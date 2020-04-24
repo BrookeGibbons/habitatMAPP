@@ -1,0 +1,12 @@
+name: geographe-bay
+title: geographe-bay
+username:
+account: globalarchive
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 2170042
+bundleId: 3057511
+url: https://globalarchive.shinyapps.io/geographe-bay/
+when: 1587690724.32527
+asMultiple: FALSE
+asStatic: FALSE
