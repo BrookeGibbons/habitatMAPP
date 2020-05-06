@@ -20,7 +20,9 @@ library(rgdal)
 library(rgeos)
 library(raster)
 library(rmapshaper)
-
+library(ggplot2)
+library(stringr)
+library(forcats)
 
 # rgeos::gSimplify on your spatial data
 # rmapshaper::ms_simplify works better than rgeos::gSimplify for simplifying polyons
@@ -33,40 +35,54 @@ bruv.image<-bruv.metadata%>%
   dplyr::mutate(image=paste0("https://marineecology.io/images/2014-12_BRUVs_Forward/",Sample,".jpg",sep=""))%>%
   ga.clean.names()%>%
   dplyr::mutate(source="stereo-bruv.image")%>%
+  mutate(height='"230"')%>%mutate(width='"405"')%>%
+  mutate(image=paste0('<iframe src=',image,' height=',height,' width=',width,'></iframe>'))%>%
   glimpse()
 
 # Tempory video links ----
-bruv.video<-data.frame(c(-33.6249992,-33.6190304),
-                      c(115.3109674,115.3875792),
-                      c("video 1", "drop2"),
-                      c('<iframe width="300" height="200" src="https://www.youtube.com/embed/QFLGJPNairI" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>',
-                        '<video width="300" controls
+bruv.video<-data.frame(c(-33.6249992,-33.6190304,-33.42207),
+                      c(115.3109674,115.3875792,115.37193),
+                      c("video 1", "drop2","video 3"),
+                      c('<iframe width="300" height="200" src="https://www.youtube.com/embed/QFLGJPNairI?autoplay=1" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>',
+                        '<video width="300" autoplay controls
   <source
     src="https://github.com/UWAMEGFisheries/UWAMEGFisheries.github.io/blob/master/videos/Compilations/test-video.mp4?raw=true"
     type="video/mp4">
+                  </video>',
+                        
+                        '<video width="300" autoplay controls
+  <source
+    src="https://github.com/UWAMEGFisheries/UWAMEGFisheries.github.io/blob/master/videos/Compilations/test-video-2.mp4?raw=true"
+    type="video/mp4">
                   </video>'
+                        
                       ))
 
 auv.video<-data.frame(c(-33.477925),
                     c(115.2743343),
                     c("auv 1"),
-                    c('<video width="300" controls <source
-    src="https://github.com/UWAMEGFisheries/UWAMEGFisheries.github.io/blob/master/videos/test-auv.mp4?raw=true"
-    type="video/mp4"></video>'
+                    c('<div class="sketchfab-embed-wrapper">
+    <iframe title="A 3D model" width="400" height="300" src="https://sketchfab.com/models/2f5bb1e3fd824d65a2d090a1f78f3d9a/embed?autostart=1&amp;preload=1&amp;ui_controls=1&amp;ui_infos=1&amp;ui_inspector=1&amp;ui_stop=1&amp;ui_watermark=1&amp;ui_watermark_link=1" frameborder="0" allow="autoplay; fullscreen; vr" mozallowfullscreen="true" webkitallowfullscreen="true"></iframe>
+    <p style="font-size: 13px; font-weight: normal; margin: 5px; color: #4A4A4A;">
+        <a href="https://sketchfab.com/3d-models/15fps-2f5bb1e3fd824d65a2d090a1f78f3d9a?utm_medium=embed&utm_source=website&utm_campaign=share-popup" target="_blank" style="font-weight: bold; color: #1CAAD9;">15fps</a>
+        by <a href="https://sketchfab.com/KyeAdams?utm_medium=embed&utm_source=website&utm_campaign=share-popup" target="_blank" style="font-weight: bold; color: #1CAAD9;">KyeAdams</a>
+        on <a href="https://sketchfab.com?utm_medium=embed&utm_source=website&utm_campaign=share-popup" target="_blank" style="font-weight: bold; color: #1CAAD9;">Sketchfab</a>
+    </p>
+</div>'
                     ))
 
-names(bruv.video)<-c("latitude","longitude","sample","video")
-names(auv.video)<-c("latitude","longitude","sample","video")
+names(bruv.video)<-c("latitude","longitude","sample","bruv.video")
+names(auv.video)<-c("latitude","longitude","sample","auv.video")
 
 bruv.video<-bruv.video%>%
-  dplyr::mutate(source="stereo-bruv.video")
+  dplyr::mutate(source="bruv.video")
 
 auv.video<-auv.video%>%
   dplyr::mutate(source="auv.video")
 
 # Merge data together for leaflet map ----
 dat<-bind_rows(bruv.image,bruv.video,auv.video)%>%
-  dplyr::select(latitude,longitude,image,video,source)%>%
+  dplyr::select(latitude,longitude,image,bruv.video,auv.video,source)%>%
   glimpse()
 
 # Make icon for images and videos----
@@ -95,9 +111,9 @@ markerLegendHTML <- function(IconSet) {
 }
 
 IconSet <- awesomeIconList(
-  "stereo-BRUV video"   = makeAwesomeIcon(icon = "video-camera", library = "fa", markerColor = "lightred", iconColor = "black"),
+  "stereo-BRUV video"   = makeAwesomeIcon(icon = "video-camera", library = "fa", markerColor = "lightred"),
   "stereo-BRUV image" = makeAwesomeIcon(icon = "image", library = "fa"),
-  "AUV photogrammetry" = makeAwesomeIcon(icon = "laptop", library = "fa", markerColor = "orange", iconColor = "black")
+  "AUV 3D models" = makeAwesomeIcon(icon = "laptop", library = "fa", markerColor = "orange")
 )
 
 lng1<-min(dat$longitude)
@@ -106,29 +122,36 @@ lng2<-max(dat$longitude)
 lat2<-max(dat$latitude)
 
 # Spatial files
+
+state.mp<-readOGR("data/spatial/test1.shp")
+state.mp <- state.mp[state.mp$Name %in% c("East Geographe Bay Sanctuary Zone", "Busselton Jetty Sanctuary Zone","Central Geographe Bay Sanctuary Zone","Eagle Bay Sanctuary Zone","Cape Naturaliste Sanctuary Zone","Injidup Sanctuary Zone","Wyadup Sanctuary Zone","Yallingup Sanctuary Zone"), ]
+
+# Spatial files
+state.mp<-readOGR("data/spatial/test1.shp")
 # wgs.84 <- "+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0"
 
-# commonwealth.marineparks <- readOGR(dsn="data/spatial/AustraliaNetworkMarineParks.shp")
-# 
-# commonwealth.marineparks<-st_as_sf(commonwealth.marineparks)%>%
-#   filter(NetName=="South-west")%>%
-#   filter(ResName=="Geographe")%>%
-#   dplyr::select(ZoneName,geometry)#%>%
-#   #rmapshaper::ms_simplify() # to test later to test shiny speed
+commonwealth.mp <- readOGR("data/spatial/AustraliaNetworkMarineParks.shp")
 
-# ngaricapes <- readOGR(dsn="data/spatial/test1.shp")
+# commonwealth.mp$ZoneIUCN <- str_replace_all(commonwealth.mp$ZoneIUCN,c("IA"="Ia"))
 
-# ngari<-st_as_sf(ngari)%>%
-#   filter(Name=="Ngari Capes")
+commonwealth.mp$ZoneIUCN <- fct_collapse(commonwealth.mp$ZoneIUCN,
+                         Ia = c("Ia", "IA"),
+                         II = "II",
+                         IV = "IV",
+                         VI = "VI")
 
-# Below from habitapp
-# ngaricapes.id <- fortify(ngaricapes)
-# class(ngaricapes.id)
-# 
-# ngaricapes@data$id <- 0:(dim(ngaricapes@data)[1]-1) # add id field
-# 
-# ngaricapes.mp <- plyr::join(x = ngaricapes.id,y = ngaricapes@data, by="id")
-# 
-# plot(ngaricapes)
-# # proj4string(commonwealth.marineparks)<-CRS(wgs.84)
-# proj4string(ngaricapes)<-CRS(wgs.84)
+commonwealth.mp$IUCN <- as.factor(commonwealth.mp$ZoneIUCN)
+
+unique(commonwealth.mp$IUCN)
+factpal <- colorFactor(c("#f6c1d9", "#7bbc63",
+                         "#fff7a3","#6daee0"), commonwealth.mp$IUCN)
+
+testpal<-colorFactor(c("#f6c1d9", "#7bbc63",
+                   "#fff7a3","#6daee0"),
+                 levels=c("Ia", "II", "IV", "VI"))
+
+#f6c1d9 - pink 1A, 1a
+#7bbc63 - green IUCN II
+#fff7a3 - yellow IUCN IV
+#b9e6fb - light blue VI
+#6daee0 - dark blue VI
