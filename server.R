@@ -8,6 +8,8 @@ function(input, output, session) {
   
   output$map <- renderLeaflet({
     
+    
+    
     leaflet() %>% 
       addTiles(group = "OSM (default)")%>%
       addProviderTiles('Esri.WorldImagery', group = "World Imagery") %>%
@@ -25,8 +27,6 @@ function(input, output, session) {
       
       # stereo-BRUV Images
       # addAwesomeMarkers(data=filter(leaflet.dat, source%in%c("stereo-bruv.image")),icon = icon.image, popup = popupImage(leaflet.dat$image, src = "remote"), group = "stereo-BRUV imagery")%>%
-      # 
-      #
       addAwesomeMarkers(data=filter(dat, source%in%c("stereo-bruv.image")),icon = icon.image,group = "stereo-BRUV images",
                             popup = dat$image,
                             popupOptions=c(closeButton = TRUE,
