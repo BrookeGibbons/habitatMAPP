@@ -24,15 +24,24 @@ library(ggplot2)
 library(stringr)
 library(forcats)
 
-# rgeos::gSimplify on your spatial data
-# rmapshaper::ms_simplify works better than rgeos::gSimplify for simplifying polyons
+# Load 2019 ningaloo metadata ----
+ning.bruv.metadata<-read.csv("data/2019-08_Ningaloo_metadata.csv")
 
-# Load metadata ----
+# Load 2014 Geographe bay metadata ----
 gb.bruv.metadata<-read.csv("data/2014-12_Geographe.Bay_stereoBRUVs_Metadata.csv")
 
-# Create dataframe for plotting ----
+# Create dataframe for 2014 Geographe Bay BRUV images for plotting ----
 gb.bruv.image<-gb.bruv.metadata%>%
   dplyr::mutate(image=paste0("https://marineecology.io/images/2014-12_BRUVs_Forward/",Sample,".jpg",sep=""))%>%
+  ga.clean.names()%>%
+  dplyr::mutate(source="stereo-bruv.image")%>%
+  mutate(height='"230"')%>%mutate(width='"405"')%>%
+  mutate(image=paste0('<iframe src=',image,' height=',height,' width=',width,'></iframe>'))%>%
+  glimpse()
+
+# Create dataframe for 2019 Ningaloo BRUV images for plotting ----
+ning.bruv.image<-ning.bruv.metadata%>%
+  dplyr::mutate(image=paste0("https://marineecology.io/images/2014-12_BRUVs_Forward/",sample,".jpg",sep=""))%>% # NEED TO UPDATE THIS
   ga.clean.names()%>%
   dplyr::mutate(source="stereo-bruv.image")%>%
   mutate(height='"230"')%>%mutate(width='"405"')%>%
@@ -81,16 +90,24 @@ gb.auv.video<-gb.auv.video%>%
   dplyr::mutate(source="auv.video")
 
 # Merge data together for leaflet map ----
-dat<-bind_rows(gb.bruv.image,gb.bruv.video,gb.auv.video)%>%
+gb.dat<-bind_rows(gb.bruv.image,gb.bruv.video,gb.auv.video)%>%
   dplyr::select(latitude,longitude,image,bruv.video,auv.video,source)%>%
   dplyr::mutate(marine.park="geographe")%>%
   glimpse()
+
+ning.dat<-bind_rows(ning.bruv.image)%>%
+  dplyr::select(latitude,longitude,image,source)%>% # ,bruv.video,auv.video,source
+  dplyr::mutate(marine.park="ningaloo")%>%
+  glimpse()
+
+dat<-bind_rows(gb.dat,ning.dat)
 
 # Make icon for images and videos----
 icon.image <- makeAwesomeIcon(icon = "image", library = "fa")
 icon.video <- makeAwesomeIcon(icon = "video-camera", library = "fa", markerColor = "lightred", iconColor = "black")
 icon.laptop <- makeAwesomeIcon(icon = "laptop", library = "fa", markerColor = "orange", iconColor = "black")
 
+# Legend function ----
 markerLegendHTML <- function(IconSet) {
   # container div:
   legendHtml <- "<div style='padding: 10px; padding-bottom: 10px;'><h4 style='padding-top:0; padding-bottom:10px; margin: 0;'> Marker Legend </h4>"
@@ -118,7 +135,7 @@ IconSet <- awesomeIconList(
 )
 
 
-# Spatial files
+# Spatial files ----
 
 state.mp<-readOGR("data/spatial/test1.shp")
 state.mp <- state.mp[state.mp$Name %in% c("East Geographe Bay Sanctuary Zone", "Busselton Jetty Sanctuary Zone","Central Geographe Bay Sanctuary Zone","Eagle Bay Sanctuary Zone","Cape Naturaliste Sanctuary Zone","Injidup Sanctuary Zone","Wyadup Sanctuary Zone","Yallingup Sanctuary Zone"), ]
