@@ -25,7 +25,7 @@ tagList(
                                                                             "South-west corner" = "southwest"))),
                          box(width=12,leafletOutput("map", height = 625)
                          
-                         ),
+                         )
                 )
         )
         

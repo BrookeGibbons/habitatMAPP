@@ -28,10 +28,10 @@ library(forcats)
 # rmapshaper::ms_simplify works better than rgeos::gSimplify for simplifying polyons
 
 # Load metadata ----
-bruv.metadata<-read.csv("data/2014-12_Geographe.Bay_stereoBRUVs_Metadata.csv")
+gb.bruv.metadata<-read.csv("data/2014-12_Geographe.Bay_stereoBRUVs_Metadata.csv")
 
 # Create dataframe for plotting ----
-bruv.image<-bruv.metadata%>%
+gb.bruv.image<-gb.bruv.metadata%>%
   dplyr::mutate(image=paste0("https://marineecology.io/images/2014-12_BRUVs_Forward/",Sample,".jpg",sep=""))%>%
   ga.clean.names()%>%
   dplyr::mutate(source="stereo-bruv.image")%>%
@@ -40,7 +40,7 @@ bruv.image<-bruv.metadata%>%
   glimpse()
 
 # Tempory video links ----
-bruv.video<-data.frame(c(-33.6249992,-33.6190304,-33.42207),
+gb.bruv.video<-data.frame(c(-33.6249992,-33.6190304,-33.42207),
                       c(115.3109674,115.3875792,115.37193),
                       c("video 1", "drop2","video 3"),
                       c('<iframe width="300" height="200" src="https://www.youtube.com/embed/QFLGJPNairI?autoplay=1" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>',
@@ -58,7 +58,7 @@ bruv.video<-data.frame(c(-33.6249992,-33.6190304,-33.42207),
                         
                       ))
 
-auv.video<-data.frame(c(-33.477925),
+gb.auv.video<-data.frame(c(-33.477925),
                     c(115.2743343),
                     c("auv 1"),
                     c('<div class="sketchfab-embed-wrapper">
@@ -71,18 +71,19 @@ auv.video<-data.frame(c(-33.477925),
 </div>'
                     ))
 
-names(bruv.video)<-c("latitude","longitude","sample","bruv.video")
-names(auv.video)<-c("latitude","longitude","sample","auv.video")
+names(gb.bruv.video)<-c("latitude","longitude","sample","bruv.video")
+names(gb.auv.video)<-c("latitude","longitude","sample","auv.video")
 
-bruv.video<-bruv.video%>%
+gb.bruv.video<-gb.bruv.video%>%
   dplyr::mutate(source="bruv.video")
 
-auv.video<-auv.video%>%
+gb.auv.video<-gb.auv.video%>%
   dplyr::mutate(source="auv.video")
 
 # Merge data together for leaflet map ----
-dat<-bind_rows(bruv.image,bruv.video,auv.video)%>%
+dat<-bind_rows(gb.bruv.image,gb.bruv.video,gb.auv.video)%>%
   dplyr::select(latitude,longitude,image,bruv.video,auv.video,source)%>%
+  dplyr::mutate(marine.park="geographe")%>%
   glimpse()
 
 # Make icon for images and videos----
@@ -116,10 +117,6 @@ IconSet <- awesomeIconList(
   "AUV 3D models" = makeAwesomeIcon(icon = "laptop", library = "fa", markerColor = "orange")
 )
 
-lng1<-min(dat$longitude)
-lat1<-min(dat$latitude)
-lng2<-max(dat$longitude)
-lat2<-max(dat$latitude)
 
 # Spatial files
 
