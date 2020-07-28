@@ -1,7 +1,7 @@
 tagList(
   useShinyjs(),
   dashboardPage(
-    dashboardHeader(title = "HabitAPP"),
+    dashboardHeader(title = "HabitatMAPP"),
     dashboardSidebar(
       sidebarMenu(
         menuItem("Interactive map", tabName = "map", icon = icon("map"))
@@ -20,11 +20,11 @@ tagList(
                 
                 
                 fluidRow(box(width=3,title = "Select a Marine Park",status="primary",solidHeader = TRUE, 
-                             selectInput("leaflet.select.marine.park", "",c("Geographe Bay" = "geographe",
-                                                                            "Ningaloo" = "ningaloo",
-                                                                            "South-west corner" = "southwest"))),
-                         box(width=12,leafletOutput("map", height = 625)
-                         
+                             selectInput("leaflet.marine.park", "",c("Geographe Bay" = "Geographe Bay",
+                                                                     "Ningaloo" = "Ningaloo",
+                                                                     "South-west Corner" = "South-west Corner"))),
+                         box(width=12,leafletOutput("leaflet.map", height = 625)
+                             
                          )
                 )
         )

@@ -1,22 +1,55 @@
 function(input, output, session) {
   
-  output$map <- renderLeaflet({
+  # Need to get this to work to filter data to selected marine region BG 28/07/20
+  map.dat <- reactive({
+    req(input$leaflet.marine.park)
     
-    req(input$leaflet.select.marine.park)
+    dat %>% 
+      dplyr::filter(marine.park %in% input$leaflet.marine.park)
+  })
+  
+  
+  output$leaflet.map <- renderLeaflet({
     
-    dat <- dat %>%
-      filter(marine.park %in%c(input$leaflet.select.marine.park))
+    #map.dat <- map.dat() # Need to get this to work BG 28/07/20
+    map.dat <- dat
     
-    lng1 <- min(dat$longitude)
-    lat1 <- min(dat$latitude)
-    lng2 <- max(dat$longitude)
-    lat2 <- max(dat$latitude)
+    lng1 <- min(map.dat$longitude)
+    lat1 <- min(map.dat$latitude)
+    lng2 <- max(map.dat$longitude)
+    lat2 <- max(map.dat$latitude)
     
     leaflet() %>% 
       addTiles(group = "OSM (default)")%>%
       addProviderTiles('Esri.WorldImagery', group = "World Imagery") %>%
       addControl(html = markerLegendHTML(IconSet = IconSet), position = "bottomleft")%>%
       flyToBounds(lng1, lat1, lng2, lat2)%>%
+      
+      # stereo-BRUV Images
+      addAwesomeMarkers(data=filter(dat, source%in%c("stereo-bruv.image")),
+                        icon = icon.image,
+                        group = "stereo-BRUV images",
+                        popup = dat$image,
+                        popupOptions=c(closeButton = TRUE,
+                                       minWidth = 0,
+                                       maxWidth = 500
+                        ))%>%
+      
+      # stereo-BRUV video
+      addAwesomeMarkers(data=filter(dat, source%in%c("bruv.video")),
+                        icon = icon.video,
+                        popup = dat$bruv.video,
+                        group="stereo-BRUV videos",
+                        popupOptions=c(closeButton = TRUE,
+                                       minWidth = 0,maxWidth = 500))%>%
+      
+      # AUV video
+      addAwesomeMarkers(data=filter(dat, source%in%c("auv.video")),
+                        icon = icon.laptop,
+                        popup = dat$auv.video,
+                        group="AUV 3D models",
+                        popupOptions=c(closeButton = TRUE,
+                                       minWidth = 0,maxWidth = 500))%>%
       
       # State Marine Parks
       addPolygons(data = state.mp, weight = 1, color = "black", 
@@ -38,31 +71,6 @@ function(input, output, session) {
       #           title="IUCN Protected Area Category",
       #           position = "bottomright", group = "State marine parks")%>%
       
-      # stereo-BRUV Images
-      addAwesomeMarkers(data=filter(dat, source%in%c("stereo-bruv.image")),
-                        icon = icon.image,
-                        group = "stereo-BRUV images",
-                        popup = dat$image,
-                        popupOptions=c(closeButton = TRUE,
-                                           minWidth = 0,
-                                           maxWidth = 500
-                            ))%>%
-      # stereo-BRUV video
-      addAwesomeMarkers(data=filter(dat, source%in%c("bruv.video")),
-                        icon = icon.video,
-                        popup = dat$bruv.video,
-                        group="stereo-BRUV videos",
-                        popupOptions=c(closeButton = TRUE,
-                        minWidth = 0,maxWidth = 500))%>%
-
-      # AUV video
-      addAwesomeMarkers(data=filter(dat, source%in%c("auv.video")),
-                        icon = icon.laptop,
-                        popup = dat$auv.video,
-                        group="AUV 3D models",
-                        popupOptions=c(closeButton = TRUE,
-                                       minWidth = 0,maxWidth = 500))%>%
-      
       addLayersControl(
         baseGroups = c("OSM (default)", "World Imagery"),
         overlayGroups = c("stereo-BRUV images",
@@ -70,7 +78,11 @@ function(input, output, session) {
                           "AUV 3D models",
                           "State marine parks",
                           "Commonwealth marine parks"), options = layersControlOptions(collapsed = FALSE))%>% hideGroup("State marine parks")%>%hideGroup("Commonwealth marine parks")
+    
+    
+    
+    
   })
-
+  
   
 }
