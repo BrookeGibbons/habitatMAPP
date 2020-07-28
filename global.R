@@ -23,7 +23,8 @@ library(stringr)
 library(forcats)
 
 # Load 2019 ningaloo metadata ----
-ning.bruv.metadata<-read.csv("data/2019-08_Ningaloo_metadata.csv")
+ning.bruv.metadata<-read.csv("data/2019-08_Ningaloo_metadata.csv")%>%
+  mutate(sample=as.character(sample))
 
 # Load 2014 Geographe bay metadata ----
 gb.bruv.metadata<-read.csv("data/2014-12_Geographe.Bay_stereoBRUVs_Metadata.csv")
@@ -39,12 +40,15 @@ gb.bruv.image<-gb.bruv.metadata%>%
 
 # Create dataframe for 2019 Ningaloo BRUV images for plotting ----
 ning.bruv.image<-ning.bruv.metadata%>%
-  dplyr::mutate(image=paste0("https://marineecology.io/images/2014-12_BRUVs_Forward/",sample,".jpg",sep=""))%>% # NEED TO UPDATE THIS
+  dplyr::mutate(image=paste0("https://raw.githubusercontent.com/BrookeGibbons/habitatMAPP/master/images/",sample,".jpg",sep=""))%>% # NEED TO UPDATE THIS
   ga.clean.names()%>%
   dplyr::mutate(source="stereo-bruv.image")%>%
   mutate(height='"230"')%>%mutate(width='"405"')%>%
   mutate(image=paste0('<iframe src=',image,' height=',height,' width=',width,'></iframe>'))%>%
   glimpse()
+
+
+# https://raw.githubusercontent.com/BrookeGibbons/habitatMAPP/master/images/3.01.jpg
 
 # Tempory video links ----
 gb.bruv.video<-data.frame(c(-33.6249992,-33.6190304,-33.42207),
