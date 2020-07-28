@@ -1,7 +1,7 @@
 tagList(
   useShinyjs(),
   dashboardPage(
-    dashboardHeader(title = "HabitatMAPP"),
+    dashboardHeader(title = "habitatMAPP"),
     dashboardSidebar(
       sidebarMenu(
         menuItem("Interactive map", tabName = "map", icon = icon("map"))

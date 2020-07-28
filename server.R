@@ -1,6 +1,6 @@
 function(input, output, session) {
   
-  # Need to get this to work to filter data to selected marine region BG 28/07/20
+  # Working BG 28/07/20
   map.dat <- reactive({
     req(input$leaflet.marine.park)
     
@@ -11,8 +11,8 @@ function(input, output, session) {
   
   output$leaflet.map <- renderLeaflet({
     
-    #map.dat <- map.dat() # Need to get this to work BG 28/07/20
-    map.dat <- dat
+    map.dat <- map.dat() # working  BG 28/07/20
+    # map.dat <- dat
     
     lng1 <- min(map.dat$longitude)
     lat1 <- min(map.dat$latitude)
@@ -26,27 +26,30 @@ function(input, output, session) {
       flyToBounds(lng1, lat1, lng2, lat2)%>%
       
       # stereo-BRUV Images
-      addAwesomeMarkers(data=filter(dat, source%in%c("stereo-bruv.image")),
+      addAwesomeMarkers(data=filter(map.dat, source%in%c("stereo-bruv.image")),
                         icon = icon.image,
+                        clusterOptions = markerClusterOptions(),
                         group = "stereo-BRUV images",
-                        popup = dat$image,
+                        popup = map.dat$image,
                         popupOptions=c(closeButton = TRUE,
                                        minWidth = 0,
                                        maxWidth = 500
                         ))%>%
       
       # stereo-BRUV video
-      addAwesomeMarkers(data=filter(dat, source%in%c("bruv.video")),
+      addAwesomeMarkers(data=filter(map.dat, source%in%c("bruv.video")),
                         icon = icon.video,
-                        popup = dat$bruv.video,
+                        popup = map.dat$bruv.video,
+                        # clusterOptions = markerClusterOptions(),
                         group="stereo-BRUV videos",
                         popupOptions=c(closeButton = TRUE,
                                        minWidth = 0,maxWidth = 500))%>%
       
       # AUV video
-      addAwesomeMarkers(data=filter(dat, source%in%c("auv.video")),
+      addAwesomeMarkers(data=filter(map.dat, source%in%c("auv.video")),
                         icon = icon.laptop,
-                        popup = dat$auv.video,
+                        popup = map.dat$auv.video,
+                        # clusterOptions = markerClusterOptions(),
                         group="AUV 3D models",
                         popupOptions=c(closeButton = TRUE,
                                        minWidth = 0,maxWidth = 500))%>%
