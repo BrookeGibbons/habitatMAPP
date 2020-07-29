@@ -37,18 +37,18 @@ function(input, output, session) {
                         ))%>%
       
       # stereo-BRUV video
-      addAwesomeMarkers(data=filter(map.dat, source%in%c("bruv.video")),
+      addAwesomeMarkers(data=filter(map.dat, source%in%c("fish.video")),
                         icon = icon.video,
-                        popup = map.dat$bruv.video,
+                        popup = map.dat$fish,
                         # clusterOptions = markerClusterOptions(),
                         group="stereo-BRUV videos",
                         popupOptions=c(closeButton = TRUE,
                                        minWidth = 0,maxWidth = 700))%>%
       
-      # AUV video
-      addAwesomeMarkers(data=filter(map.dat, source%in%c("auv.video")),
+      # 3D models
+      addAwesomeMarkers(data=filter(map.dat, source%in%c("3d.model")),
                         icon = icon.laptop,
-                        popup = map.dat$auv.video,
+                        popup = map.dat$auv,
                         # clusterOptions = markerClusterOptions(),
                         group="AUV 3D models",
                         popupOptions=c(closeButton = TRUE,
@@ -90,7 +90,9 @@ function(input, output, session) {
                           "stereo-BRUV videos",
                           "AUV 3D models",
                           "State marine parks",
-                          "Commonwealth marine parks"), options = layersControlOptions(collapsed = FALSE))%>% hideGroup("State marine parks")%>%hideGroup("Commonwealth marine parks")
+                          "Commonwealth marine parks"), options = layersControlOptions(collapsed = FALSE))%>% 
+      hideGroup("State marine parks")%>%
+      hideGroup("Commonwealth marine parks")
     
     
     

@@ -37,7 +37,7 @@ gb.bruv.image <- gb.bruv.metadata %>%
   dplyr::mutate(image=paste0("https://marineecology.io/images/2014-12_BRUVs_Forward/",Sample,".jpg",sep="")) %>%
   ga.clean.names() %>%
   dplyr::mutate(source="stereo-bruv.image") %>%
-  mutate(height='"230"') %>% mutate(width='"405"') %>%
+  mutate(height='"365"') %>% mutate(width='"645"') %>%
   mutate(image=paste0('<iframe src=',image,' height=',height,' width=',width,'></iframe>')) %>%
   glimpse()
 
@@ -60,46 +60,16 @@ sw.bruv.image <- sw.bruv.metadata %>%
   mutate(image=paste0('<iframe src=',image,' height=',height,' width=',width,'></iframe>')) %>%
   glimpse()
 
-# Tempory video links ----
-gb.bruv.video<-data.frame(c(-33.6249992,-33.6190304,-33.42207),
-                          c(115.3109674,115.3875792,115.37193),
-                          c("video 1", "drop2","video 3"),
-                          c('<iframe width="300" height="200" src="https://www.youtube.com/embed/QFLGJPNairI?autoplay=1" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>',
-                            '<video width="300" autoplay controls
-  <source
-    src="https://github.com/UWAMEGFisheries/UWAMEGFisheries.github.io/blob/master/videos/Compilations/test-video.mp4?raw=true"
-    type="video/mp4">
-                  </video>',
-                            
-                            '<video width="645" autoplay controls
-  <source
-    src="https://github.com/UWAMEGFisheries/UWAMEGFisheries.github.io/blob/master/videos/Compilations/test-video-2.mp4?raw=true"
-    type="video/mp4">
-                  </video>'
-                            
-                          ))
+# Fish and AUV video links ----
+fish.and.models <- read.csv("data/zone-midpoints.csv", na.strings=c("NA","NaN", " ",""))
 
-gb.auv.video<-data.frame(c(-33.477925),
-                         c(115.2743343),
-                         c("auv 1"),
-                         c('<div class="sketchfab-embed-wrapper">
-    <iframe title="A 3D model" width="400" height="300" src="https://sketchfab.com/models/2f5bb1e3fd824d65a2d090a1f78f3d9a/embed?autostart=1&amp;preload=1&amp;ui_controls=1&amp;ui_infos=1&amp;ui_inspector=1&amp;ui_stop=1&amp;ui_watermark=1&amp;ui_watermark_link=1" frameborder="0" allow="autoplay; fullscreen; vr" mozallowfullscreen="true" webkitallowfullscreen="true"></iframe>
-    <p style="font-size: 13px; font-weight: normal; margin: 5px; color: #4A4A4A;">
-        <a href="https://sketchfab.com/3d-models/15fps-2f5bb1e3fd824d65a2d090a1f78f3d9a?utm_medium=embed&utm_source=website&utm_campaign=share-popup" target="_blank" style="font-weight: bold; color: #1CAAD9;">15fps</a>
-        by <a href="https://sketchfab.com/KyeAdams?utm_medium=embed&utm_source=website&utm_campaign=share-popup" target="_blank" style="font-weight: bold; color: #1CAAD9;">KyeAdams</a>
-        on <a href="https://sketchfab.com?utm_medium=embed&utm_source=website&utm_campaign=share-popup" target="_blank" style="font-weight: bold; color: #1CAAD9;">Sketchfab</a>
-    </p>
-</div>'
-                         ))
+fish <- fish.and.models %>% 
+  dplyr::filter(!is.na(fish)) %>% 
+  dplyr::mutate(source="fish.video")
 
-names(gb.bruv.video)<-c("latitude","longitude","sample","bruv.video")
-names(gb.auv.video)<-c("latitude","longitude","sample","auv.video")
-
-gb.bruv.video<-gb.bruv.video%>%
-  dplyr::mutate(source="bruv.video")
-
-gb.auv.video<-gb.auv.video%>%
-  dplyr::mutate(source="auv.video")
+models <- fish.and.models %>% 
+  dplyr::filter(!is.na(auv)) %>% 
+  dplyr::mutate(source="3d.model")
 
 # Merge data together for leaflet map ----
 gb.dat <- bind_rows(gb.bruv.image,gb.bruv.video,gb.auv.video) %>%
@@ -117,7 +87,7 @@ sw.dat <- bind_rows(sw.bruv.image) %>%
   dplyr::mutate(marine.park="South-west Corner") %>%
   glimpse()
 
-dat <- bind_rows(gb.dat,ning.dat, sw.dat)
+dat <- bind_rows(gb.dat,ning.dat, sw.dat, fish, models)
 
 # Make icon for images and videos----
 icon.image <- makeAwesomeIcon(icon = "image", library = "fa")
