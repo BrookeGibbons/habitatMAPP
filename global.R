@@ -40,10 +40,10 @@ gb.bruv.image<-gb.bruv.metadata%>%
 
 # Create dataframe for 2019 Ningaloo BRUV images for plotting ----
 ning.bruv.image<-ning.bruv.metadata%>%
-  dplyr::mutate(image=paste0("https://raw.githubusercontent.com/BrookeGibbons/habitatMAPP/master/images/",sample,".jpg",sep=""))%>% # NEED TO UPDATE THIS
+  dplyr::mutate(image=paste0("https://marineecology.io/images/habitatmapp/ningaloo/",sample,".jpg",sep=""))%>% # NEED TO UPDATE THIS
   ga.clean.names()%>%
   dplyr::mutate(source="stereo-bruv.image")%>%
-  mutate(height='"230"')%>%mutate(width='"405"')%>%
+  mutate(height='"365"')%>%mutate(width='"645"')%>%
   mutate(image=paste0('<iframe src=',image,' height=',height,' width=',width,'></iframe>'))%>%
   glimpse()
 
@@ -61,7 +61,7 @@ gb.bruv.video<-data.frame(c(-33.6249992,-33.6190304,-33.42207),
     type="video/mp4">
                   </video>',
                             
-                            '<video width="300" autoplay controls
+                            '<video width="645" autoplay controls
   <source
     src="https://github.com/UWAMEGFisheries/UWAMEGFisheries.github.io/blob/master/videos/Compilations/test-video-2.mp4?raw=true"
     type="video/mp4">

@@ -33,7 +33,7 @@ function(input, output, session) {
                         popup = map.dat$image,
                         popupOptions=c(closeButton = TRUE,
                                        minWidth = 0,
-                                       maxWidth = 500
+                                       maxWidth = 700 # changed from 500 BG 28/07
                         ))%>%
       
       # stereo-BRUV video
@@ -43,7 +43,7 @@ function(input, output, session) {
                         # clusterOptions = markerClusterOptions(),
                         group="stereo-BRUV videos",
                         popupOptions=c(closeButton = TRUE,
-                                       minWidth = 0,maxWidth = 500))%>%
+                                       minWidth = 0,maxWidth = 700))%>%
       
       # AUV video
       addAwesomeMarkers(data=filter(map.dat, source%in%c("auv.video")),
