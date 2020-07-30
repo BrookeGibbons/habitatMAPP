@@ -78,7 +78,7 @@ function(input, output, session) {
       addLegend(pal = commonwealth.pal, values = commonwealth.mp$zone, opacity = 1,
                 title="Commonwealth Zones",
                 position = "bottomright", group = "Commonwealth marine parks")%>%
-      # 
+      
       # # Add a legend
       # addLegend(pal = testpal, values = commonwealth.mp$IUCN, opacity = 1,
       #           title="IUCN Protected Area Category",

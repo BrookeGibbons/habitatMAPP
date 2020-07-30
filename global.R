@@ -72,8 +72,8 @@ models <- fish.and.models %>%
   dplyr::mutate(source="3d.model")
 
 # Merge data together for leaflet map ----
-gb.dat <- bind_rows(gb.bruv.image,gb.bruv.video,gb.auv.video) %>%
-  dplyr::select(latitude,longitude,image,bruv.video,auv.video,source) %>%
+gb.dat <- bind_rows(gb.bruv.image) %>%
+  dplyr::select(latitude,longitude,image,source) %>%
   dplyr::mutate(marine.park="Geographe Bay") %>%
   glimpse()
 
