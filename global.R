@@ -65,11 +65,17 @@ fish.and.models <- read.csv("data/zone-midpoints.csv", na.strings=c("NA","NaN", 
 
 fish <- fish.and.models %>% 
   dplyr::filter(!is.na(fish)) %>% 
-  dplyr::mutate(source="fish.video")
+  dplyr::mutate(source = "fish.video")%>%
+  dplyr::mutate(fish = paste("<center><h4>Fish observed in the ",
+                             marine.park,
+                             " Marine Park, in the ",
+                             zone,
+                             " Zone.</h4></center>","<br/>",
+                             fish,sep=""))
 
 models <- fish.and.models %>% 
   dplyr::filter(!is.na(auv)) %>% 
-  dplyr::mutate(source="3d.model")
+  dplyr::mutate(source = "3d.model")
 
 # Merge data together for leaflet map ----
 gb.dat <- bind_rows(gb.bruv.image) %>%
@@ -97,7 +103,7 @@ icon.laptop <- makeAwesomeIcon(icon = "laptop", library = "fa", markerColor = "o
 IconSet <- awesomeIconList(
   "stereo-BRUV video"   = makeAwesomeIcon(icon = "video-camera", library = "fa", markerColor = "lightred"),
   "stereo-BRUV image" = makeAwesomeIcon(icon = "image", library = "fa"),
-  "AUV 3D models" = makeAwesomeIcon(icon = "laptop", library = "fa", markerColor = "orange")
+  "3D models" = makeAwesomeIcon(icon = "laptop", library = "fa", markerColor = "orange")
 )
 
 # Spatial files ----
@@ -222,3 +228,51 @@ markerLegendHTML <- function(IconSet) {
   }
   paste0(legendHtml, "</div>")
 }
+
+
+# HOW TO ADD ICONS BASED ON COLUMN ------
+# Make a list of icons. We'll index into it based on name.
+# oceanIcons <- iconList(
+#   ship = makeIcon("ferry-18.png", "ferry-18@2x.png", 18, 18),
+#   pirate = makeIcon("danger-24.png", "danger-24@2x.png", 24, 24)
+# )
+# 
+# # Some fake data
+# df <- sp::SpatialPointsDataFrame(
+#   cbind(
+#     (runif(20) - .5) * 10 - 90.620130,  # lng
+#     (runif(20) - .5) * 3.8 + 25.638077  # lat
+#   ),
+#   data.frame(type = factor(
+#     ifelse(runif(20) > 0.75, "pirate", "ship"),
+#     c("ship", "pirate")
+#   ))
+# )
+# 
+# leaflet(df) %>% addTiles() %>%
+#   # Select from oceanIcons based on df$type
+#   addMarkers(icon = ~oceanIcons[type])
+
+# first 20 quakes
+# df.20 <- quakes[1:20,]
+# 
+# getColor <- function(quakes) {
+#   sapply(quakes$mag, function(mag) {
+#     if(mag <= 4) {
+#       "green"
+#     } else if(mag <= 5) {
+#       "orange"
+#     } else {
+#       "red"
+#     } })
+# }
+# 
+# icons <- awesomeIcons(
+#   icon = 'ios-close',
+#   iconColor = 'black',
+#   library = 'ion',
+#   markerColor = getColor(df.20)
+# )
+# 
+# leaflet(df.20) %>% addTiles() %>%
+#   addAwesomeMarkers(~long, ~lat, icon=icons, label=~as.character(mag))

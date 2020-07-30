@@ -19,9 +19,9 @@ tagList(
                 ),
                 
                 
-                fluidRow(box(width=3,title = "Select a Marine Park",status="primary",solidHeader = TRUE, 
-                             selectInput("leaflet.marine.park", "",c("Geographe Bay" = "Geographe Bay",
-                                                                     "Ningaloo" = "Ningaloo",
+                fluidRow(box(width=3,title = "Select a Marine Park to explore",status="primary",solidHeader = TRUE, 
+                             selectInput("leaflet.marine.park", "",c("Geographe Marine Park" = "Geographe Bay",
+                                                                     "Ningaloo Marine Park" = "Ningaloo",
                                                                      "South-west Corner" = "South-west Corner"))),
                          box(width=12,leafletOutput("leaflet.map", height = 625)
                              

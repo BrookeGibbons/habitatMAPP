@@ -50,7 +50,7 @@ function(input, output, session) {
                         icon = icon.laptop,
                         popup = map.dat$auv,
                         # clusterOptions = markerClusterOptions(),
-                        group="AUV 3D models",
+                        group="3D models",
                         popupOptions=c(closeButton = TRUE,
                                        minWidth = 0,maxWidth = 500))%>%
       
@@ -88,7 +88,7 @@ function(input, output, session) {
         baseGroups = c("OSM (default)", "World Imagery"),
         overlayGroups = c("stereo-BRUV images",
                           "stereo-BRUV videos",
-                          "AUV 3D models",
+                          "3D models",
                           "State marine parks",
                           "Commonwealth marine parks"), options = layersControlOptions(collapsed = FALSE))%>% 
       hideGroup("State marine parks")%>%
