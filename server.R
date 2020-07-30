@@ -1,18 +1,24 @@
 function(input, output, session) {
   
-  # Working BG 28/07/20
+# Filter data to selected marine park (should make plotting faster) ----
   map.dat <- reactive({
     req(input$leaflet.marine.park)
     
     dat %>% 
       dplyr::filter(marine.park %in% input$leaflet.marine.park)
   })
-  
-  
+
+# Create leaflet explore map ---- 
   output$leaflet.map <- renderLeaflet({
     
-    map.dat <- map.dat() # working  BG 28/07/20
-    # map.dat <- dat
+    map.dat <- map.dat() # call in filtered data
+    
+    # test.icons <- awesomeIcons(
+    #   icon = 'ios-close',
+    #   iconColor = 'black',
+    #   library = 'ion',
+    #   markerColor = get.color(map.dat)
+    # )
     
     lng1 <- min(map.dat$longitude)
     lat1 <- min(map.dat$latitude)
@@ -25,30 +31,39 @@ function(input, output, session) {
       addControl(html = markerLegendHTML(IconSet = IconSet), position = "bottomleft")%>%
       flyToBounds(lng1, lat1, lng2, lat2)%>%
       
+      # addAwesomeMarkers(data=map.dat, # this doesn't work because you can't use groups
+      #                   icon = test.icons,
+      #                   clusterOptions = markerClusterOptions(),
+      #                   group = "videos",
+      #                   popup = map.dat$popup,
+      #                   popupOptions=c(closeButton = TRUE,
+      #                                  minWidth = 0,
+      #                                  maxWidth = 700))%>%
+      
       # stereo-BRUV Images
-      addAwesomeMarkers(data=filter(map.dat, source%in%c("stereo-bruv.image")),
+      addAwesomeMarkers(data=filter(map.dat, source%in%c("image")),
                         icon = icon.image,
                         clusterOptions = markerClusterOptions(),
                         group = "stereo-BRUV images",
-                        popup = map.dat$image,
+                        popup = map.dat$popup,
                         popupOptions=c(closeButton = TRUE,
                                        minWidth = 0,
                                        maxWidth = 700 # changed from 500 BG 28/07
                         ))%>%
-      
+
       # stereo-BRUV video
       addAwesomeMarkers(data=filter(map.dat, source%in%c("fish.video")),
                         icon = icon.video,
-                        popup = map.dat$fish,
+                        popup = map.dat$popup,
                         # clusterOptions = markerClusterOptions(),
                         group="stereo-BRUV videos",
                         popupOptions=c(closeButton = TRUE,
                                        minWidth = 0,maxWidth = 700))%>%
-      
+
       # 3D models
       addAwesomeMarkers(data=filter(map.dat, source%in%c("3d.model")),
                         icon = icon.laptop,
-                        popup = map.dat$auv,
+                        popup = map.dat$popup,
                         # clusterOptions = markerClusterOptions(),
                         group="3D models",
                         popupOptions=c(closeButton = TRUE,

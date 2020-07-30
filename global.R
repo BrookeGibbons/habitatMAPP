@@ -36,29 +36,32 @@ sw.bruv.metadata <- read.csv("data/2020-06_south-west_stereoBRUVs_metadata.csv")
 gb.bruv.image <- gb.bruv.metadata %>%
   dplyr::mutate(image=paste0("https://marineecology.io/images/2014-12_BRUVs_Forward/",Sample,".jpg",sep="")) %>%
   ga.clean.names() %>%
-  dplyr::mutate(source="stereo-bruv.image") %>%
+  dplyr::mutate(source="image") %>%
   mutate(height='"365"') %>% mutate(width='"645"') %>%
-  mutate(image=paste0('<iframe src=',image,' height=',height,' width=',width,'></iframe>')) %>%
-  glimpse()
+  mutate(popup=paste0('<iframe src=',image,' height=',height,' width=',width,'></iframe>')) %>%
+  dplyr::select(latitude,longitude,popup,source) %>%
+  dplyr::mutate(marine.park="Geographe Bay")
 
 # Create dataframe for 2019 Ningaloo BRUV images for plotting ----
 ning.bruv.image <- ning.bruv.metadata %>%
   dplyr::mutate(image=paste0("https://marineecology.io/images/habitatmapp/ningaloo/",sample,".jpg",sep="")) %>% 
   ga.clean.names() %>%
-  dplyr::mutate(source="stereo-bruv.image") %>%
+  dplyr::mutate(source="image") %>%
   mutate(height='"365"')%>%mutate(width='"645"')%>%
-  mutate(image=paste0('<iframe src=',image,' height=',height,' width=',width,'></iframe>')) %>%
-  glimpse()
+  mutate(popup=paste0('<iframe src=',image,' height=',height,' width=',width,'></iframe>')) %>%
+  dplyr::select(latitude,longitude,popup,source) %>% # ,bruv.video,auv.video,source
+  dplyr::mutate(marine.park="Ningaloo")
 
 # Create dataframe for 2019 Ningaloo BRUV images for plotting ----
 sw.bruv.image <- sw.bruv.metadata %>%
   ga.clean.names() %>%
   dplyr::mutate(image=paste0("https://marineecology.io/images/habitatmapp/sw/",sample,".jpg",sep="")) %>% # NEED TO UPDATE THIS
   ga.clean.names() %>%
-  dplyr::mutate(source="stereo-bruv.image") %>%
+  dplyr::mutate(source="image") %>%
   mutate(height='"365"')%>%mutate(width='"645"') %>%
-  mutate(image=paste0('<iframe src=',image,' height=',height,' width=',width,'></iframe>')) %>%
-  glimpse()
+  mutate(popup=paste0('<iframe src=',image,' height=',height,' width=',width,'></iframe>')) %>%
+  dplyr::select(latitude,longitude,popup,source) %>% # ,bruv.video,auv.video,source
+  dplyr::mutate(marine.park="South-west Corner")
 
 # Fish and AUV video links ----
 fish.and.models <- read.csv("data/zone-midpoints.csv", na.strings=c("NA","NaN", " ",""))
@@ -66,34 +69,20 @@ fish.and.models <- read.csv("data/zone-midpoints.csv", na.strings=c("NA","NaN", 
 fish <- fish.and.models %>% 
   dplyr::filter(!is.na(fish)) %>% 
   dplyr::mutate(source = "fish.video")%>%
-  dplyr::mutate(fish = paste("<center><h4>Fish observed in the ",
+  dplyr::mutate(popup = paste("<center><h4>Fish observed in the ",
                              marine.park,
                              " Marine Park, in the ",
                              zone,
                              " Zone.</h4></center>","<br/>",
-                             fish,sep=""))
+                             fish, sep = ""))
 
 models <- fish.and.models %>% 
   dplyr::filter(!is.na(auv)) %>% 
-  dplyr::mutate(source = "3d.model")
+  dplyr::mutate(source = "3d.model") %>%
+  dplyr::mutate(popup = paste(auv, sep = ""))
 
 # Merge data together for leaflet map ----
-gb.dat <- bind_rows(gb.bruv.image) %>%
-  dplyr::select(latitude,longitude,image,source) %>%
-  dplyr::mutate(marine.park="Geographe Bay") %>%
-  glimpse()
-
-ning.dat <- bind_rows(ning.bruv.image) %>%
-  dplyr::select(latitude,longitude,image,source) %>% # ,bruv.video,auv.video,source
-  dplyr::mutate(marine.park="Ningaloo") %>%
-  glimpse()
-
-sw.dat <- bind_rows(sw.bruv.image) %>%
-  dplyr::select(latitude,longitude,image,source) %>% # ,bruv.video,auv.video,source
-  dplyr::mutate(marine.park="South-west Corner") %>%
-  glimpse()
-
-dat <- bind_rows(gb.dat,ning.dat, sw.dat, fish, models)
+dat <- bind_rows(gb.bruv.image, ning.bruv.image, sw.bruv.image, fish, models)
 
 # Make icon for images and videos----
 icon.image <- makeAwesomeIcon(icon = "image", library = "fa")
@@ -105,6 +94,18 @@ IconSet <- awesomeIconList(
   "stereo-BRUV image" = makeAwesomeIcon(icon = "image", library = "fa"),
   "3D models" = makeAwesomeIcon(icon = "laptop", library = "fa", markerColor = "orange")
 )
+
+# Use this to only have one plot function for markers - can't use a filter to hide them individually :(
+# get.color <- function(dat) {
+#   sapply(dat$source, function(source) {
+#     if(source %in% "3d.model") {
+#       "orange"
+#     } else if(source %in% "fish.video") {
+#       "lightred"
+#     } else { # stereo-bruv.image
+#       "green"
+#     } })
+# }
 
 # Spatial files ----
 # State marine parks ----
@@ -256,23 +257,3 @@ markerLegendHTML <- function(IconSet) {
 # first 20 quakes
 # df.20 <- quakes[1:20,]
 # 
-# getColor <- function(quakes) {
-#   sapply(quakes$mag, function(mag) {
-#     if(mag <= 4) {
-#       "green"
-#     } else if(mag <= 5) {
-#       "orange"
-#     } else {
-#       "red"
-#     } })
-# }
-# 
-# icons <- awesomeIcons(
-#   icon = 'ios-close',
-#   iconColor = 'black',
-#   library = 'ion',
-#   markerColor = getColor(df.20)
-# )
-# 
-# leaflet(df.20) %>% addTiles() %>%
-#   addAwesomeMarkers(~long, ~lat, icon=icons, label=~as.character(mag))
