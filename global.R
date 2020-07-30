@@ -36,32 +36,32 @@ sw.bruv.metadata <- read.csv("data/2020-06_south-west_stereoBRUVs_metadata.csv")
 gb.bruv.image <- gb.bruv.metadata %>%
   dplyr::mutate(image=paste0("https://marineecology.io/images/2014-12_BRUVs_Forward/",Sample,".jpg",sep="")) %>%
   ga.clean.names() %>%
-  dplyr::mutate(source="image") %>%
+  dplyr::mutate(source = "image") %>%
   mutate(height='"365"') %>% mutate(width='"645"') %>%
   mutate(popup=paste0('<iframe src=',image,' height=',height,' width=',width,'></iframe>')) %>%
-  dplyr::select(latitude,longitude,popup,source) %>%
-  dplyr::mutate(marine.park="Geographe Bay")
+  dplyr::select(latitude, longitude, popup, source) %>%
+  dplyr::mutate(marine.park = "Geographe Bay")
 
 # Create dataframe for 2019 Ningaloo BRUV images for plotting ----
 ning.bruv.image <- ning.bruv.metadata %>%
   dplyr::mutate(image=paste0("https://marineecology.io/images/habitatmapp/ningaloo/",sample,".jpg",sep="")) %>% 
   ga.clean.names() %>%
-  dplyr::mutate(source="image") %>%
+  dplyr::mutate(source = "image") %>%
   mutate(height='"365"')%>%mutate(width='"645"')%>%
   mutate(popup=paste0('<iframe src=',image,' height=',height,' width=',width,'></iframe>')) %>%
-  dplyr::select(latitude,longitude,popup,source) %>% # ,bruv.video,auv.video,source
-  dplyr::mutate(marine.park="Ningaloo")
+  dplyr::select(latitude, longitude, popup, source) %>% # ,bruv.video,auv.video,source
+  dplyr::mutate(marine.park = "Ningaloo")
 
 # Create dataframe for 2019 Ningaloo BRUV images for plotting ----
 sw.bruv.image <- sw.bruv.metadata %>%
   ga.clean.names() %>%
   dplyr::mutate(image=paste0("https://marineecology.io/images/habitatmapp/sw/",sample,".jpg",sep="")) %>% # NEED TO UPDATE THIS
   ga.clean.names() %>%
-  dplyr::mutate(source="image") %>%
+  dplyr::mutate(source = "image") %>%
   mutate(height='"365"')%>%mutate(width='"645"') %>%
   mutate(popup=paste0('<iframe src=',image,' height=',height,' width=',width,'></iframe>')) %>%
-  dplyr::select(latitude,longitude,popup,source) %>% # ,bruv.video,auv.video,source
-  dplyr::mutate(marine.park="South-west Corner")
+  dplyr::select(latitude, longitude, popup, source) %>% # ,bruv.video,auv.video,source
+  dplyr::mutate(marine.park = "South-west Corner")
 
 # Fish and AUV video links ----
 fish.and.models <- read.csv("data/zone-midpoints.csv", na.strings=c("NA","NaN", " ",""))
