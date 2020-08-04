@@ -9,7 +9,7 @@ function(input, output, session) {
   })
 
 # Create leaflet explore map ---- 
-  output$leaflet.map <- renderLeaflet({
+  output$imagery.leaflet <- renderLeaflet({
     
     map.dat <- map.dat() # call in filtered data
     
@@ -52,7 +52,7 @@ function(input, output, session) {
                         ))%>%
 
       # stereo-BRUV video
-      addAwesomeMarkers(data=filter(map.dat, source%in%c("fish.video")),
+      addAwesomeMarkers(data=filter(map.dat, source%in%c("fish.bruv")),
                         icon = icon.video,
                         popup = map.dat$popup,
                         # clusterOptions = markerClusterOptions(),

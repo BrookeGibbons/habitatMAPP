@@ -42,6 +42,22 @@ gb.bruv.image <- gb.bruv.metadata %>%
   dplyr::select(latitude, longitude, popup, source) %>%
   dplyr::mutate(marine.park = "Geographe Bay")
 
+gb.bruv.video <- gb.bruv.metadata %>%
+  ga.clean.names() %>%
+  dplyr::mutate(sample=as.numeric(sample))%>% # for testing only
+  dplyr::filter(sample<5)%>% # for testing only
+  dplyr::mutate(sample=as.character(sample))%>% # for testing only
+  dplyr::mutate(video=paste0("https://github.com/UWAMEGFisheries/UWAMEGFisheries.github.io/blob/master/videos/", sample, ".mp4?raw=true",sep="")) %>%
+  dplyr::mutate(source = "fish.bruv") %>%
+  dplyr::mutate(height='"365"') %>% dplyr::mutate(width='"645"') %>%
+  dplyr::mutate(popup=paste0('<video width=', width, ' autoplay controls <source src=',video,' type="video/mp4"> </video>')) %>%
+  dplyr::select(latitude, longitude, popup, source) %>%
+  dplyr::mutate(marine.park = "Geographe Bay")
+
+# <video width="645" autoplay controls <source src="https://github.com/UWAMEGFisheries/UWAMEGFisheries.github.io/blob/master/videos/Compilations/test-video-2.mp4?raw=true" type="video/mp4"> </video>
+
+# <video width="645" autoplay controls <source src="https://github.com/UWAMEGFisheries/UWAMEGFisheries.github.io/blob/master/videos/Compilations/test-video-2.mp4?raw=true" type="vid
+
 # Create dataframe for 2019 Ningaloo BRUV images for plotting ----
 ning.bruv.image <- ning.bruv.metadata %>%
   dplyr::mutate(image=paste0("https://marineecology.io/images/habitatmapp/ningaloo/",sample,".jpg",sep="")) %>% 
@@ -82,7 +98,7 @@ models <- fish.and.models %>%
   dplyr::mutate(popup = paste(auv, sep = ""))
 
 # Merge data together for leaflet map ----
-dat <- bind_rows(gb.bruv.image, ning.bruv.image, sw.bruv.image, fish, models)
+dat <- bind_rows(gb.bruv.image, ning.bruv.image, sw.bruv.image, fish, models, gb.bruv.video)
 
 # Make icon for images and videos----
 icon.image <- makeAwesomeIcon(icon = "image", library = "fa")
