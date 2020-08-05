@@ -124,6 +124,7 @@ function(input, output, session) {
       filter(pie.dat, method == pie.method)
     }
   })
+
   
   output$pie.leaflet <- renderLeaflet({
     
@@ -161,5 +162,78 @@ function(input, output, session) {
         colorPalette = broad.colors,
         width = 20, transitionTime = 0)
   })
+  
+  
+  bubble.data <- reactive({
+    req(input$bubble.marine.park, input$bubble.method)
+    
+    bubble.dat <- hab.data %>%
+      dplyr::filter(marine.park%in%input$bubble.marine.park)
+    
+    if (input$bubble.method == "all") {
+      bubble.dat
+      
+    } else {
+      bubble.method <- input$bubble.method
+      filter(bubble.dat, method == bubble.method)
+    }
+    
+  })
+  
+  # Habitat bubble plot ----
+  
+  output$bubble.leaflet <- renderLeaflet({
+    req(input$bubble.habitat)
+    
+    bubble.dat<-bubble.data()%>%
+      dplyr::select(method, sample, longitude, latitude, Consolidated, Macroalgae, Seagrasses, Sponges, Stony.corals, Turf.algae, Unconsolidated, Other) # "biota.ascidians", "biota.crinoids", "biota.invertebrate.complex","biota.seagrasses",
+    # Gather habitat to bubble plot easier
+    
+    habitat<-tidyr::gather(bubble.dat,"Consolidated","Macroalgae",
+                    "Seagrasses","Sponges",
+                    "Stony.corals","Turf.algae",
+                    "Unconsolidated","Other",key="habitat.type",value="percent.cover")%>%glimpse()
+    
+    habitat<-habitat%>%
+      dplyr::mutate(habitat.type=ga.capitalise(habitat.type))%>%
+      dplyr::mutate(habitat.type=str_replace_all(.$habitat.type, c("[^[:alnum:]]"=" ")))
+    
+    habitat.bubble<-habitat%>%
+      dplyr::filter(habitat.type==input$bubble.habitat)
+    
+    map <- leaflet(habitat.bubble) %>%
+      addTiles()%>%
+      fitBounds(~min(longitude), ~min(latitude), ~max(longitude), ~max(latitude))
+    
+    # if (input$shapefile.bubble==TRUE) {
+    #   map<-map%>%
+    #     addPolygons(data = new.shp,weight = 1,color = "black", fillOpacity = 0.5,fillColor = "#7bbc63",group = "group",label=new.shp$Name)
+    # }
+    
+    overzero <- habitat.bubble%>%
+      filter(percent.cover > 0)
+    
+    equalzero <- habitat.bubble%>%
+      filter(percent.cover == 0)
+    
+    if (nrow(overzero)) {
+      map <- map %>%
+        addCircleMarkers(
+          data = overzero, lat = ~ latitude, lng = ~ longitude,
+          radius = ~((percent.cover/max(percent.cover))*15), fillOpacity = 0.5, stroke = FALSE,
+          label = ~as.character(percent.cover)
+        )
+    }
+    if (nrow(equalzero)) {
+      map <- map %>%
+        addCircleMarkers(
+          data = equalzero, lat = ~ latitude, lng = ~ longitude,
+          radius = 2, fillOpacity = 0.5, color = "white",stroke = FALSE,
+          label = ~as.character(percent.cover)
+        )
+    }
+    map
+  })
+  
   
 }

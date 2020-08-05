@@ -22,6 +22,7 @@ library(shinythemes)
 library(shinyjs)
 library(sf)
 library(stringr)
+library(tidyr)
 
 # Bring in data ----
 # Load 2019 ningaloo metadata ----

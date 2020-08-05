@@ -45,9 +45,9 @@ tagList(
                                                                  "South-west Corner" = "South-west Corner"))),
                          box(width = 3, title = "Select a method to plot", status = "primary", solidHeader = TRUE, 
                              selectInput("bubble.method", "", c("All"="all",
-                                                            "AUV" = "auv",
-                                                            "stereo-BRUV" = "bruv",
-                                                            "Towed video" = "towed"))),
+                                                            "AUV" = "AUV",
+                                                            "stereo-BRUV" = "stereo-BRUV",
+                                                            "Towed video" = "Towed"))),
                          box(width = 3, title = "Select habitat type to plot", status = "primary", solidHeader = TRUE, 
                              selectInput("bubble.habitat", "", c("Consolidated", "Macroalgae", "Seagrasses", "Sponges", "Stony.corals", "Turf.algae", "Unconsolidated", "Other"), multiple = FALSE)),
                          box(width = 12, leafletOutput("bubble.leaflet", height = 625))
