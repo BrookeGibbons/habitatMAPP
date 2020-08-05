@@ -33,70 +33,69 @@ gb.bruv.metadata <- read.csv("data/2014-12_Geographe.Bay_stereoBRUVs_Metadata.cs
 sw.bruv.metadata <- read.csv("data/2020-06_south-west_stereoBRUVs_metadata.csv")
 
 # Create dataframe for 2014 Geographe Bay BRUV images for plotting ----
-gb.bruv.image <- gb.bruv.metadata %>%
-  dplyr::mutate(image=paste0("https://marineecology.io/images/2014-12_BRUVs_Forward/",Sample,".jpg",sep="")) %>%
-  ga.clean.names() %>%
-  dplyr::mutate(source = "image") %>%
-  mutate(height='"365"') %>% mutate(width='"645"') %>%
-  mutate(popup=paste0('<iframe src=',image,' height=',height,' width=',width,'></iframe>')) %>%
-  dplyr::select(latitude, longitude, popup, source) %>%
-  dplyr::mutate(marine.park = "Geographe Bay")
+# gb.bruv.image <- gb.bruv.metadata %>%
+#   dplyr::mutate(image=paste0("https://marineecology.io/images/2014-12_BRUVs_Forward/",Sample,".jpg",sep="")) %>%
+#   ga.clean.names() %>%
+#   dplyr::mutate(source = "image") %>%
+#   mutate(height='"365"') %>% mutate(width='"645"') %>%
+#   mutate(popup=paste0('<iframe src=',image,' height=',height,' width=',width,'></iframe>')) %>%
+#   dplyr::select(latitude, longitude, popup, source) %>%
+#   dplyr::mutate(marine.park = "Geographe Bay")
 
 gb.bruv.video <- gb.bruv.metadata %>%
   ga.clean.names() %>%
   dplyr::mutate(sample=as.numeric(sample))%>% # for testing only
-  dplyr::filter(sample<5)%>% # for testing only
+  dplyr::filter(sample<2)%>% # for testing only
   dplyr::mutate(sample=as.character(sample))%>% # for testing only
-  dplyr::mutate(video=paste0("https://github.com/UWAMEGFisheries/UWAMEGFisheries.github.io/blob/master/videos/1.mp4?raw=true",sep="")) %>%
-  dplyr::mutate(source = "fish.bruv") %>%
+  dplyr::mutate(video=paste0("/videos/1.mp4",sep="")) %>%
+  dplyr::mutate(source = "fish.highlights") %>%
   dplyr::mutate(height='"365"') %>% dplyr::mutate(width='"645"') %>%
-  dplyr::mutate(popup=paste0('<video width="645" autoplay controls 
-<source src="https://github.com/UWAMEGFisheries/UWAMEGFisheries.github.io/blob/master/videos/1.mp4?raw=true" type="video/mp4"> </video>')) %>%
+  dplyr::mutate(popup=paste0('<video width="645" controls>
+  <source src="https://github.com/UWAMEGFisheries/UWAMEGFisheries.github.io/blob/master/videos/1.mp4?raw=true" type="video/mp4">
+</video>')) %>%
   dplyr::select(latitude, longitude, popup, source) %>%
   dplyr::mutate(marine.park = "Geographe Bay")
 
-# <video width="645" autoplay controls <source src="https://github.com/UWAMEGFisheries/UWAMEGFisheries.github.io/blob/master/videos/Compilations/test-video-2.mp4?raw=true" type="video/mp4"> </video>
-
-# <video width="645" autoplay controls <source src="https://github.com/UWAMEGFisheries/UWAMEGFisheries.github.io/blob/master/videos/Compilations/test-video-2.mp4?raw=true" type="vid
+# https://github.com/UWAMEGFisheries/UWAMEGFisheries.github.io/blob/master/videos/Compilations/test-video-2.mp4?raw=true # this link works
 
 # Create dataframe for 2019 Ningaloo BRUV images for plotting ----
-ning.bruv.image <- ning.bruv.metadata %>%
-  dplyr::mutate(image=paste0("https://marineecology.io/images/habitatmapp/ningaloo/",sample,".jpg",sep="")) %>% 
-  ga.clean.names() %>%
-  dplyr::mutate(source = "image") %>%
-  mutate(height='"365"')%>%mutate(width='"645"')%>%
-  mutate(popup=paste0('<iframe src=',image,' height=',height,' width=',width,'></iframe>')) %>%
-  dplyr::select(latitude, longitude, popup, source) %>% # ,bruv.video,auv.video,source
-  dplyr::mutate(marine.park = "Ningaloo")
-
-# Create dataframe for 2019 Ningaloo BRUV images for plotting ----
-sw.bruv.image <- sw.bruv.metadata %>%
-  ga.clean.names() %>%
-  dplyr::mutate(image=paste0("https://marineecology.io/images/habitatmapp/sw/",sample,".jpg",sep="")) %>% # NEED TO UPDATE THIS
-  ga.clean.names() %>%
-  dplyr::mutate(source = "image") %>%
-  mutate(height='"365"')%>%mutate(width='"645"') %>%
-  mutate(popup=paste0('<iframe src=',image,' height=',height,' width=',width,'></iframe>')) %>%
-  dplyr::select(latitude, longitude, popup, source) %>% # ,bruv.video,auv.video,source
-  dplyr::mutate(marine.park = "South-west Corner")
+# ning.bruv.image <- ning.bruv.metadata %>%
+#   dplyr::mutate(image=paste0("https://marineecology.io/images/habitatmapp/ningaloo/",sample,".jpg",sep="")) %>% 
+#   ga.clean.names() %>%
+#   dplyr::mutate(source = "image") %>%
+#   mutate(height='"365"')%>%mutate(width='"645"')%>%
+#   mutate(popup=paste0('<iframe src=',image,' height=',height,' width=',width,'></iframe>')) %>%
+#   dplyr::select(latitude, longitude, popup, source) %>% # ,bruv.video,auv.video,source
+#   dplyr::mutate(marine.park = "Ningaloo")
+# 
+# # Create dataframe for 2019 Ningaloo BRUV images for plotting ----
+# sw.bruv.image <- sw.bruv.metadata %>%
+#   ga.clean.names() %>%
+#   dplyr::mutate(image=paste0("https://marineecology.io/images/habitatmapp/sw/",sample,".jpg",sep="")) %>% # NEED TO UPDATE THIS
+#   ga.clean.names() %>%
+#   dplyr::mutate(source = "image") %>%
+#   mutate(height='"365"')%>%mutate(width='"645"') %>%
+#   mutate(popup=paste0('<iframe src=',image,' height=',height,' width=',width,'></iframe>')) %>%
+#   dplyr::select(latitude, longitude, popup, source) %>% # ,bruv.video,auv.video,source
+#   dplyr::mutate(marine.park = "South-west Corner")
 
 # Fish and AUV video links ----
-fish <- read.csv("data/zone-midpoints.csv", na.strings=c("NA","NaN", " ","")) %>% 
-  dplyr::filter(!is.na(fish)) %>% 
-  dplyr::mutate(source = "fish.video")%>%
-  dplyr::mutate(popup = paste("<center><h4>Fish observed in the ",
-                             marine.park,
-                             " Marine Park, in the ",
-                             zone,
-                             " Zone.</h4></center>","<br/>",
-                             fish, sep = ""))
+# fish <- read.csv("data/zone-midpoints.csv", na.strings=c("NA","NaN", " ","")) %>% 
+#   dplyr::filter(!is.na(fish)) %>% 
+#   dplyr::mutate(source = "fish.video")%>%
+#   dplyr::mutate(popup = paste("<center><h4>Fish observed in the ",
+#                              marine.park,
+#                              " Marine Park, in the ",
+#                              zone,
+#                              " Zone.</h4></center>","<br/>",
+#                              fish, sep = ""))
 
 models <- read.csv("data/3Dmodels.csv", na.strings=c("NA","NaN", " ","")) %>% 
-  # dplyr::filter(!is.na(popup)) %>% 
+  # dplyr::filter(test=="test") %>% 
   dplyr::mutate(source = "3d.model")
 
 # Merge data together for leaflet map ----
-dat <- bind_rows(gb.bruv.image, ning.bruv.image, sw.bruv.image, fish, models, gb.bruv.video)
+dat <- bind_rows(models, gb.bruv.video) # fish, gb.bruv.image, ning.bruv.image, sw.bruv.image, 
 
 # Make icon for images and videos----
 icon.image <- makeAwesomeIcon(icon = "image", library = "fa")

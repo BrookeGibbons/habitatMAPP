@@ -13,6 +13,10 @@ function(input, output, session) {
     
     map.dat <- map.dat() # call in filtered data
     
+    fish.highlights.popups <- filter(map.dat, source%in%c("fish.highlights"))
+    threed.model.popups <- filter(map.dat, source%in%c("3d.model"))                                
+                                     
+    
     # test.icons <- awesomeIcons(
     #   icon = 'ios-close',
     #   iconColor = 'black',
@@ -52,18 +56,18 @@ function(input, output, session) {
       #                   ))%>%
 
       # # stereo-BRUV video
-      # addAwesomeMarkers(data=filter(map.dat, source%in%c("fish.bruv")),
-      #                   icon = icon.video,
-      #                   popup = map.dat$popup,
-      #                   # clusterOptions = markerClusterOptions(),
-      #                   group="stereo-BRUV videos",
-      #                   popupOptions=c(closeButton = TRUE,
-      #                                  minWidth = 0,maxWidth = 700))%>%
+      addAwesomeMarkers(data=fish.highlights.popups,
+                        icon = icon.video,
+                        popup = fish.highlights.popups$popup,
+                        # clusterOptions = markerClusterOptions(),
+                        group="stereo-BRUV videos",
+                        popupOptions=c(closeButton = TRUE,
+                                       minWidth = 0,maxWidth = 700))%>%
 
       # 3D models
-      addAwesomeMarkers(data=filter(map.dat, source%in%c("3d.model")),
+      addAwesomeMarkers(data=threed.model.popups,
                         icon = icon.laptop,
-                        popup = map.dat$popup,
+                        popup = threed.model.popups$popup,
                         # clusterOptions = markerClusterOptions(),
                         group="3D models",
                         popupOptions=c(closeButton = TRUE,
