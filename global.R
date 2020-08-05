@@ -45,13 +45,13 @@ sw.bruv.metadata <- read.csv("data/2020-06_south-west_stereoBRUVs_metadata.csv")
 gb.bruv.video <- gb.bruv.metadata %>%
   ga.clean.names() %>%
   dplyr::mutate(sample=as.numeric(sample))%>% # for testing only
-  dplyr::filter(sample<2)%>% # for testing only
+  dplyr::filter(sample<61)%>% # for testing only
   dplyr::mutate(sample=as.character(sample))%>% # for testing only
-  dplyr::mutate(video=paste0("/videos/1.mp4",sep="")) %>%
+  # dplyr::mutate(video=paste0("/videos/1.mp4",sep="")) %>%
   dplyr::mutate(source = "fish.highlights") %>%
-  dplyr::mutate(height='"365"') %>% dplyr::mutate(width='"645"') %>%
-  dplyr::mutate(popup=paste0('<video width="645" controls>
-  <source src="https://github.com/UWAMEGFisheries/UWAMEGFisheries.github.io/blob/master/videos/1.mp4?raw=true" type="video/mp4">
+  # dplyr::mutate(height='"365"') %>% dplyr::mutate(width='"645"') %>%
+  dplyr::mutate(popup=paste0('<video width="645" autoplay controls>
+  <source src="https://github.com/UWAMEGFisheries/UWAMEGFisheries.github.io/blob/master/videos/',sample,'.mp4?raw=true" type="video/mp4">
 </video>')) %>%
   dplyr::select(latitude, longitude, popup, source) %>%
   dplyr::mutate(marine.park = "Geographe Bay")
