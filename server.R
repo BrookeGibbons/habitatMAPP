@@ -30,7 +30,7 @@ function(input, output, session) {
       
       # stereo-BRUV Images
       addAwesomeMarkers(data=filter(map.dat, source%in%c("image")),
-                        icon = icon.video,
+                        icon = icon.habitat,
                         clusterOptions = markerClusterOptions(),
                         group = "stereo-BRUV images",
                         popup = map.dat$popup,
