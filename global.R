@@ -44,12 +44,10 @@ sw.bruv.metadata <- read.csv("data/2020-06_south-west_stereoBRUVs_metadata.csv")
 
 gb.bruv.video <- gb.bruv.metadata %>%
   ga.clean.names() %>%
-  dplyr::mutate(sample=as.numeric(sample))%>% # for testing only
-  dplyr::filter(sample<61)%>% # for testing only
-  dplyr::mutate(sample=as.character(sample))%>% # for testing only
-  # dplyr::mutate(video=paste0("/videos/1.mp4",sep="")) %>%
+  # dplyr::mutate(sample=as.numeric(sample))%>% # for testing only
+  # dplyr::filter(sample<61)%>% # for testing only
+  dplyr::mutate(sample=as.character(sample))%>% 
   dplyr::mutate(source = "fish.highlights") %>%
-  # dplyr::mutate(height='"365"') %>% dplyr::mutate(width='"645"') %>%
   dplyr::mutate(popup=paste0('<video width="645" autoplay controls>
   <source src="https://github.com/UWAMEGFisheries/UWAMEGFisheries.github.io/blob/master/videos/',sample,'.mp4?raw=true" type="video/mp4">
 </video>')) %>%
@@ -59,25 +57,25 @@ gb.bruv.video <- gb.bruv.metadata %>%
 # https://github.com/UWAMEGFisheries/UWAMEGFisheries.github.io/blob/master/videos/Compilations/test-video-2.mp4?raw=true # this link works
 
 # Create dataframe for 2019 Ningaloo BRUV images for plotting ----
-# ning.bruv.image <- ning.bruv.metadata %>%
-#   dplyr::mutate(image=paste0("https://marineecology.io/images/habitatmapp/ningaloo/",sample,".jpg",sep="")) %>% 
-#   ga.clean.names() %>%
-#   dplyr::mutate(source = "image") %>%
-#   mutate(height='"365"')%>%mutate(width='"645"')%>%
-#   mutate(popup=paste0('<iframe src=',image,' height=',height,' width=',width,'></iframe>')) %>%
-#   dplyr::select(latitude, longitude, popup, source) %>% # ,bruv.video,auv.video,source
-#   dplyr::mutate(marine.park = "Ningaloo")
+ning.bruv.image <- ning.bruv.metadata %>%
+  dplyr::mutate(image=paste0("https://marineecology.io/images/habitatmapp/ningaloo/",sample,".jpg",sep="")) %>%
+  ga.clean.names() %>%
+  dplyr::mutate(source = "image") %>%
+  mutate(height='"365"')%>%mutate(width='"645"')%>%
+  mutate(popup=paste0('<iframe src=',image,' height=',height,' width=',width,'></iframe>')) %>%
+  dplyr::select(latitude, longitude, popup, source) %>% # ,bruv.video,auv.video,source
+  dplyr::mutate(marine.park = "Ningaloo")
 # 
 # # Create dataframe for 2019 Ningaloo BRUV images for plotting ----
-# sw.bruv.image <- sw.bruv.metadata %>%
-#   ga.clean.names() %>%
-#   dplyr::mutate(image=paste0("https://marineecology.io/images/habitatmapp/sw/",sample,".jpg",sep="")) %>% # NEED TO UPDATE THIS
-#   ga.clean.names() %>%
-#   dplyr::mutate(source = "image") %>%
-#   mutate(height='"365"')%>%mutate(width='"645"') %>%
-#   mutate(popup=paste0('<iframe src=',image,' height=',height,' width=',width,'></iframe>')) %>%
-#   dplyr::select(latitude, longitude, popup, source) %>% # ,bruv.video,auv.video,source
-#   dplyr::mutate(marine.park = "South-west Corner")
+sw.bruv.image <- sw.bruv.metadata %>%
+  ga.clean.names() %>%
+  dplyr::mutate(image=paste0("https://marineecology.io/images/habitatmapp/sw/",sample,".jpg",sep="")) %>% # NEED TO UPDATE THIS
+  ga.clean.names() %>%
+  dplyr::mutate(source = "image") %>%
+  mutate(height='"365"')%>%mutate(width='"645"') %>%
+  mutate(popup=paste0('<iframe src=',image,' height=',height,' width=',width,'></iframe>')) %>%
+  dplyr::select(latitude, longitude, popup, source) %>% # ,bruv.video,auv.video,source
+  dplyr::mutate(marine.park = "South-west Corner")
 
 # Fish and AUV video links ----
 # fish <- read.csv("data/zone-midpoints.csv", na.strings=c("NA","NaN", " ","")) %>% 
@@ -91,11 +89,10 @@ gb.bruv.video <- gb.bruv.metadata %>%
 #                              fish, sep = ""))
 
 models <- read.csv("data/3Dmodels.csv", na.strings=c("NA","NaN", " ","")) %>% 
-  # dplyr::filter(test=="test") %>% 
   dplyr::mutate(source = "3d.model")
 
 # Merge data together for leaflet map ----
-dat <- bind_rows(models, gb.bruv.video) # fish, gb.bruv.image, ning.bruv.image, sw.bruv.image, 
+dat <- bind_rows(models, gb.bruv.video, ning.bruv.image, sw.bruv.image) # fish, gb.bruv.image, ning.bruv.image, sw.bruv.image, 
 
 # Make icon for images and videos----
 icon.image <- makeAwesomeIcon(icon = "image", library = "fa")

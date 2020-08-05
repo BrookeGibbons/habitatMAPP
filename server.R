@@ -45,15 +45,15 @@ function(input, output, session) {
       #                                  maxWidth = 700))%>%
       
       # # stereo-BRUV Images
-      # addAwesomeMarkers(data=filter(map.dat, source%in%c("image")),
-      #                   icon = icon.image,
-      #                   clusterOptions = markerClusterOptions(),
-      #                   group = "stereo-BRUV images",
-      #                   popup = map.dat$popup,
-      #                   popupOptions=c(closeButton = TRUE,
-      #                                  minWidth = 0,
-      #                                  maxWidth = 700 # changed from 500 BG 28/07
-      #                   ))%>%
+      addAwesomeMarkers(data=filter(map.dat, source%in%c("image")),
+                        icon = icon.image,
+                        clusterOptions = markerClusterOptions(),
+                        group = "stereo-BRUV images",
+                        popup = map.dat$popup,
+                        popupOptions=c(closeButton = TRUE,
+                                       minWidth = 0,
+                                       maxWidth = 700 # changed from 500 BG 28/07
+                        ))%>%
 
       # # stereo-BRUV video
       addAwesomeMarkers(data=fish.highlights.popups,
