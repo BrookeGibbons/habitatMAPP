@@ -13,16 +13,9 @@ function(input, output, session) {
     
     map.dat <- map.dat() # call in filtered data
     
+    habitat.highlights.popups <- filter(map.dat, source%in%c("habitat.highlights"))
     fish.highlights.popups <- filter(map.dat, source%in%c("fish.highlights"))
     threed.model.popups <- filter(map.dat, source%in%c("3d.model"))                                
-                                     
-    
-    # test.icons <- awesomeIcons(
-    #   icon = 'ios-close',
-    #   iconColor = 'black',
-    #   library = 'ion',
-    #   markerColor = get.color(map.dat)
-    # )
     
     lng1 <- min(map.dat$longitude)
     lat1 <- min(map.dat$latitude)
@@ -35,43 +28,37 @@ function(input, output, session) {
       addControl(html = markerLegendHTML(IconSet = IconSet), position = "bottomleft")%>%
       flyToBounds(lng1, lat1, lng2, lat2)%>%
       
-      # addAwesomeMarkers(data=map.dat, # this doesn't work because you can't use groups
-      #                   icon = test.icons,
-      #                   clusterOptions = markerClusterOptions(),
-      #                   group = "videos",
-      #                   popup = map.dat$popup,
-      #                   popupOptions=c(closeButton = TRUE,
-      #                                  minWidth = 0,
-      #                                  maxWidth = 700))%>%
-      
-      # # stereo-BRUV Images
+      # stereo-BRUV Images
       addAwesomeMarkers(data=filter(map.dat, source%in%c("image")),
-                        icon = icon.image,
+                        icon = icon.video,
                         clusterOptions = markerClusterOptions(),
                         group = "stereo-BRUV images",
                         popup = map.dat$popup,
-                        popupOptions=c(closeButton = TRUE,
-                                       minWidth = 0,
-                                       maxWidth = 700 # changed from 500 BG 28/07
-                        ))%>%
+                        popupOptions=c(closeButton = TRUE,minWidth = 0,maxWidth = 700))%>%
 
-      # # stereo-BRUV video
+      # stereo-BRUV habitat videos
+      addAwesomeMarkers(data=habitat.highlights.popups,
+                        icon = icon.habitat,
+                        popup = habitat.highlights.popups$popup,
+                        # clusterOptions = markerClusterOptions(),
+                        group="stereo-BRUV videos",
+                        popupOptions=c(closeButton = TRUE,minWidth = 0,maxWidth = 700))%>%
+      
+      # stereo-BRUV fish videos
       addAwesomeMarkers(data=fish.highlights.popups,
-                        icon = icon.video,
+                        icon = icon.fish,
                         popup = fish.highlights.popups$popup,
                         # clusterOptions = markerClusterOptions(),
                         group="stereo-BRUV videos",
-                        popupOptions=c(closeButton = TRUE,
-                                       minWidth = 0,maxWidth = 700))%>%
+                        popupOptions=c(closeButton = TRUE,minWidth = 0,maxWidth = 700))%>%
 
       # 3D models
       addAwesomeMarkers(data=threed.model.popups,
-                        icon = icon.laptop,
+                        icon = icon.models,
                         popup = threed.model.popups$popup,
                         # clusterOptions = markerClusterOptions(),
                         group="3D models",
-                        popupOptions=c(closeButton = TRUE,
-                                       minWidth = 0,maxWidth = 700))%>%
+                        popupOptions=c(closeButton = TRUE, minWidth = 0,maxWidth = 700))%>%
       
       # Ngari Capes Marine Parks
       addPolygons(data = ngari.mp, weight = 1, color = "black", 

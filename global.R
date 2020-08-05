@@ -47,7 +47,7 @@ gb.bruv.video <- gb.bruv.metadata %>%
   # dplyr::mutate(sample=as.numeric(sample))%>% # for testing only
   # dplyr::filter(sample<61)%>% # for testing only
   dplyr::mutate(sample=as.character(sample))%>% 
-  dplyr::mutate(source = "fish.highlights") %>%
+  dplyr::mutate(source = "habitat.highlights") %>%
   dplyr::mutate(popup=paste0('<video width="645" autoplay controls>
   <source src="https://github.com/UWAMEGFisheries/UWAMEGFisheries.github.io/blob/master/videos/',sample,'.mp4?raw=true" type="video/mp4">
 </video>')) %>%
@@ -77,16 +77,16 @@ sw.bruv.image <- sw.bruv.metadata %>%
   dplyr::select(latitude, longitude, popup, source) %>% # ,bruv.video,auv.video,source
   dplyr::mutate(marine.park = "South-west Corner")
 
-# Fish and AUV video links ----
-# fish <- read.csv("data/zone-midpoints.csv", na.strings=c("NA","NaN", " ","")) %>% 
-#   dplyr::filter(!is.na(fish)) %>% 
-#   dplyr::mutate(source = "fish.video")%>%
-#   dplyr::mutate(popup = paste("<center><h4>Fish observed in the ",
-#                              marine.park,
-#                              " Marine Park, in the ",
-#                              zone,
-#                              " Zone.</h4></center>","<br/>",
-#                              fish, sep = ""))
+# Fish hihglights and 3D model links ----
+fish <- read.csv("data/zone-midpoints.csv", na.strings=c("NA","NaN", " ","")) %>%
+  dplyr::filter(!is.na(fish)) %>%
+  dplyr::mutate(source = "fish.highlights")%>%
+  dplyr::mutate(popup = paste("<center><h4>Fish observed in the ",
+                             marine.park,
+                             " Marine Park, in the ",
+                             zone,
+                             " Zone.</h4></center>","<br/>",
+                             fish, sep = ""))
 
 models <- read.csv("data/3Dmodels.csv", na.strings=c("NA","NaN", " ","")) %>% 
   dplyr::mutate(source = "3d.model")
@@ -95,13 +95,13 @@ models <- read.csv("data/3Dmodels.csv", na.strings=c("NA","NaN", " ","")) %>%
 dat <- bind_rows(models, gb.bruv.video, ning.bruv.image, sw.bruv.image) # fish, gb.bruv.image, ning.bruv.image, sw.bruv.image, 
 
 # Make icon for images and videos----
-icon.image <- makeAwesomeIcon(icon = "image", library = "fa")
-icon.video <- makeAwesomeIcon(icon = "video-camera", library = "fa", markerColor = "lightred", iconColor = "black")
-icon.laptop <- makeAwesomeIcon(icon = "laptop", library = "fa", markerColor = "orange", iconColor = "black")
+icon.habitat <- makeAwesomeIcon(icon = "image", library = "fa")
+icon.fish <- makeAwesomeIcon(icon = "video-camera", library = "fa", markerColor = "lightred", iconColor = "black")
+icon.models <- makeAwesomeIcon(icon = "laptop", library = "fa", markerColor = "orange", iconColor = "black")
 
 IconSet <- awesomeIconList(
-  "stereo-BRUV video"   = makeAwesomeIcon(icon = "video-camera", library = "fa", markerColor = "lightred"),
-  "stereo-BRUV image" = makeAwesomeIcon(icon = "image", library = "fa"),
+  "stereo-BRUV fish highlights"   = makeAwesomeIcon(icon = "video-camera", library = "fa", markerColor = "lightred"),
+  "stereo-BRUV habitat snapshot" = makeAwesomeIcon(icon = "image", library = "fa"),
   "3D models" = makeAwesomeIcon(icon = "laptop", library = "fa", markerColor = "orange")
 )
 
