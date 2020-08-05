@@ -15,7 +15,13 @@ function(input, output, session) {
     
     habitat.highlights.popups <- filter(map.dat, source%in%c("habitat.highlights"))
     fish.highlights.popups <- filter(map.dat, source%in%c("fish.highlights"))
-    threed.model.popups <- filter(map.dat, source%in%c("3d.model"))                                
+    threed.model.popups <- filter(map.dat, source%in%c("3d.model")) 
+    image.popups <- filter(map.dat, source%in%c('image'))
+    
+    # Having this in the global.R script breaks now - make icons on server side 
+    icon.habitat <- makeAwesomeIcon(icon = "image", library = "fa")
+    icon.fish <- makeAwesomeIcon(icon = "video-camera", library = "fa", markerColor = "lightred", iconColor = "black")
+    icon.models <- makeAwesomeIcon(icon = "laptop", library = "fa", markerColor = "orange", iconColor = "black")
     
     lng1 <- min(map.dat$longitude)
     lat1 <- min(map.dat$latitude)
@@ -29,13 +35,13 @@ function(input, output, session) {
       flyToBounds(lng1, lat1, lng2, lat2)%>%
       
       # stereo-BRUV Images
-      addAwesomeMarkers(data=filter(map.dat, source%in%c("image")),
+      addAwesomeMarkers(data=image.popups,
                         icon = icon.habitat,
-                        clusterOptions = markerClusterOptions(),
+                        # clusterOptions = markerClusterOptions(),
                         group = "stereo-BRUV habitat",
-                        popup = map.dat$popup,
+                        popup = image.popups$popup,
                         popupOptions=c(closeButton = TRUE,minWidth = 0,maxWidth = 700))%>%
-
+      
       # stereo-BRUV habitat videos
       addAwesomeMarkers(data=habitat.highlights.popups,
                         icon = icon.habitat,
@@ -51,14 +57,16 @@ function(input, output, session) {
                         # clusterOptions = markerClusterOptions(),
                         group="stereo-BRUV fish",
                         popupOptions=c(closeButton = TRUE,minWidth = 0,maxWidth = 700))%>%
-
+    
       # 3D models
       addAwesomeMarkers(data=threed.model.popups,
                         icon = icon.models,
                         popup = threed.model.popups$popup,
                         # clusterOptions = markerClusterOptions(),
                         group="3D models",
-                        popupOptions=c(closeButton = TRUE, minWidth = 0,maxWidth = 700))%>%
+                        popupOptions=c(closeButton = TRUE, minWidth = 0,maxWidth = 700)
+                        )%>%
+      
       
       # Ngari Capes Marine Parks
       addPolygons(data = ngari.mp, weight = 1, color = "black", 
