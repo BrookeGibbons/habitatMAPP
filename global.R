@@ -47,10 +47,11 @@ gb.bruv.video <- gb.bruv.metadata %>%
   dplyr::mutate(sample=as.numeric(sample))%>% # for testing only
   dplyr::filter(sample<5)%>% # for testing only
   dplyr::mutate(sample=as.character(sample))%>% # for testing only
-  dplyr::mutate(video=paste0("https://github.com/UWAMEGFisheries/UWAMEGFisheries.github.io/blob/master/videos/", sample, ".mp4?raw=true",sep="")) %>%
+  dplyr::mutate(video=paste0("https://github.com/UWAMEGFisheries/UWAMEGFisheries.github.io/blob/master/videos/1.mp4?raw=true",sep="")) %>%
   dplyr::mutate(source = "fish.bruv") %>%
   dplyr::mutate(height='"365"') %>% dplyr::mutate(width='"645"') %>%
-  dplyr::mutate(popup=paste0('<video width=', width, ' autoplay controls <source src=',video,' type="video/mp4"> </video>')) %>%
+  dplyr::mutate(popup=paste0('<video width="645" autoplay controls 
+<source src="https://github.com/UWAMEGFisheries/UWAMEGFisheries.github.io/blob/master/videos/1.mp4?raw=true" type="video/mp4"> </video>')) %>%
   dplyr::select(latitude, longitude, popup, source) %>%
   dplyr::mutate(marine.park = "Geographe Bay")
 
