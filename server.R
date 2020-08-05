@@ -108,10 +108,58 @@ function(input, output, session) {
       hideGroup("State marine parks")%>%
       hideGroup("Commonwealth marine parks")
     
-    
-    
-    
   })
   
+  pie.data <- reactive({
+    req(input$pie.marine.park, input$pie.method)
+    
+    pie.dat <- hab.data %>%
+      dplyr::filter(marine.park%in%input$pie.marine.park)
+    
+    if (input$pie.method == "all") {
+      pie.dat
+      
+    } else {
+      pie.method <- input$pie.method
+      filter(pie.dat, method == pie.method)
+    }
+  })
+  
+  output$pie.leaflet <- renderLeaflet({
+    
+    data<- pie.data() %>%
+      dplyr::select(Consolidated,Macroalgae,Seagrasses,Sponges,Stony.corals,Turf.algae,Unconsolidated,Other)
+  
+    names(data) <- ga.capitalise(names(data))
+    
+    glimpse(data)
+    
+    #4eb570 green
+    #d94c45 red
+    #bd6539 brown
+    #d67cc9 pink
+    #78807a grey
+    #faef52 yellow
+    #d99445 orange
+    
+    broad.colors <- c("#8491B4B2","#1B9E77","#66A61E","#E64B35B2","#7570B3","#D95F02","#E6AB02","black")
+    
+    basemap <- leaflet(pie.data(), width = "100%", height = "800px") %>%
+      fitBounds(~min(longitude), ~min(latitude), ~max(longitude), ~max(latitude))%>%
+      addTiles()
+    
+    # if (input$shapefile.pie==TRUE) {
+    #   basemap<-basemap%>%
+    #     addPolygons(data = new.shp,weight = 1,color = "black", fillOpacity = 0.5,fillColor = "#7bbc63",group = "group",label=new.shp$Name)
+    # }
+    
+    basemap %>%
+      addMinicharts(
+        pie.data()$longitude, pie.data()$latitude,
+        type = "pie",
+        chartdata = data,
+        colorPalette = broad.colors,
+        width = 20, transitionTime = 0)
+  })
   
 }

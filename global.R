@@ -2,10 +2,12 @@
 library(dplyr)
 library(DT)
 library(forcats)
+library(fst)
 library(ggplot2)
 library(GlobalArchive)
 library(htmlwidgets)
 library(leaflet)
+library(leaflet.minicharts)
 library(leafpop)
 library(mapview)
 library(profvis)
@@ -227,6 +229,15 @@ commonwealth.pal <- colorFactor(c("#f6c1d9", # Sanctuary
 #ccc1d6 - special purpose
 #f4eb0a - recreational 
 #b5e2ed - general use
+
+# Habitat data for plotting ----
+hab.data <- fst::read_fst("data/annotations/geographe/southwest.broad.fst") %>%
+  as.data.frame() %>%
+  dplyr::mutate(method=str_replace_all(.$campaignid, c("2007-03_Capes_MF_stereoBRUVs"="stereo-BRUV",
+                                                       "2014-12_Geographe_Bay_stereoBRUVs"="stereo-BRUV")))%>%
+  dplyr::mutate(marine.park="Geographe Bay")
+
+unique(hab.data$method)
 
 # Legend function ----
 markerLegendHTML <- function(IconSet) {

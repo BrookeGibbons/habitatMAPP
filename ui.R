@@ -30,10 +30,10 @@ tagList(
                                                                      "Ningaloo Marine Park" = "Ningaloo",
                                                                      "South-west Corner" = "South-west Corner"))),
                          box(width = 3, title = "Select a method to plot", status= "primary", solidHeader = TRUE, 
-                             selectInput("pie.method", "",c("All"="all",
-                                                                  "AUV" = "auv",
-                                                                  "stereo-BRUV" = "bruv",
-                                                                  "Towed video" = "towed"))),
+                             selectInput("pie.method", "",c("All methods"="all",
+                                                                  "AUV" = "AUV",
+                                                                  "stereo-BRUV" = "stereo-BRUV",
+                                                                  "Towed video" = "Towed"))),
                          box(width=12,leafletOutput("pie.leaflet", height = 625))
                 )
                 ), # End tab item
