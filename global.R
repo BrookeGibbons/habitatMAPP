@@ -81,9 +81,7 @@ sw.bruv.image <- sw.bruv.metadata %>%
   dplyr::mutate(marine.park = "South-west Corner")
 
 # Fish and AUV video links ----
-fish.and.models <- read.csv("data/zone-midpoints.csv", na.strings=c("NA","NaN", " ",""))
-
-fish <- fish.and.models %>% 
+fish <- read.csv("data/zone-midpoints.csv", na.strings=c("NA","NaN", " ","")) %>% 
   dplyr::filter(!is.na(fish)) %>% 
   dplyr::mutate(source = "fish.video")%>%
   dplyr::mutate(popup = paste("<center><h4>Fish observed in the ",
@@ -93,10 +91,9 @@ fish <- fish.and.models %>%
                              " Zone.</h4></center>","<br/>",
                              fish, sep = ""))
 
-models <- fish.and.models %>% 
-  dplyr::filter(!is.na(auv)) %>% 
-  dplyr::mutate(source = "3d.model") %>%
-  dplyr::mutate(popup = paste(auv, sep = ""))
+models <- read.csv("data/3Dmodels.csv", na.strings=c("NA","NaN", " ","")) %>% 
+  # dplyr::filter(!is.na(popup)) %>% 
+  dplyr::mutate(source = "3d.model")
 
 # Merge data together for leaflet map ----
 dat <- bind_rows(gb.bruv.image, ning.bruv.image, sw.bruv.image, fish, models, gb.bruv.video)

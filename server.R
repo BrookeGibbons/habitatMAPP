@@ -40,25 +40,25 @@ function(input, output, session) {
       #                                  minWidth = 0,
       #                                  maxWidth = 700))%>%
       
-      # stereo-BRUV Images
-      addAwesomeMarkers(data=filter(map.dat, source%in%c("image")),
-                        icon = icon.image,
-                        clusterOptions = markerClusterOptions(),
-                        group = "stereo-BRUV images",
-                        popup = map.dat$popup,
-                        popupOptions=c(closeButton = TRUE,
-                                       minWidth = 0,
-                                       maxWidth = 700 # changed from 500 BG 28/07
-                        ))%>%
+      # # stereo-BRUV Images
+      # addAwesomeMarkers(data=filter(map.dat, source%in%c("image")),
+      #                   icon = icon.image,
+      #                   clusterOptions = markerClusterOptions(),
+      #                   group = "stereo-BRUV images",
+      #                   popup = map.dat$popup,
+      #                   popupOptions=c(closeButton = TRUE,
+      #                                  minWidth = 0,
+      #                                  maxWidth = 700 # changed from 500 BG 28/07
+      #                   ))%>%
 
-      # stereo-BRUV video
-      addAwesomeMarkers(data=filter(map.dat, source%in%c("fish.bruv")),
-                        icon = icon.video,
-                        popup = map.dat$popup,
-                        # clusterOptions = markerClusterOptions(),
-                        group="stereo-BRUV videos",
-                        popupOptions=c(closeButton = TRUE,
-                                       minWidth = 0,maxWidth = 700))%>%
+      # # stereo-BRUV video
+      # addAwesomeMarkers(data=filter(map.dat, source%in%c("fish.bruv")),
+      #                   icon = icon.video,
+      #                   popup = map.dat$popup,
+      #                   # clusterOptions = markerClusterOptions(),
+      #                   group="stereo-BRUV videos",
+      #                   popupOptions=c(closeButton = TRUE,
+      #                                  minWidth = 0,maxWidth = 700))%>%
 
       # 3D models
       addAwesomeMarkers(data=filter(map.dat, source%in%c("3d.model")),
@@ -67,7 +67,7 @@ function(input, output, session) {
                         # clusterOptions = markerClusterOptions(),
                         group="3D models",
                         popupOptions=c(closeButton = TRUE,
-                                       minWidth = 0,maxWidth = 500))%>%
+                                       minWidth = 0,maxWidth = 700))%>%
       
       # Ngari Capes Marine Parks
       addPolygons(data = ngari.mp, weight = 1, color = "black", 
