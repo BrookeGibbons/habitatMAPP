@@ -65,6 +65,15 @@ ning.bruv.image <- ning.bruv.metadata %>%
   mutate(popup=paste0('<iframe src=',image,' height=',height,' width=',width,'></iframe>')) %>%
   dplyr::select(latitude, longitude, popup, source) %>% # ,bruv.video,auv.video,source
   dplyr::mutate(marine.park = "Ningaloo")
+
+ning.bruv.video <- ning.bruv.metadata %>%
+  ga.clean.names() %>%
+  dplyr::mutate(source = "habitat.highlights") %>%
+  dplyr::mutate(popup=paste0('<video width="645" autoplay controls>
+  <source src="https://github.com/UWAMEGFisheries/UWAMEGFisheries.github.io/blob/master/videos/ningaloo',sample,'.mp4?raw=true" type="video/mp4">
+</video>')) %>%
+  dplyr::select(latitude, longitude, popup, source) %>% # ,bruv.video,auv.video,source
+  dplyr::mutate(marine.park = "Ningaloo")
 # 
 # # Create dataframe for 2019 Ningaloo BRUV images for plotting ----
 sw.bruv.image <- sw.bruv.metadata %>%
@@ -92,7 +101,7 @@ models <- read.csv("data/3Dmodels.csv", na.strings=c("NA","NaN", " ","")) %>%
   dplyr::mutate(source = "3d.model")
 
 # Merge data together for leaflet map ----
-dat <- bind_rows(models, gb.bruv.video, ning.bruv.image, sw.bruv.image, fish) # fish, gb.bruv.image, ning.bruv.image, sw.bruv.image, 
+dat <- bind_rows(models, gb.bruv.video, sw.bruv.image, fish, ning.bruv.video) # fish, gb.bruv.image, ning.bruv.image, sw.bruv.image, 
 
 # Make icon for images and videos----
 icon.habitat <- makeAwesomeIcon(icon = "image", library = "fa")
