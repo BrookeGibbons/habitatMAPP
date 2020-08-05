@@ -32,7 +32,7 @@ function(input, output, session) {
       addAwesomeMarkers(data=filter(map.dat, source%in%c("image")),
                         icon = icon.habitat,
                         clusterOptions = markerClusterOptions(),
-                        group = "stereo-BRUV images",
+                        group = "stereo-BRUV habitat",
                         popup = map.dat$popup,
                         popupOptions=c(closeButton = TRUE,minWidth = 0,maxWidth = 700))%>%
 
@@ -41,7 +41,7 @@ function(input, output, session) {
                         icon = icon.habitat,
                         popup = habitat.highlights.popups$popup,
                         # clusterOptions = markerClusterOptions(),
-                        group="stereo-BRUV videos",
+                        group="stereo-BRUV fish",
                         popupOptions=c(closeButton = TRUE,minWidth = 0,maxWidth = 700))%>%
       
       # stereo-BRUV fish videos
@@ -49,7 +49,7 @@ function(input, output, session) {
                         icon = icon.fish,
                         popup = fish.highlights.popups$popup,
                         # clusterOptions = markerClusterOptions(),
-                        group="stereo-BRUV videos",
+                        group="stereo-BRUV habitat",
                         popupOptions=c(closeButton = TRUE,minWidth = 0,maxWidth = 700))%>%
 
       # 3D models
@@ -92,8 +92,8 @@ function(input, output, session) {
       
       addLayersControl(
         baseGroups = c("OSM (default)", "World Imagery"),
-        overlayGroups = c("stereo-BRUV images",
-                          "stereo-BRUV videos",
+        overlayGroups = c("stereo-BRUV habitat",
+                          "stereo-BRUV fish",
                           "3D models",
                           "State marine parks",
                           "Commonwealth marine parks"), options = layersControlOptions(collapsed = FALSE))%>% 

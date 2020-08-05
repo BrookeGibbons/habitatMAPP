@@ -92,7 +92,7 @@ models <- read.csv("data/3Dmodels.csv", na.strings=c("NA","NaN", " ","")) %>%
   dplyr::mutate(source = "3d.model")
 
 # Merge data together for leaflet map ----
-dat <- bind_rows(models, gb.bruv.video, ning.bruv.image, sw.bruv.image) # fish, gb.bruv.image, ning.bruv.image, sw.bruv.image, 
+dat <- bind_rows(models, gb.bruv.video, ning.bruv.image, sw.bruv.image, fish) # fish, gb.bruv.image, ning.bruv.image, sw.bruv.image, 
 
 # Make icon for images and videos----
 icon.habitat <- makeAwesomeIcon(icon = "image", library = "fa")
