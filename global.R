@@ -70,7 +70,7 @@ ning.bruv.video <- ning.bruv.metadata %>%
   ga.clean.names() %>%
   dplyr::mutate(source = "habitat.highlights") %>%
   dplyr::mutate(popup=paste0('<video width="645" autoplay controls>
-  <source src="https://github.com/UWAMEGFisheries/UWAMEGFisheries.github.io/blob/master/videos/ningaloo',sample,'.mp4?raw=true" type="video/mp4">
+  <source src="https://github.com/UWAMEGFisheries/UWAMEGFisheries.github.io/blob/master/videos/ningaloo/',sample,'.mp4?raw=true" type="video/mp4">
 </video>')) %>%
   dplyr::select(latitude, longitude, popup, source) %>% # ,bruv.video,auv.video,source
   dplyr::mutate(marine.park = "Ningaloo")

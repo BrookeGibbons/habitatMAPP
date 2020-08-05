@@ -41,7 +41,7 @@ function(input, output, session) {
                         icon = icon.habitat,
                         popup = habitat.highlights.popups$popup,
                         # clusterOptions = markerClusterOptions(),
-                        group="stereo-BRUV fish",
+                        group="stereo-BRUV habitat",
                         popupOptions=c(closeButton = TRUE,minWidth = 0,maxWidth = 700))%>%
       
       # stereo-BRUV fish videos
@@ -49,7 +49,7 @@ function(input, output, session) {
                         icon = icon.fish,
                         popup = fish.highlights.popups$popup,
                         # clusterOptions = markerClusterOptions(),
-                        group="stereo-BRUV habitat",
+                        group="stereo-BRUV fish",
                         popupOptions=c(closeButton = TRUE,minWidth = 0,maxWidth = 700))%>%
 
       # 3D models
