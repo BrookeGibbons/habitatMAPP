@@ -10,6 +10,7 @@ function(input, output, session) {
 
 # Create leaflet explore map ---- 
   output$imagery.leaflet <- renderLeaflet({
+    # req(input$leaflet.zoom)
     
     map.dat <- map.dat() # call in filtered data
     
@@ -28,17 +29,25 @@ function(input, output, session) {
     lng2 <- max(map.dat$longitude)
     lat2 <- max(map.dat$latitude)
     
-    leaflet() %>% 
-      addTiles(group = "OSM (default)")%>%
+    leaflet <- leaflet() %>% 
       addProviderTiles('Esri.WorldImagery', group = "World Imagery") %>%
+      addTiles(group = "Open Street Map")%>%
       addControl(html = markerLegendHTML(IconSet = IconSet), position = "bottomleft")%>%
-      flyToBounds(lng1, lat1, lng2, lat2)%>%
+      # flyToBounds(lng1, lat1, lng2, lat2)%>%
+      fitBounds(lng1, lat1, lng2, lat2)%>%
       
       # stereo-BRUV Images
       addAwesomeMarkers(data=image.popups,
                         icon = icon.habitat,
-                        # clusterOptions = markerClusterOptions(),
-                        group = "stereo-BRUV habitat",
+                        clusterOptions = markerClusterOptions(iconCreateFunction =
+                        JS("
+                                          function(cluster) {
+                                             return new L.DivIcon({
+                                               html: '<div style=\"background-color:rgba(56,169,220,0.9)\"><span>' + cluster.getChildCount() + '</div><span>',
+                                               className: 'marker-cluster'
+                                             });
+                                           }")),
+                        group = "Habitat imagery",
                         popup = image.popups$popup,
                         popupOptions=c(closeButton = TRUE,minWidth = 0,maxWidth = 700))%>%
       
@@ -46,23 +55,44 @@ function(input, output, session) {
       addAwesomeMarkers(data=habitat.highlights.popups,
                         icon = icon.habitat,
                         popup = habitat.highlights.popups$popup,
-                        # clusterOptions = markerClusterOptions(),
-                        group="stereo-BRUV habitat",
+                        clusterOptions = markerClusterOptions(iconCreateFunction =
+                                                                JS("
+                                          function(cluster) {
+                                             return new L.DivIcon({
+                                               html: '<div style=\"background-color:rgba(56,169,220,0.9)\"><span>' + cluster.getChildCount() + '</div><span>',
+                                               className: 'marker-cluster'
+                                             });
+                                           }")),
+                        group="Habitat imagery",
                         popupOptions=c(closeButton = TRUE,minWidth = 0,maxWidth = 700))%>%
       
       # stereo-BRUV fish videos
       addAwesomeMarkers(data=fish.highlights.popups,
                         icon = icon.fish,
                         popup = fish.highlights.popups$popup,
-                        # clusterOptions = markerClusterOptions(),
-                        group="stereo-BRUV fish",
+                        clusterOptions = markerClusterOptions(iconCreateFunction =
+                                                                JS("
+                                          function(cluster) {
+                                             return new L.DivIcon({
+                                               html: '<div style=\"background-color:rgba(255,137,121,0.9)\"><span>' + cluster.getChildCount() + '</div><span>',
+                                               className: 'marker-cluster'
+                                             });
+                                           }")),
+                        group="Fish highlights",
                         popupOptions=c(closeButton = TRUE,minWidth = 0,maxWidth = 700))%>%
     
       # 3D models
       addAwesomeMarkers(data=threed.model.popups,
                         icon = icon.models,
                         popup = threed.model.popups$popup,
-                        # clusterOptions = markerClusterOptions(),
+                        clusterOptions = markerClusterOptions(iconCreateFunction =
+                                                                JS("
+                                          function(cluster) {
+                                             return new L.DivIcon({
+                                               html: '<div style=\"background-color:rgba(239,146,46,0.9)\"><span>' + cluster.getChildCount() + '</div><span>',
+                                               className: 'marker-cluster'
+                                             });
+                                           }")),
                         group="3D models",
                         popupOptions=c(closeButton = TRUE, minWidth = 0,maxWidth = 700)
                         )%>%
@@ -70,28 +100,28 @@ function(input, output, session) {
       
       # Ngari Capes Marine Parks
       addPolygons(data = ngari.mp, weight = 1, color = "black", 
-                  fillOpacity = 0.5, fillColor = "#c1d72f", 
-                  group = "State marine parks", label=ngari.mp$Name)%>%
+                  fillOpacity = 0.8, fillColor = "#7bbc63", 
+                  group = "State Marine Parks", label=ngari.mp$Name)%>%
       
       # State Marine Parks
       addPolygons(data = state.mp, weight = 1, color = "black", 
-                  fillOpacity = 0.5, fillColor = ~state.pal(zone), 
-                  group = "State marine parks", label=state.mp$COMMENTS)%>%
+                  fillOpacity = 0.8, fillColor = ~state.pal(zone), 
+                  group = "State Marine Parks", label=state.mp$COMMENTS)%>%
       
       # Add a legend
       addLegend(pal = state.pal, values = state.mp$zone, opacity = 1,
                 title="State Zones",
-                position = "bottomright", group = "State marine parks")%>%
+                position = "bottomright", group = "State Marine Parks")%>%
       
       # Commonwealth Marine Parks
       addPolygons(data = commonwealth.mp, weight = 1, color = "black", 
-                  fillOpacity = 0.5, fillColor = ~commonwealth.pal(zone), 
-                  group = "Commonwealth marine parks", label=commonwealth.mp$ZoneName)%>%
+                  fillOpacity = 0.8, fillColor = ~commonwealth.pal(zone), 
+                  group = "Australian Marine Parks", label=commonwealth.mp$ZoneName)%>%
       
       # Add a legend
       addLegend(pal = commonwealth.pal, values = commonwealth.mp$zone, opacity = 1,
-                title="Commonwealth Zones",
-                position = "bottomright", group = "Commonwealth marine parks")%>%
+                title="Australian Marine Park Zones",
+                position = "bottomright", group = "Australian Marine Parks")%>%
       
       # # Add a legend
       # addLegend(pal = testpal, values = commonwealth.mp$IUCN, opacity = 1,
@@ -99,17 +129,34 @@ function(input, output, session) {
       #           position = "bottomright", group = "State marine parks")%>%
       
       addLayersControl(
-        baseGroups = c("OSM (default)", "World Imagery"),
-        overlayGroups = c("stereo-BRUV habitat",
-                          "stereo-BRUV fish",
+        baseGroups = c("World Imagery","Open Street Map"),
+        overlayGroups = c("Fish highlights",
+                          "Habitat imagery",
                           "3D models",
-                          "State marine parks",
-                          "Commonwealth marine parks"), options = layersControlOptions(collapsed = FALSE))%>% 
-      hideGroup("State marine parks")%>%
-      hideGroup("Commonwealth marine parks")
+                          "State Marine Parks",
+                          "Australian Marine Parks"), options = layersControlOptions(collapsed = FALSE))%>% 
+      hideGroup("State Marine Parks")%>%
+      hideGroup("Australian Marine Parks")#%>%
+      #hideGroup("Habitat imagery")
+    
+    
+    # zoom.method(lng1, lat1, lng2, lat2) %>%
+      # flyToBounds(lng1, lat1, lng2, lat2)%>%
+      # fitBounds(lng1, lat1, lng2, lat2)%>%
+        # 
+        # if (input$leaflet.zoom%in%TRUE) {
+        #   leaflet <- leaflet %>% flyToBounds(lng1, lat1, lng2, lat2)
+        # } else {
+        #   leaflet <- leaflet %>% fitBounds(lng1, lat1, lng2, lat2)
+        # }
+        # 
+    
+    
+    leaflet
     
   })
   
+  # Habitat pie plot ----
   pie.data <- reactive({
     req(input$pie.marine.park, input$pie.method)
     

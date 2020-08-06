@@ -18,6 +18,7 @@ library(rmapshaper)
 library(shiny)
 library(shinyBS)
 library(shinydashboard)
+# library(shinydashboardPlus)
 library(shinythemes)
 library(shinyjs)
 library(sf)
@@ -112,8 +113,8 @@ icon.fish <- makeAwesomeIcon(icon = "video-camera", library = "fa", markerColor 
 icon.models <- makeAwesomeIcon(icon = "laptop", library = "fa", markerColor = "orange", iconColor = "black")
 
 IconSet <- awesomeIconList(
-  "stereo-BRUV fish highlights"   = makeAwesomeIcon(icon = "video-camera", library = "fa", markerColor = "lightred"),
-  "stereo-BRUV habitat snapshot" = makeAwesomeIcon(icon = "image", library = "fa"),
+  "Fish highlights"   = makeAwesomeIcon(icon = "video-camera", library = "fa", markerColor = "lightred"),
+  "Habitat imagery" = makeAwesomeIcon(icon = "image", library = "fa"),
   "3D models" = makeAwesomeIcon(icon = "laptop", library = "fa", markerColor = "orange")
 )
 
@@ -139,14 +140,14 @@ state.mp <- state.mp[!state.mp$ZONE_TYPE %in% c("Unassigned (IUCN IA)","Unassign
 
 # remove all alphanumeric to rename zone type
 state.mp$zone<-str_replace_all(state.mp$ZONE_TYPE, c("[^[:alnum:]]"=" "))
-state.mp$zone<-str_replace_all(state.mp$zone, c("Conservation Area  IUCN IA "="Conservation",
+state.mp$zone<-str_replace_all(state.mp$zone, c("Conservation Area  IUCN IA "="Conservation (no-take)",
                                                           "General Use  IUCN II "="General Use",
                                                           "General Use Area  IUCN VI "="General Use",
                                                           "General Use Zone  IUCN II "="General Use",
                                                           "Recreation Area  IUCN II "="Recreation",
                                                           "Recreation Zone  IUCN II "="Recreation",
-                                                          "Sanctuary Area  IUCN VI "="Sanctuary",
-                                                          "Sanctuary Zone  IUCN IA "="Sanctuary",
+                                                          "Sanctuary Area  IUCN VI "="Sanctuary (no-take)",
+                                                          "Sanctuary Zone  IUCN IA "="Sanctuary (no-take)",
                                                           "Special Purpose Zone  Aquaculture   IUCN VI " ="Special Purpose",
                                                           "Special Purpose Zone  Benthic Protection   IUCN IV "="Special Purpose",
                                                           "Special Purpose Zone  Dugong Protection   IUCN IV "="Special Purpose", 
@@ -165,39 +166,46 @@ state.mp$zone<-str_replace_all(state.mp$zone, c("Conservation Area  IUCN IA "="C
                                                           "Special Purpose Zone 3  Shore based Activities   IUCN VI " ="Special Purpose",      
                                                           "Special Purpose Zone 4  Shore based Activities   IUCN II "="Special Purpose"))
 
+# unique(state.mp$zone)
+
+
 # Commonwealth marine parks ----
 commonwealth.mp <- readOGR("data/spatial/AustraliaNetworkMarineParks.shp")
 commonwealth.mp$zone<-str_replace_all(commonwealth.mp$ZoneName, c("[^[:alnum:]]"=" "))
 commonwealth.mp$zone<-str_replace_all(commonwealth.mp$zone, c(" Zone"="",
-                                                                      "Habitat Protection  Lord Howe "="Habitat Protection",
-                                                                      "Habitat Protection  Reefs "="Habitat Protection",
-                                                                      "Marine National Park"="National Park",
-                                                                      "Special Purpose  Mining Exclusion "="Special Purpose",
-                                                                      "Special Purpose  Norfolk "="Special Purpose",
-                                                                      "Special Purpose  Trawl "="Special Purpose"))
+                                                                      "Habitat Protection  Lord Howe " = "Habitat Protection",
+                                                                      "Habitat Protection  Reefs " = "Habitat Protection",
+                                                                      "Marine National Park" = "National Park",
+                                                                      "National Park" = "National Park (no-take)",
+                                                                      "Special Purpose  Mining Exclusion " = "Special Purpose",
+                                                                      "Special Purpose  Norfolk " = "Special Purpose",
+                                                                      "Special Purpose  Trawl " = "Special Purpose",
+                                                                      "Sanctuary" = "Sanctuary (no-take)"))
+unique(commonwealth.mp$zone)
+
 
 # Create factors for legends and plotting ----
 # State marine parks ----
 state.mp$zone <- as.factor(state.mp$zone)
-state.mp$zone<-fct_relevel(state.mp$zone, "Conservation", "Sanctuary", "Special Purpose", "Recreation", "General Use")
+state.mp$zone<-fct_relevel(state.mp$zone, "Conservation (no-take)", "Sanctuary (no-take)", "Recreation", "General Use", "Special Purpose")
 
 state.pal <- colorFactor(c("#bfaf02", # conservation
-                           "#c1d72f", # sanctuary
-                           "#ccc1d6", # special purpose
-                           "#f4eb0a", # recreational
-                           '#b5e2ed' # general use
+                           "#7bbc63", # sanctuary = National Park
+                           "#fdb930", # recreation
+                           "#b9e6fb", # general use
+                           '#ccc1d6' # special purpose
 ), state.mp$zone)
 
 # Commonwealth marine parks ----
 commonwealth.mp$zone <- as.factor(commonwealth.mp$zone)
-commonwealth.mp$zone<-fct_relevel(commonwealth.mp$zone, "Sanctuary", "National Park", "Recreational Use", "Habitat Protection", "Multiple Use", "Special Purpose")
+commonwealth.mp$zone<-fct_relevel(commonwealth.mp$zone, "Sanctuary (no-take)", "National Park (no-take)", "Recreational Use", "Habitat Protection", "Multiple Use", "Special Purpose")
 
 commonwealth.pal <- colorFactor(c("#f6c1d9", # Sanctuary
                          "#7bbc63", # National Park
                          "#fdb930", # Recreational Use
                          "#fff7a3", # Habitat Protection
                          '#b9e6fb', # Multiple Use
-                         '#6daee0'# Special Purpose
+                         '#ccc1d6'# Special Purpose
 ), commonwealth.mp$zone)
 
 # To plot using IUCN ----
@@ -287,4 +295,23 @@ markerLegendHTML <- function(IconSet) {
 
 # first 20 quakes
 # df.20 <- quakes[1:20,]
+
+
+
+dbHeader <- dashboardHeader()
+dbHeader$children[[2]]$children <-  tags$a(href='http://mycompanyishere.com',
+                                           tags$img(src='https://www.nespmarine.edu.au/sites/default/themes/nespmarine/logo.png',height='60',width='200'))
+
+dbHeader <- dashboardHeader(title = "HabitatMAPPer",
+                            tags$li(a(href = 'https://marineecology.io/',
+                                      img(src = 'https://github.com/UWAMEGFisheries/UWAMEGFisheries.github.io/blob/master/images/MEG-white.png?raw=true',
+                                          title = "Marine Ecology Group", height = "50px"),
+                                      style = "padding-top:10px; padding-bottom:10px;"),
+                                    class = "dropdown"),
+                            tags$li(a(href = 'https://www.nespmarine.edu.au/',
+                                      img(src = 'https://github.com/UWAMEGFisheries/UWAMEGFisheries.github.io/blob/master/images/mbh-logo-white-cropped.png?raw=true',
+                                          title = "Marine Biodiversity Hub", height = "50px"),
+                                      style = "padding-top:10px; padding-bottom:10px;"),
+                                    class = "dropdown"))
+
 # 
