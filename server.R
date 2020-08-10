@@ -227,6 +227,19 @@ function(input, output, session) {
     
   })
   
+  
+  # logos
+  output$logos <- renderImage({
+      return(list(
+        src = "images/logos-stacked.png",
+        width = 350,
+        height = 600,
+        contentType = "image/png",
+        alt = "Face"
+      ))
+    
+  }, deleteFile = FALSE)
+  
   # Habitat bubble plot ----
   
   output$bubble.leaflet <- renderLeaflet({

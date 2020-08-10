@@ -61,11 +61,15 @@ tagList(
         ), # End tab item
         
         tabItem(tabName = "acknowledgements",
-                fluidRow(box(width = 12, status = "primary",
-                  "Acknowledgments here", br(), "More box content"
-                  
+                fluidRow(box(width = 8, status = "primary", height = 800, title = "Acknowledgments",
+                             "The Marine Biodiversity Hub is funded by the Australian Government's National Environental Science Program", br(), 
+                             "Ningaloo video footage from the baseline survey of deepwater fish in the Ningaloo Marine Park, Commonwealth waters. Funded by the Marine Biodiversity Hub and Parks Australia.", br(),
+                             "Geographe Bay video footage from the .....",br(),
+                             "South-west corner video footage from the .... Funded by Parks Australia"),
+                         box(width = 4, status = "primary", height = 800,
+                             imageOutput("logos")
+                
                 )
-                         
                 )
         )
         

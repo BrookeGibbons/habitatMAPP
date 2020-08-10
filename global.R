@@ -84,11 +84,11 @@ ning.bruv.video <- ning.bruv.metadata %>%
 # # Create dataframe for 2019 Ningaloo BRUV images for plotting ----
 sw.bruv.image <- sw.bruv.metadata %>%
   ga.clean.names() %>%
-  dplyr::mutate(image=paste0("https://marineecology.io/images/habitatmapp/sw/",sample,".jpg",sep="")) %>% # NEED TO UPDATE THIS
-  ga.clean.names() %>%
+  dplyr::mutate(image=paste0("01",sample,"",sep="")) %>% # NEED TO UPDATE THIS
   dplyr::mutate(source = "image") %>%
-  mutate(height='"365"')%>%mutate(width='"645"') %>%
-  mutate(popup=paste0('<iframe src=',image,' height=',height,' width=',width,'></iframe>')) %>%
+  dplyr::mutate(popup=paste0('<video width="645" autoplay controls>
+  <source src="https://github.com/UWAMEGFisheries/UWAMEGFisheries.github.io/blob/master/videos/south-west/',sample,'.mp4?raw=true" type="video/mp4">
+</video>')) %>%
   dplyr::select(latitude, longitude, popup, source) %>% # ,bruv.video,auv.video,source
   dplyr::mutate(marine.park = "South-west Corner")
 
