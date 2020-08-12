@@ -18,7 +18,7 @@ tagList(
                 #tags$head(
                 #  includeCSS("styles.css") # Include custom CSS
                 #),
-                fluidRow(box(width = 3, title = "Select a Marine Park to explore", status = "primary", solidHeader = TRUE, 
+                fluidRow(box(width = 12, title = "Select a Marine Park to explore", status = "primary", solidHeader = TRUE, 
                              selectInput("leaflet.marine.park", "", c("Geographe Marine Park" = "Geographe Bay",
                                                                      "Ningaloo Marine Park" = "Ningaloo",
                                                                      "South-west Corner" = "South-west Corner"))),
@@ -62,10 +62,11 @@ tagList(
         
         tabItem(tabName = "acknowledgements",
                 fluidRow(box(width = 8, status = "primary", height = 800, title = "Acknowledgments",
-                             "The Marine Biodiversity Hub is funded by the Australian Government's National Environental Science Program", br(), 
-                             "Ningaloo video footage from the baseline survey of deepwater fish in the Ningaloo Marine Park, Commonwealth waters. Funded by the Marine Biodiversity Hub and Parks Australia.", br(),
-                             "Geographe Bay video footage from the .....",br(),
-                             "South-west corner video footage from the .... Funded by Parks Australia"),
+                             "The Marine Biodiversity Hub is funded by the Australian Government's National Environmental Science Program", br(), br(),
+                             "Ningaloo video footage from the baseline survey of deepwater fish in the Ningaloo Marine Park, Commonwealth waters. Funded by the Marine Biodiversity Hub and Parks Australia.", br(),br(),
+                             "Geographe Bay video footage from the .....",br(),br(),
+                             "South-west corner video footage from the baseline survey of deeperwater fish and habitats in the South-west Corner Marine Park, Commonwealth waters. Funded by the Marine Biodiversity Hub, Parks Australia and the University of Western Australia.
+"),
                          box(width = 4, status = "primary", height = 800,
                              imageOutput("logos")
                 
