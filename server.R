@@ -1,5 +1,6 @@
 function(input, output, session) {
   
+  
 # Filter data to selected marine park (should make plotting faster) ----
   map.dat <- reactive({
     req(input$leaflet.marine.park)
