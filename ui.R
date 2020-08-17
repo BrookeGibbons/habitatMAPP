@@ -6,8 +6,9 @@ tagList(
     dashboardSidebar(
       sidebarMenu(
         menuItem("Interactive imagery", tabName = "imagery", icon = icon("map")),
-        menuItem("Pie charts", tabName = "pie", icon = icon("pie-chart")),
-        menuItem("Bubble plots", tabName = "bubble", icon = icon("circle")),
+        menuItem("Fish plots", tabName = "fish", icon = icon("fish", lib="font-awesome")),
+        menuItem("Habitat pie charts", tabName = "pie", icon = icon("pie-chart")),
+        menuItem("Habitat bubble plots", tabName = "bubble", icon = icon("circle")),
         menuItem("Acknowledgements", tabName = "acknowledgements", icon = icon("hands-helping", lib="font-awesome"))
       )
     ),
@@ -19,6 +20,8 @@ tagList(
                 #  includeCSS("styles.css") # Include custom CSS
                 #),
                 fluidRow(box(width = 12, title = "Select a Marine Park to explore", status = "primary", solidHeader = TRUE, 
+                             add_busy_spinner(spin = "fading-circle"),
+                             # add_busy_gif(src = "https://github.com/UWAMEGFisheries/UWAMEGFisheries.github.io/blob/master/Blocks-1s-200px.gif", height = 70, width = 70),
                              selectInput("leaflet.marine.park", "", c("Geographe Marine Park" = "Geographe Bay",
                                                                      "Ningaloo Marine Park" = "Ningaloo",
                                                                      "South-west Corner" = "South-west Corner"))),
@@ -30,6 +33,34 @@ tagList(
                 )
                 ), # End tab item
         
+        tabItem(tabName = "fish",
+                fluidRow(box(width = 4, title = "Select a Marine Park to plot", status = "primary", solidHeader = TRUE, 
+                             selectInput("fish.marine.park", "", c("Geographe Marine Park" = "Geographe Bay"#,
+                                                                  # "Ningaloo Marine Park" = "Ningaloo",
+                                                                  # "South-west Corner" = "South-west Corner"
+                                                                  ))),
+                         box(width = 4, title = "Select a metric to plot", status= "primary", solidHeader = TRUE, 
+                             selectInput("fish.metric", "",c("Abundance"="maxn",
+                                                            "Length" = "length",
+                                                            "Biomass" = "biomass"))),
+                         
+                         box(width=4,title = "Number of species to plot",status="primary",solidHeader = TRUE,numericInput("species.limit", "Number:", 15, min = 5, max = 20)),
+                         # add_busy_bar(color = "#FF0000"),
+                         box(width=12,height = 500,
+                             title = "Plot of most abundant species", status = "primary",
+                             plotOutput("top.species")),
+                         
+                         box(width=12,title = "Choose a species to plot below:", status = "primary", solidHeader = TRUE,
+                             htmlOutput("fish.species.dropdown",multiple=TRUE)),
+                         
+
+                         box(width=12,title = "Marine Park Zones", status = "primary", plotOutput("fish.zones", height = 250)),
+                         box(width=12,title = "Fished vs. No-take", status = "primary", plotOutput("fish.status", height = 250))
+                         # box(width=12,leafletOutput("pie.leaflet", height = 625))
+                )
+        ), # End tab item
+        
+        
         tabItem(tabName = "pie",
                 fluidRow(box(width = 3, title = "Select a Marine Park to plot", status = "primary", solidHeader = TRUE, 
                              selectInput("pie.marine.park", "", c("Geographe Marine Park" = "Geographe Bay",
@@ -40,6 +71,7 @@ tagList(
                                                                   "AUV" = "AUV",
                                                                   "stereo-BRUV" = "stereo-BRUV",
                                                                   "Towed video" = "Towed"))),
+                         # add_busy_bar(color = "#FF0000"),
                          box(width=12,leafletOutput("pie.leaflet", height = 625))
                 )
                 ), # End tab item
@@ -77,15 +109,16 @@ tagList(
       )
     )
   ),
-  tags$footer("Developed by Brooke Gibbons and Tim Langlois, 2020", align = "center", style = "
-              position:absolute;
-              bottom:0;
-              width:100%;
-              height:30px;   /* Height of the footer */
-              color: white;
-              padding: 10px;
-              background-color: black;
-              z-index: 1000;")
+  tags$footer("Developed by Brooke Gibbons and Tim Langlois, 2020", align = "center"#, style = "
+              # position:absolute;
+              # bottom:0;
+              # width:100%;
+              # height:30px;   /* Height of the footer */
+              # color: white;
+              # padding: 10px;
+              # background-color: black;
+              # z-index: 1000;"
+              )
   
 )#end tagList
 # )

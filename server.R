@@ -30,6 +30,9 @@ function(input, output, session) {
     lng2 <- max(map.dat$longitude)
     lat2 <- max(map.dat$latitude)
     
+    # simulate building
+    show_loading(elem = "leafletBusy")
+    
     leaflet <- leaflet() %>% 
       addProviderTiles('Esri.WorldImagery', group = "World Imagery") %>%
       addTiles(group = "Open Street Map")%>%
@@ -152,8 +155,10 @@ function(input, output, session) {
         # }
         # 
     
-    
-    leaflet
+    Sys.sleep(5)
+    hide_loading(elem = "leafletBusy")
+    return(leaflet)
+    # leaflet
     
   })
   
@@ -208,7 +213,7 @@ function(input, output, session) {
         type = "pie",
         chartdata = data,
         colorPalette = broad.colors,
-        width = 20, transitionTime = 0)
+        width = 20, transitionTime = 10)
   })
   
   

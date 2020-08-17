@@ -1,4 +1,5 @@
 # Load libraries ----
+# install.packages("shinybusy")
 
 library(dplyr)
 library(DT)
@@ -18,6 +19,7 @@ library(rgeos)
 library(rmapshaper)
 library(shiny)
 library(shinyBS)
+library(shinybusy)
 library(shinydashboard)
 # library(shinydashboardPlus)
 library(shinythemes)
@@ -316,5 +318,3 @@ dbHeader <- dashboardHeader(title = "HabitatMAPPer",
                                           title = "Marine Biodiversity Hub", height = "50px"),
                                       style = "padding-top:10px; padding-bottom:10px;"),
                                     class = "dropdown"))
-
-# 
