@@ -116,11 +116,11 @@ dat <- bind_rows(models, gb.bruv.video, sw.bruv.image, fish, ning.bruv.video) # 
 
 # Make icon for images and videos----
 icon.habitat <- makeAwesomeIcon(icon = "image", library = "fa")
-icon.fish <- makeAwesomeIcon(icon = "video-camera", library = "fa", markerColor = "lightred", iconColor = "black")
+icon.fish <- makeAwesomeIcon(icon = "fishes", library = "glyphicon", markerColor = "lightred", iconColor = "black")
 icon.models <- makeAwesomeIcon(icon = "laptop", library = "fa", markerColor = "orange", iconColor = "black")
 
 IconSet <- awesomeIconList(
-  "Fish highlights"   = makeAwesomeIcon(icon = "video-camera", library = "fa", markerColor = "lightred"),
+  "Fish highlights"   = makeAwesomeIcon(icon = "fishes", library = "glyphicon", markerColor = "lightred"),
   "Habitat imagery" = makeAwesomeIcon(icon = "image", library = "fa"),
   "3D models" = makeAwesomeIcon(icon = "laptop", library = "fa", markerColor = "orange")
 )

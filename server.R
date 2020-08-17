@@ -36,7 +36,7 @@ function(input, output, session) {
     
     # Having this in the global.R script breaks now - make icons on server side 
     icon.habitat <- makeAwesomeIcon(icon = "image", library = "fa")
-    icon.fish <- makeAwesomeIcon(icon = "video-camera", library = "fa", markerColor = "lightred", iconColor = "black")
+    icon.fish <- makeAwesomeIcon(icon = "fishes", library = "glyphicon", markerColor = "lightred", iconColor = "black")
     icon.models <- makeAwesomeIcon(icon = "laptop", library = "fa", markerColor = "orange", iconColor = "black")
     
     lng1 <- min(map.dat$longitude)
