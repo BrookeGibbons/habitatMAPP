@@ -1,6 +1,20 @@
 function(input, output, session) {
   
-  
+  # Dropdown function -----
+  create_dropdown <- function(input_name, choices, label) {
+    if (!is.null(input[[input_name]]) && input[[input_name]] %in% choices) {
+      selected <- input[[input_name]]
+    } else {
+      selected <- choices[1]
+    }
+    
+    selectInput(
+      inputId = input_name,
+      label = label,
+      choices = choices,
+      selected = selected
+    )
+  }
 # Filter data to selected marine park (should make plotting faster) ----
   map.dat <- reactive({
     req(input$leaflet.marine.park)
@@ -31,7 +45,7 @@ function(input, output, session) {
     lat2 <- max(map.dat$latitude)
     
     # simulate building
-    show_loading(elem = "leafletBusy")
+    # show_loading(elem = "leafletBusy")
     
     leaflet <- leaflet() %>% 
       addProviderTiles('Esri.WorldImagery', group = "World Imagery") %>%
@@ -155,8 +169,8 @@ function(input, output, session) {
         # }
         # 
     
-    Sys.sleep(5)
-    hide_loading(elem = "leafletBusy")
+    # Sys.sleep(5)
+    # hide_loading(elem = "leafletBusy")
     return(leaflet)
     # leaflet
     
@@ -299,6 +313,234 @@ function(input, output, session) {
         )
     }
     map
+  })
+  
+
+# FISH ----
+  # Top species ----
+  output$top.species <- renderPlot({
+    maxn.sum<-maxn%>%
+      left_join(master)%>%
+      dplyr::mutate(scientific=paste(genus," ",species," (",australian.common.name,")",sep=""))%>%
+      group_by(scientific)%>%
+      dplyr::summarise(maxn=sum(maxn))%>%
+      ungroup()%>%
+      top_n(input$species.limit)
+    
+    length.sum<-length%>%
+      left_join(master)%>%
+      dplyr::mutate(scientific=paste(genus," ",species," (",australian.common.name,")",sep=""))%>%
+      group_by(scientific)%>%
+      dplyr::summarise(number=sum(number))%>%
+      ungroup()%>%
+      top_n(input$species.limit)
+    
+    mass.sum<-mass%>%
+      left_join(master)%>%
+      # dplyr::filter(mass.g>0)%>%
+      replace_na(list(mass.g=0))%>%
+      dplyr::mutate(scientific=paste(genus," ",species," (",australian.common.name,")",sep=""))%>%
+      group_by(scientific)%>%
+      dplyr::summarise(mass.g=sum(mass.g))%>%
+      ungroup()%>%
+      dplyr::mutate(mass.kg=mass.g/1000)%>%
+      top_n(input$species.limit)
+    
+    if (input$fish.metric%in%c("maxn")) {
+    
+    plot<-ggplot(maxn.sum, aes(x=reorder(scientific,maxn), y=maxn)) +   
+        geom_bar(stat="identity",position=position_dodge())+
+        coord_flip()+
+        xlab("Species")+
+        ylab(expression(Overall~abundance~(Sigma~MaxN)))+
+        Theme1+
+        theme(axis.text.y = element_text(face="italic"))+
+        theme_collapse+
+        scale_y_continuous(expand = expand_scale(mult = c(0, .1)))
+    } else if (input$fish.metric%in%c("length")){
+      
+      plot<-ggplot(length.sum, aes(x=reorder(scientific,number), y=number)) +   
+        geom_bar(stat="identity",position=position_dodge())+
+        coord_flip()+
+        xlab("Species")+
+        ylab(expression(Overall~number~measured~(Sigma~Number)))+
+        Theme1+
+        theme(axis.text.y = element_text(face="italic"))+
+        theme_collapse+
+        scale_y_continuous(expand = expand_scale(mult = c(0, .1)))
+    } else {
+      plot<-ggplot(mass.sum, aes(x=reorder(scientific,mass.kg), y=mass.kg)) +   
+        geom_bar(stat="identity",position=position_dodge())+
+        coord_flip()+
+        xlab("Species")+
+        ylab(expression(Sum~of~mass~(KG)))+
+        Theme1+
+        theme(axis.text.y = element_text(face="italic"))+
+        theme_collapse+
+        scale_y_continuous(expand = expand_scale(mult = c(0, .1)))
+    }
+    
+    
+    plot
+    
+    
+    
+    
+  })
+  
+  # Species dropdown -----
+  output$fish.species.dropdown <- renderUI({
+    df<-maxn#%>%glimpse()
+    
+    options <- df %>%
+      dplyr::mutate(genus=ifelse(genus%in%c(NA,"NA","Unknown","NANA"),as.character(family),as.character(genus)))%>%
+      dplyr::group_by(family,genus,species)%>%
+      dplyr::summarise(n=sum(maxn))%>%
+      arrange(-n)%>%
+      left_join(master)%>%
+      dplyr::mutate(scientific=paste(genus," ",species," (",australian.common.name,")",sep=""))%>%
+      # dplyr::mutate(scientific=paste(genus," ",species,sep=""))%>%
+      distinct(scientific) %>%
+      pull("scientific")
+    
+    create_dropdown("fish.species.dropdown", options, NULL)
+  })
+  
+  output$fish.zones <- renderPlot({
+    
+    maxn.per.sample<-maxn%>%
+      left_join(metadata.regions)%>%
+      left_join(master)%>%
+      dplyr::mutate(scientific=paste(genus," ",species," (",australian.common.name,")",sep=""))%>%
+      dplyr::filter(scientific%in%c(input$fish.species.dropdown))%>%
+      group_by(sample,zone)%>%
+      summarise(maxn=sum(maxn))
+    
+    mass.per.sample<-mass%>%
+      # dplyr::filter(mass.g>0)%>%
+      replace_na(list(mass.g=0))%>%
+      left_join(metadata.regions)%>%
+      left_join(master)%>%
+      dplyr::mutate(scientific=paste(genus," ",species," (",australian.common.name,")",sep=""))%>%
+      dplyr::filter(scientific%in%c(input$fish.species.dropdown))%>%
+      group_by(sample,zone)%>%
+      summarise(mass.g=sum(mass.g))%>%
+      ungroup()%>%
+      mutate(mass.kg=mass.g/1000)
+    
+    scientific.name<-input$maxn.species.dropdown
+    
+    grob.sci <- grobTree(textGrob(as.character(scientific.name), x=0.01,  y=0.97, hjust=0,
+                                  gp=gpar(col="black", fontsize=13, fontface="italic")))
+    
+    
+    
+    if (input$fish.metric%in%c("maxn")) {
+    plot <- ggplot(maxn.per.sample, aes(x = zone,y=maxn, fill = zone)) + 
+      stat_summary(fun.y=mean, geom="bar",colour="black") +
+      stat_summary(fun.ymin = se.min, fun.ymax = se.max, geom = "errorbar", width = 0.1) +
+      geom_hline(aes(yintercept=0))+
+      xlab("Zone")+
+      ylab("Average abundance per stereo-BRUV \n(+/- SE)")+
+      # scale_fill_manual(values = c("Fished" = "grey", "No-take" = "#3c8dbc"))+
+      scale_y_continuous(expand = expand_scale(mult = c(0, .1)))+
+      annotation_custom(grob.sci)+ 
+      Theme1
+    } else if (input$fish.metric%in%c("length")){
+      plot <- ggplot(maxn.per.sample, aes(x = zone,y=maxn, fill = zone)) + 
+        stat_summary(fun.y=mean, geom="bar",colour="black") +
+        stat_summary(fun.ymin = se.min, fun.ymax = se.max, geom = "errorbar", width = 0.1) +
+        geom_hline(aes(yintercept=0))+
+        xlab("Zone")+
+        ylab("Average abundance per stereo-BRUV \n(+/- SE)")+
+        # scale_fill_manual(values = c("Fished" = "grey", "No-take" = "#3c8dbc"))+
+        scale_y_continuous(expand = expand_scale(mult = c(0, .1)))+
+        annotation_custom(grob.sci)+ 
+        Theme1
+    } else {
+      posn.d <- position_dodge(0.9)
+      
+      plot <- ggplot(mass.per.sample, aes(x = zone,y=mass.kg, fill = zone)) + 
+        stat_summary(fun.y=mean, geom="bar",colour="black",position="dodge") +
+        stat_summary(fun.ymin = se.min, fun.ymax = se.max, geom = "errorbar", width = 0.1,position=posn.d) +
+        geom_hline(aes(yintercept=0))+
+        xlab("Zone")+
+        ylab("Average biomass per stereo-BRUV\nKG (+/- SE)")+
+        # scale_fill_manual(values = c("Fished" = "grey", "No-take" = "#3c8dbc"))+
+        scale_y_continuous(expand = expand_scale(mult = c(0, .1)))+
+        annotation_custom(grob.sci)+ 
+        Theme1
+    }
+    plot
+      
+      
+  })
+  
+  output$fish.status <- renderPlot({
+    
+    maxn.per.sample<-maxn%>%
+      left_join(metadata.regions)%>%
+      left_join(master)%>%
+      dplyr::mutate(scientific=paste(genus," ",species," (",australian.common.name,")",sep=""))%>%
+      dplyr::filter(scientific%in%c(input$fish.species.dropdown))%>%
+      group_by(sample,status)%>%
+      summarise(maxn=sum(maxn))
+    
+    
+    mass.per.sample<-mass%>%
+      # dplyr::filter(mass.g>0)%>%
+      replace_na(list(mass.g=0))%>%
+      left_join(metadata.regions)%>%
+      left_join(master)%>%
+      dplyr::mutate(scientific=paste(genus," ",species," (",australian.common.name,")",sep=""))%>%
+      dplyr::filter(scientific%in%c(input$fish.species.dropdown))%>%
+      group_by(sample,status)%>%
+      summarise(mass.g=sum(mass.g))%>%
+      ungroup()%>%
+      mutate(mass.kg=mass.g/1000)
+    
+    scientific.name<-input$maxn.species.dropdown
+    
+    grob.sci <- grobTree(textGrob(as.character(scientific.name), x=0.01,  y=0.97, hjust=0,
+                                  gp=gpar(col="black", fontsize=13, fontface="italic")))
+    
+    if (input$fish.metric%in%c("maxn")) {
+      plot <- ggplot(maxn.per.sample, aes(x = status,y=maxn, fill = status)) + 
+        stat_summary(fun.y=mean, geom="bar",colour="black") +
+        stat_summary(fun.ymin = se.min, fun.ymax = se.max, geom = "errorbar", width = 0.1) +
+        geom_hline(aes(yintercept=0))+
+        xlab("Status")+
+        ylab("Average abundance per stereo-BRUV \n(+/- SE)")+
+        # scale_fill_manual(values = c("Fished" = "grey", "No-take" = "#3c8dbc"))+
+        scale_y_continuous(expand = expand_scale(mult = c(0, .1)))+
+        annotation_custom(grob.sci)+ 
+        Theme1
+    } else if (input$fish.metric%in%c("length")){
+      plot <- ggplot(maxn.per.sample, aes(x = status,y=maxn, fill = status)) + 
+        stat_summary(fun.y=mean, geom="bar",colour="black") +
+        stat_summary(fun.ymin = se.min, fun.ymax = se.max, geom = "errorbar", width = 0.1) +
+        geom_hline(aes(yintercept=0))+
+        xlab("Status")+
+        ylab("Average abundance per stereo-BRUV \n(+/- SE)")+
+        # scale_fill_manual(values = c("Fished" = "grey", "No-take" = "#3c8dbc"))+
+        scale_y_continuous(expand = expand_scale(mult = c(0, .1)))+
+        annotation_custom(grob.sci)+ 
+        Theme1
+    } else {
+      posn.d <- position_dodge(0.9)
+      
+      plot <- ggplot(mass.per.sample, aes(x = status,y=mass.kg, fill = status)) + 
+        stat_summary(fun.y=mean, geom="bar",colour="black",position="dodge") +
+        stat_summary(fun.ymin = se.min, fun.ymax = se.max, geom = "errorbar", width = 0.1,position=posn.d) +
+        geom_hline(aes(yintercept=0))+
+        xlab("Status")+
+        ylab("Average biomass per stereo-BRUV )\nKG (+/- SE)")+
+        # scale_fill_manual(values = c("Fished" = "grey", "No-take" = "#3c8dbc"))+
+        scale_y_continuous(expand = expand_scale(mult = c(0, .1)))+
+        annotation_custom(grob.sci)+ 
+        Theme1
+    }
+    plot
   })
   
   

@@ -7,6 +7,7 @@ library(forcats)
 library(fst)
 library(ggplot2)
 library(GlobalArchive)
+library(grid)
 library(htmlwidgets)
 library(leaflet)
 library(leaflet.minicharts)
@@ -14,6 +15,7 @@ library(leafpop)
 library(mapview)
 library(profvis)
 library(raster)
+library(readr)
 library(rgdal)
 library(rgeos)
 library(rmapshaper)
@@ -213,6 +215,7 @@ commonwealth.pal <- colorFactor(c("#f6c1d9", # Sanctuary
                          '#ccc1d6'# Special Purpose
 ), commonwealth.mp$zone)
 
+
 # To plot using IUCN ----
 # commonwealth.mp$ZoneIUCN <- str_replace_all(commonwealth.mp$ZoneIUCN,c("IA"="Ia"))
 
@@ -243,6 +246,39 @@ commonwealth.pal <- colorFactor(c("#f6c1d9", # Sanctuary
 #ccc1d6 - special purpose
 #f4eb0a - recreational 
 #b5e2ed - general use
+
+# Fish data for plots ----
+maxn <- read_csv("data/fish/2014-12_Geographe.Bay_stereoBRUVs.complete.maxn.csv",col_types = cols(.default = "c"))%>%
+  dplyr::mutate(maxn=as.numeric(maxn))%>%
+  dplyr::select(-c(latitude,longitude,status))%>%
+  glimpse()
+
+master<-read_csv("data/fish/australia.life.history_200805.csv")%>%
+  ga.clean.names()%>%
+  dplyr::select(family,genus,species,australian.common.name)%>%
+  glimpse()
+
+metadata.regions<-read_csv("data/fish/metadata.regions.csv",col_types = cols(.default = "c"))%>%glimpse()
+
+length <- read_csv("data/fish/2014-12_Geographe.Bay_stereoBRUVs.complete.length.csv",col_types = cols(.default = "c"))%>%
+  dplyr::mutate(number=as.numeric(number))%>%
+  dplyr::select(-c(latitude,longitude,status))%>%
+  glimpse()
+
+mass <- read_csv("data/fish/2014-12_Geographe.Bay_stereoBRUVs.complete.mass.csv",col_types = cols(.default = "c"))%>%
+  dplyr::mutate(number=as.numeric(number),mass.g=as.numeric(mass.g))%>%
+  dplyr::select(-c(latitude,longitude,status))%>%
+  # dplyr::filter(species=="auricularis")%>%
+  # left_join(metadata.regions)
+  glimpse()
+
+length(unique(mass$sample))
+
+
+test<-maxn%>%
+  left_join(.,metadata.regions)%>%
+  distinct(sample,zone,status)
+
 
 # Habitat data for plotting ----
 hab.data <- fst::read_fst("data/annotations/geographe/southwest.broad.fst") %>%
@@ -318,3 +354,38 @@ dbHeader <- dashboardHeader(title = "HabitatMAPPer",
                                           title = "Marine Biodiversity Hub", height = "50px"),
                                       style = "padding-top:10px; padding-bottom:10px;"),
                                     class = "dropdown"))
+
+
+# Theme for plotting ----
+Theme1 <-    theme_bw()+
+  theme( # use theme_get() to see available options
+    panel.grid = element_blank(), 
+    panel.border = element_blank(), 
+    axis.line = element_line(colour = "black"),
+    panel.grid.major = element_blank(), 
+    panel.grid.minor = element_blank(), 
+    legend.background = element_blank(),
+    legend.key = element_blank(), # switch off the rectangle around symbols in the legend
+    legend.text = element_text(size=12),
+    legend.title = element_blank(),
+    #legend.position = "top",
+    text=element_text(size=12),
+    strip.text.y = element_text(size = 12,angle = 0),
+    axis.title.x=element_text(vjust=0.3, size=12),
+    axis.title.y=element_text(vjust=0.6, angle=90, size=12),
+    axis.text.y=element_text(size=12),
+    axis.text.x=element_text(size=12),
+    axis.line.x=element_line(colour="black", size=0.5,linetype='solid'),
+    axis.line.y=element_line(colour="black", size=0.5,linetype='solid'),
+    strip.background = element_blank(),
+    plot.title = element_text(color="black", size=12, face="bold.italic"))
+
+theme_collapse<-theme(      ## the commented values are from theme_grey
+  panel.grid.major=element_line(colour = "white"), ## element_line(colour = "white")
+  panel.grid.minor=element_line(colour = "white", size = 0.25), 
+  plot.margin= grid::unit(c(0, 0, 0, 0), "in"))
+
+# functions for summarising data on plots ----
+se <- function(x) sd(x) / sqrt(length(x))
+se.min <- function(x) (mean(x)) - se(x)
+se.max <- function(x) (mean(x)) + se(x)
