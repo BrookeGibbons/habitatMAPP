@@ -116,11 +116,11 @@ dat <- bind_rows(models, gb.bruv.video, sw.bruv.image, fish, ning.bruv.video) # 
 
 # Make icon for images and videos----
 icon.habitat <- makeAwesomeIcon(icon = "image", library = "fa")
-icon.fish <- makeAwesomeIcon(icon = "fishes", library = "glyphicon", markerColor = "lightred", iconColor = "black")
+icon.fish <- makeAwesomeIcon(icon = "video", library = "fa", markerColor = "lightred", iconColor = "black")
 icon.models <- makeAwesomeIcon(icon = "laptop", library = "fa", markerColor = "orange", iconColor = "black")
 
 IconSet <- awesomeIconList(
-  "Fish highlights"   = makeAwesomeIcon(icon = "fishes", library = "glyphicon", markerColor = "lightred"),
+  "Fish highlights"   = makeAwesomeIcon(icon = "video", library = "fa", markerColor = "lightred"),
   "Habitat imagery" = makeAwesomeIcon(icon = "image", library = "fa"),
   "3D models" = makeAwesomeIcon(icon = "laptop", library = "fa", markerColor = "orange")
 )
@@ -268,15 +268,13 @@ metadata.regions<-read_csv("data/fish/metadata.regions.csv",col_types = cols(.de
 unique(metadata.regions$zone)
 
 length <- read_csv("data/fish/2014-12_Geographe.Bay_stereoBRUVs.complete.length.csv",col_types = cols(.default = "c"))%>%
-  dplyr::mutate(number=as.numeric(number))%>%
+  dplyr::mutate(number=as.numeric(number),length=as.numeric(length))%>%
   dplyr::select(-c(latitude,longitude,status))%>%
   glimpse()
 
 mass <- read_csv("data/fish/2014-12_Geographe.Bay_stereoBRUVs.complete.mass.csv",col_types = cols(.default = "c"))%>%
   dplyr::mutate(number=as.numeric(number),mass.g=as.numeric(mass.g))%>%
   dplyr::select(-c(latitude,longitude,status))%>%
-  # dplyr::filter(species=="auricularis")%>%
-  # left_join(metadata.regions)
   glimpse()
 
 length(unique(mass$sample))

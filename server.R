@@ -36,7 +36,7 @@ function(input, output, session) {
     
     # Having this in the global.R script breaks now - make icons on server side 
     icon.habitat <- makeAwesomeIcon(icon = "image", library = "fa")
-    icon.fish <- makeAwesomeIcon(icon = "fishes", library = "glyphicon", markerColor = "lightred", iconColor = "black")
+    icon.fish <- makeAwesomeIcon(icon = "video", library = "fa", markerColor = "lightred", iconColor = "black")
     icon.models <- makeAwesomeIcon(icon = "laptop", library = "fa", markerColor = "orange", iconColor = "black")
     
     lng1 <- min(map.dat$longitude)
@@ -429,7 +429,14 @@ function(input, output, session) {
       dplyr::ungroup()%>%
       dplyr::mutate(mass.kg=mass.g/1000)
     
-    scientific.name<-input$maxn.species.dropdown
+    length.data<-length%>%
+      dplyr::left_join(metadata.regions)%>%
+      dplyr::left_join(master)%>%
+      dplyr::mutate(scientific=paste(genus," ",species," (",australian.common.name,")",sep=""))%>%
+      dplyr::filter(scientific%in%c(input$fish.species.dropdown))%>%
+      glimpse()
+    
+    scientific.name<-input$fish.species.dropdown
     
     grob.sci <- grobTree(textGrob(as.character(scientific.name), x=0.01,  y=0.97, hjust=0,
                                   gp=gpar(col="black", fontsize=13, fontface="italic")))
@@ -443,21 +450,18 @@ function(input, output, session) {
       geom_hline(aes(yintercept=0))+
       xlab("Zone")+
       ylab("Average abundance per stereo-BRUV \n(+/- SE)")+
-      # scale_fill_manual(values = c("Fished" = "grey", "No-take" = "#3c8dbc"))+
       scale_y_continuous(expand = expand_scale(mult = c(0, .1)))+
       annotation_custom(grob.sci)+ 
       Theme1+
       scale_fill_manual(values=c("#63BC78", "#7bbc63", "#fff7a3","#b9e6fb","#ccc1d6","#A463BC"))
     
     } else if (input$fish.metric%in%c("length")){
-      plot <- ggplot(maxn.per.sample, aes(x = zone,y=maxn, fill = zone)) + 
-        stat_summary(fun.y=mean, geom="bar",colour="black") +
-        stat_summary(fun.ymin = se.min, fun.ymax = se.max, geom = "errorbar", width = 0.1) +
-        geom_hline(aes(yintercept=0))+
-        xlab("Zone")+
-        ylab("Average abundance per stereo-BRUV \n(+/- SE)")+
-        # scale_fill_manual(values = c("Fished" = "grey", "No-take" = "#3c8dbc"))+
+      plot <- ggplot(length.data,aes(x = factor(zone), y = length,  fill = zone, notch=FALSE, outlier.shape = NA),alpha=0.5) + 
+        stat_boxplot(geom='errorbar')+
+        geom_boxplot(outlier.color = NA, notch=FALSE)+
+        stat_summary(fun.y=mean, geom="point", shape=23, size=4)+ #this is adding the dot for the mean
         scale_y_continuous(expand = expand_scale(mult = c(0, .1)))+
+        xlab("Zone") + ylab("Length (mm)") +
         annotation_custom(grob.sci)+ 
         Theme1+
         scale_fill_manual(values=c("#63BC78", "#7bbc63", "#fff7a3","#b9e6fb","#ccc1d6","#A463BC"))
@@ -471,7 +475,6 @@ function(input, output, session) {
         geom_hline(aes(yintercept=0))+
         xlab("Zone")+
         ylab("Average biomass per stereo-BRUV\nKG (+/- SE)")+
-        # scale_fill_manual(values = c("Fished" = "grey", "No-take" = "#3c8dbc"))+
         scale_y_continuous(expand = expand_scale(mult = c(0, .1)))+
         annotation_custom(grob.sci)+ 
         Theme1+
@@ -480,7 +483,7 @@ function(input, output, session) {
     }
     plot
       
-      
+  # Status plots ----    
   })
   
   output$fish.status <- renderPlot({
@@ -495,7 +498,6 @@ function(input, output, session) {
     
     
     mass.per.sample<-mass%>%
-      # dplyr::filter(mass.g>0)%>%
       replace_na(list(mass.g=0))%>%
       dplyr::left_join(metadata.regions)%>%
       dplyr::left_join(master)%>%
@@ -506,11 +508,20 @@ function(input, output, session) {
       dplyr::ungroup()%>%
       dplyr::mutate(mass.kg=mass.g/1000)
     
-    scientific.name<-input$maxn.species.dropdown
+    
+    length.data<-length%>%
+      dplyr::left_join(metadata.regions)%>%
+      dplyr::left_join(master)%>%
+      dplyr::mutate(scientific=paste(genus," ",species," (",australian.common.name,")",sep=""))%>%
+      dplyr::filter(scientific%in%c(input$fish.species.dropdown))%>%
+      glimpse()
+    
+    
+    scientific.name<-input$fish.species.dropdown
     
     grob.sci <- grobTree(textGrob(as.character(scientific.name), x=0.01,  y=0.97, hjust=0,
                                   gp=gpar(col="black", fontsize=13, fontface="italic")))
-    
+
     if (input$fish.metric%in%c("maxn")) {
       plot <- ggplot(maxn.per.sample, aes(x = status,y=maxn, fill = status)) + 
         stat_summary(fun.y=mean, geom="bar",colour="black") +
@@ -518,24 +529,19 @@ function(input, output, session) {
         geom_hline(aes(yintercept=0))+
         xlab("Status")+
         ylab("Average abundance per stereo-BRUV \n(+/- SE)")+
-        # scale_fill_manual(values = c("Fished" = "grey", "No-take" = "#3c8dbc"))+
         scale_y_continuous(expand = expand_scale(mult = c(0, .1)))+
         annotation_custom(grob.sci)+ 
         Theme1+
-        scale_fill_manual(values=c("#7bbc63","#BC637B"))
+        scale_fill_manual(values = c("Fished" = "#BC637B", "No-take" = "#7bbc63"))
       
     } else if (input$fish.metric%in%c("length")){
-      plot <- ggplot(maxn.per.sample, aes(x = status,y=maxn, fill = status)) + 
-        stat_summary(fun.y=mean, geom="bar",colour="black") +
-        stat_summary(fun.ymin = se.min, fun.ymax = se.max, geom = "errorbar", width = 0.1) +
-        geom_hline(aes(yintercept=0))+
-        xlab("Status")+
-        ylab("Average abundance per stereo-BRUV \n(+/- SE)")+
-        # scale_fill_manual(values = c("Fished" = "grey", "No-take" = "#3c8dbc"))+
+      plot <-    ggplot(length.data,aes(x = length, fill=status), col = "black",alpha=0.5)+
+        geom_histogram(alpha=0.5, position="identity",col="black")+
+        xlab("Length (mm)") + ylab("Count") +
         scale_y_continuous(expand = expand_scale(mult = c(0, .1)))+
         annotation_custom(grob.sci)+ 
         Theme1+
-        scale_fill_manual(values=c("#7bbc63","#BC637B"))
+        scale_fill_manual(values = c("Fished" = "#BC637B", "No-take" = "#7bbc63"))
       
     } else {
       posn.d <- position_dodge(0.9)
@@ -546,11 +552,10 @@ function(input, output, session) {
         geom_hline(aes(yintercept=0))+
         xlab("Status")+
         ylab("Average biomass per stereo-BRUV )\nKG (+/- SE)")+
-        # scale_fill_manual(values = c("Fished" = "grey", "No-take" = "#3c8dbc"))+
         scale_y_continuous(expand = expand_scale(mult = c(0, .1)))+
         annotation_custom(grob.sci)+ 
         Theme1+
-        scale_fill_manual(values=c("#7bbc63","#BC637B"))
+        scale_fill_manual(values = c("Fished" = "#BC637B", "No-take" = "#7bbc63"))
     }
     plot
   })
