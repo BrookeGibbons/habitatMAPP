@@ -410,24 +410,24 @@ function(input, output, session) {
   output$fish.zones <- renderPlot({
     
     maxn.per.sample<-maxn%>%
-      left_join(metadata.regions)%>%
-      left_join(master)%>%
+      dplyr::left_join(metadata.regions)%>%
+      dplyr::left_join(master)%>%
       dplyr::mutate(scientific=paste(genus," ",species," (",australian.common.name,")",sep=""))%>%
       dplyr::filter(scientific%in%c(input$fish.species.dropdown))%>%
-      group_by(sample,zone)%>%
-      summarise(maxn=sum(maxn))
+      dplyr::group_by(sample,zone)%>%
+      dplyr::summarise(maxn=sum(maxn))
     
     mass.per.sample<-mass%>%
       # dplyr::filter(mass.g>0)%>%
       replace_na(list(mass.g=0))%>%
-      left_join(metadata.regions)%>%
-      left_join(master)%>%
+      dplyr::left_join(metadata.regions)%>%
+      dplyr::left_join(master)%>%
       dplyr::mutate(scientific=paste(genus," ",species," (",australian.common.name,")",sep=""))%>%
       dplyr::filter(scientific%in%c(input$fish.species.dropdown))%>%
-      group_by(sample,zone)%>%
-      summarise(mass.g=sum(mass.g))%>%
-      ungroup()%>%
-      mutate(mass.kg=mass.g/1000)
+      dplyr::group_by(sample,zone)%>%
+      dplyr::summarise(mass.g=sum(mass.g))%>%
+      dplyr::ungroup()%>%
+      dplyr::mutate(mass.kg=mass.g/1000)
     
     scientific.name<-input$maxn.species.dropdown
     
@@ -497,14 +497,14 @@ function(input, output, session) {
     mass.per.sample<-mass%>%
       # dplyr::filter(mass.g>0)%>%
       replace_na(list(mass.g=0))%>%
-      left_join(metadata.regions)%>%
-      left_join(master)%>%
+      dplyr::left_join(metadata.regions)%>%
+      dplyr::left_join(master)%>%
       dplyr::mutate(scientific=paste(genus," ",species," (",australian.common.name,")",sep=""))%>%
       dplyr::filter(scientific%in%c(input$fish.species.dropdown))%>%
-      group_by(sample,status)%>%
-      summarise(mass.g=sum(mass.g))%>%
-      ungroup()%>%
-      mutate(mass.kg=mass.g/1000)
+      dplyr::group_by(sample,status)%>%
+      dplyr::summarise(mass.g=sum(mass.g))%>%
+      dplyr::ungroup()%>%
+      dplyr::mutate(mass.kg=mass.g/1000)
     
     scientific.name<-input$maxn.species.dropdown
     
