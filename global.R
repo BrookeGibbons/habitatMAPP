@@ -288,6 +288,7 @@ test<-maxn%>%
 # Habitat data for plotting ----
 hab.data <- fst::read_fst("data/annotations/geographe/southwest.broad.fst") %>%
   as.data.frame() %>%
+  dplyr::filter(!campaignid%in%c("2007-03_Capes_MF_stereoBRUVs"))%>%
   dplyr::mutate(method=str_replace_all(.$campaignid, c("2007-03_Capes_MF_stereoBRUVs"="stereo-BRUV",
                                                        "2014-12_Geographe_Bay_stereoBRUVs"="stereo-BRUV")))%>%
   dplyr::mutate(marine.park="Geographe Bay")
