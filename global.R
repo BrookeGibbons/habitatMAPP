@@ -1,6 +1,6 @@
 # Load libraries ----
 # install.packages("shinybusy")
-
+# profvis(runApp())
 library(dplyr)
 library(DT)
 library(forcats)
@@ -250,39 +250,25 @@ commonwealth.pal <- colorFactor(c("#f6c1d9", # Sanctuary
 # Fish data for plots ----
 maxn <- read_csv("data/fish/2014-12_Geographe.Bay_stereoBRUVs.complete.maxn.csv",col_types = cols(.default = "c"))%>%
   dplyr::mutate(maxn=as.numeric(maxn))%>%
-  dplyr::select(-c(latitude,longitude,status))%>%
-  glimpse()
+  dplyr::select(-c(latitude,longitude,status))
 
 master<-read_csv("data/fish/australia.life.history_200805.csv")%>%
   ga.clean.names()%>%
-  dplyr::select(family,genus,species,australian.common.name)%>%
-  glimpse()
+  dplyr::select(family,genus,species,australian.common.name)
 
 metadata.regions<-read_csv("data/fish/metadata.regions.csv",col_types = cols(.default = "c"))%>%
   mutate(zone=str_replace_all(.$zone,c("Sanctuary"="Sanctuary (no-take)","Fished"="Outside Marine Park")))%>%
   mutate(zone=as.factor(zone))%>%
   mutate(zone=fct_relevel(zone, "Sanctuary (no-take)", "National Park (no-take)","Habitat Protection","Multiple Use","Special Purpose"))%>%
-  mutate(status=fct_relevel(status, "No-take", "Fished"))%>%
-  glimpse()
-
-unique(metadata.regions$zone)
+  mutate(status=fct_relevel(status, "No-take", "Fished"))
 
 length <- read_csv("data/fish/2014-12_Geographe.Bay_stereoBRUVs.complete.length.csv",col_types = cols(.default = "c"))%>%
   dplyr::mutate(number=as.numeric(number),length=as.numeric(length))%>%
-  dplyr::select(-c(latitude,longitude,status))%>%
-  glimpse()
+  dplyr::select(-c(latitude,longitude,status))
 
 mass <- read_csv("data/fish/2014-12_Geographe.Bay_stereoBRUVs.complete.mass.csv",col_types = cols(.default = "c"))%>%
   dplyr::mutate(number=as.numeric(number),mass.g=as.numeric(mass.g))%>%
-  dplyr::select(-c(latitude,longitude,status))%>%
-  glimpse()
-
-length(unique(mass$sample))
-
-
-test<-maxn%>%
-  left_join(.,metadata.regions)%>%
-  distinct(sample,zone,status)
+  dplyr::select(-c(latitude,longitude,status))
 
 
 # Habitat data for plotting ----
@@ -293,7 +279,7 @@ hab.data <- fst::read_fst("data/annotations/geographe/southwest.broad.fst") %>%
                                                        "2014-12_Geographe_Bay_stereoBRUVs"="stereo-BRUV")))%>%
   dplyr::mutate(marine.park="Geographe Bay")
 
-unique(hab.data$method)
+broad.colors <- c("#8491B4B2","#1B9E77","#66A61E","#E64B35B2","#7570B3","#D95F02","#E6AB02","black")
 
 # Legend function ----
 markerLegendHTML <- function(IconSet) {

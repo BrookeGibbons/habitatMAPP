@@ -180,8 +180,8 @@ function(input, output, session) {
   pie.data <- reactive({
     req(input$pie.marine.park, input$pie.method)
     
-    pie.dat <- hab.data %>%
-      dplyr::filter(marine.park%in%input$pie.marine.park)
+    pie.dat <- hab.data #%>%
+      #dplyr::filter(marine.park%in%input$pie.marine.park)
     
     if (input$pie.method == "all") {
       pie.dat
@@ -192,15 +192,14 @@ function(input, output, session) {
     }
   })
 
-  
   output$pie.leaflet <- renderLeaflet({
     
-    data<- pie.data() %>%
+    coords<-pie.data()
+    
+    data<- coords %>%
       dplyr::select(Consolidated,Macroalgae,Seagrasses,Sponges,Stony.corals,Turf.algae,Unconsolidated,Other)
   
     names(data) <- ga.capitalise(names(data))
-    
-    glimpse(data)
     
     #4eb570 green
     #d94c45 red
@@ -210,20 +209,11 @@ function(input, output, session) {
     #faef52 yellow
     #d99445 orange
     
-    broad.colors <- c("#8491B4B2","#1B9E77","#66A61E","#E64B35B2","#7570B3","#D95F02","#E6AB02","black")
-    
-    basemap <- leaflet(pie.data(), width = "100%", height = "800px") %>%
+    leaflet(coords, width = "100%", height = "800px") %>%
       fitBounds(~min(longitude), ~min(latitude), ~max(longitude), ~max(latitude))%>%
-      addTiles()
-    
-    # if (input$shapefile.pie==TRUE) {
-    #   basemap<-basemap%>%
-    #     addPolygons(data = new.shp,weight = 1,color = "black", fillOpacity = 0.5,fillColor = "#7bbc63",group = "group",label=new.shp$Name)
-    # }
-    
-    basemap %>%
+      addTiles()%>%
       addMinicharts(
-        pie.data()$longitude, pie.data()$latitude,
+        coords$longitude, coords$latitude,
         type = "pie",
         chartdata = data,
         colorPalette = broad.colors,
@@ -272,7 +262,7 @@ function(input, output, session) {
     habitat<-tidyr::gather(bubble.dat,"Consolidated","Macroalgae",
                     "Seagrasses","Sponges",
                     "Stony.corals","Turf.algae",
-                    "Unconsolidated","Other",key="habitat.type",value="percent.cover")%>%glimpse()
+                    "Unconsolidated","Other",key="habitat.type",value="percent.cover")
     
     habitat<-habitat%>%
       dplyr::mutate(habitat.type=ga.capitalise(habitat.type))%>%
@@ -390,9 +380,8 @@ function(input, output, session) {
   
   # Species dropdown -----
   output$fish.species.dropdown <- renderUI({
-    df<-maxn#%>%glimpse()
-    
-    options <- df %>%
+
+    options <- maxn %>%
       dplyr::mutate(genus=ifelse(genus%in%c(NA,"NA","Unknown","NANA"),as.character(family),as.character(genus)))%>%
       dplyr::group_by(family,genus,species)%>%
       dplyr::summarise(n=sum(maxn))%>%
@@ -433,8 +422,7 @@ function(input, output, session) {
       dplyr::left_join(metadata.regions)%>%
       dplyr::left_join(master)%>%
       dplyr::mutate(scientific=paste(genus," ",species," (",australian.common.name,")",sep=""))%>%
-      dplyr::filter(scientific%in%c(input$fish.species.dropdown))%>%
-      glimpse()
+      dplyr::filter(scientific%in%c(input$fish.species.dropdown))
     
     scientific.name<-input$fish.species.dropdown
     
@@ -513,8 +501,7 @@ function(input, output, session) {
       dplyr::left_join(metadata.regions)%>%
       dplyr::left_join(master)%>%
       dplyr::mutate(scientific=paste(genus," ",species," (",australian.common.name,")",sep=""))%>%
-      dplyr::filter(scientific%in%c(input$fish.species.dropdown))%>%
-      glimpse()
+      dplyr::filter(scientific%in%c(input$fish.species.dropdown))
     
     
     scientific.name<-input$fish.species.dropdown
