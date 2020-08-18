@@ -258,7 +258,14 @@ master<-read_csv("data/fish/australia.life.history_200805.csv")%>%
   dplyr::select(family,genus,species,australian.common.name)%>%
   glimpse()
 
-metadata.regions<-read_csv("data/fish/metadata.regions.csv",col_types = cols(.default = "c"))%>%glimpse()
+metadata.regions<-read_csv("data/fish/metadata.regions.csv",col_types = cols(.default = "c"))%>%
+  mutate(zone=str_replace_all(.$zone,c("Sanctuary"="Sanctuary (no-take)","Fished"="Outside Marine Park")))%>%
+  mutate(zone=as.factor(zone))%>%
+  mutate(zone=fct_relevel(zone, "Sanctuary (no-take)", "National Park (no-take)","Habitat Protection","Multiple Use","Special Purpose"))%>%
+  mutate(status=fct_relevel(status, "No-take", "Fished"))%>%
+  glimpse()
+
+unique(metadata.regions$zone)
 
 length <- read_csv("data/fish/2014-12_Geographe.Bay_stereoBRUVs.complete.length.csv",col_types = cols(.default = "c"))%>%
   dplyr::mutate(number=as.numeric(number))%>%

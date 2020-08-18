@@ -406,6 +406,7 @@ function(input, output, session) {
     create_dropdown("fish.species.dropdown", options, NULL)
   })
   
+  # Marine park zones plot -----
   output$fish.zones <- renderPlot({
     
     maxn.per.sample<-maxn%>%
@@ -433,9 +434,9 @@ function(input, output, session) {
     grob.sci <- grobTree(textGrob(as.character(scientific.name), x=0.01,  y=0.97, hjust=0,
                                   gp=gpar(col="black", fontsize=13, fontface="italic")))
     
-    
-    
+
     if (input$fish.metric%in%c("maxn")) {
+      
     plot <- ggplot(maxn.per.sample, aes(x = zone,y=maxn, fill = zone)) + 
       stat_summary(fun.y=mean, geom="bar",colour="black") +
       stat_summary(fun.ymin = se.min, fun.ymax = se.max, geom = "errorbar", width = 0.1) +
@@ -445,7 +446,9 @@ function(input, output, session) {
       # scale_fill_manual(values = c("Fished" = "grey", "No-take" = "#3c8dbc"))+
       scale_y_continuous(expand = expand_scale(mult = c(0, .1)))+
       annotation_custom(grob.sci)+ 
-      Theme1
+      Theme1+
+      scale_fill_manual(values=c("#63BC78", "#7bbc63", "#fff7a3","#b9e6fb","#ccc1d6","#A463BC"))
+    
     } else if (input$fish.metric%in%c("length")){
       plot <- ggplot(maxn.per.sample, aes(x = zone,y=maxn, fill = zone)) + 
         stat_summary(fun.y=mean, geom="bar",colour="black") +
@@ -456,7 +459,9 @@ function(input, output, session) {
         # scale_fill_manual(values = c("Fished" = "grey", "No-take" = "#3c8dbc"))+
         scale_y_continuous(expand = expand_scale(mult = c(0, .1)))+
         annotation_custom(grob.sci)+ 
-        Theme1
+        Theme1+
+        scale_fill_manual(values=c("#63BC78", "#7bbc63", "#fff7a3","#b9e6fb","#ccc1d6","#A463BC"))
+      
     } else {
       posn.d <- position_dodge(0.9)
       
@@ -469,7 +474,9 @@ function(input, output, session) {
         # scale_fill_manual(values = c("Fished" = "grey", "No-take" = "#3c8dbc"))+
         scale_y_continuous(expand = expand_scale(mult = c(0, .1)))+
         annotation_custom(grob.sci)+ 
-        Theme1
+        Theme1+
+        scale_fill_manual(values=c("#63BC78", "#7bbc63", "#fff7a3","#b9e6fb","#ccc1d6","#A463BC"))
+      
     }
     plot
       
@@ -514,7 +521,9 @@ function(input, output, session) {
         # scale_fill_manual(values = c("Fished" = "grey", "No-take" = "#3c8dbc"))+
         scale_y_continuous(expand = expand_scale(mult = c(0, .1)))+
         annotation_custom(grob.sci)+ 
-        Theme1
+        Theme1+
+        scale_fill_manual(values=c("#7bbc63","#BC637B"))
+      
     } else if (input$fish.metric%in%c("length")){
       plot <- ggplot(maxn.per.sample, aes(x = status,y=maxn, fill = status)) + 
         stat_summary(fun.y=mean, geom="bar",colour="black") +
@@ -525,7 +534,9 @@ function(input, output, session) {
         # scale_fill_manual(values = c("Fished" = "grey", "No-take" = "#3c8dbc"))+
         scale_y_continuous(expand = expand_scale(mult = c(0, .1)))+
         annotation_custom(grob.sci)+ 
-        Theme1
+        Theme1+
+        scale_fill_manual(values=c("#7bbc63","#BC637B"))
+      
     } else {
       posn.d <- position_dodge(0.9)
       
@@ -538,7 +549,8 @@ function(input, output, session) {
         # scale_fill_manual(values = c("Fished" = "grey", "No-take" = "#3c8dbc"))+
         scale_y_continuous(expand = expand_scale(mult = c(0, .1)))+
         annotation_custom(grob.sci)+ 
-        Theme1
+        Theme1+
+        scale_fill_manual(values=c("#7bbc63","#BC637B"))
     }
     plot
   })
