@@ -370,11 +370,7 @@ function(input, output, session) {
         scale_y_continuous(expand = expand_scale(mult = c(0, .1)))
     }
     
-    
     plot
-    
-    
-    
     
   })
   
@@ -469,6 +465,7 @@ function(input, output, session) {
         scale_fill_manual(values=c("#63BC78", "#7bbc63", "#fff7a3","#b9e6fb","#ccc1d6","#A463BC"))
       
     }
+    
     plot
       
   # Status plots ----    
@@ -546,6 +543,5 @@ function(input, output, session) {
     }
     plot
   })
-  
   
 }
