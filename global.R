@@ -319,11 +319,16 @@ html_legend <- "<div style='width: auto; height: 45px'> <div style='position: re
 <div style='width: auto; height: 45px'> <div style='position: relative; display: inline-block; width: 36px; height: 45px' <img src='images/marker_red.png'> </div> <p style='position: relative; top: 15px; display: inline-block; ' > BRUV </p> </div>
 <div style='width: auto; height: 45px'> <div style='position: relative; display: inline-block; width: 36px; height: 45px' <img src='images/marker_red.png'> </div> <p style='position: relative; top: 15px; display: inline-block; ' > BRUV </p> </div>"
 
-html_legend <- "<img src='https://unpkg.com/leaflet@1.3.1/dist/images/marker-icon.png'
-style='width:10px;height:10px;'>green<br/> 
+html_legend <- "<div style='padding: 10px; padding-bottom: 10px;'><h4 style='padding-top:0; padding-bottom:10px; margin: 0;'> Marker Legend </h4><br/>
 
-<img src='http://leafletjs.com/docs/images/leaf-red.png'  
-style='width:10px;height:10px;'>red"
+<img src='https://github.com/BrookeGibbons/habitatMAPP/blob/master/images/marker_red.png?raw=true'
+style='width:30px;height:35px;'> Fish highlights <br/> 
+
+<img src='https://github.com/BrookeGibbons/habitatMAPP/blob/master/images/marker_blue.png?raw=true'
+style='width:30px;height:35px;'> Habitat imagery<br/> 
+
+<img src='https://github.com/BrookeGibbons/habitatMAPP/blob/master/images/marker_green.png?raw=true'  
+style='width:30px;height:35px;'> 3D models"
 
 # Legend function ----
 markerLegendHTML <- function(IconSet) {
