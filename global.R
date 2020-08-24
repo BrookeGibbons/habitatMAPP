@@ -258,6 +258,7 @@ master<-read_csv("data/fish/australia.life.history_200824.csv")%>%
 
 family.common.names<-read_csv("data/fish/family.common.names.csv")%>%
   ga.clean.names()%>%
+  distinct()%>%
   dplyr::mutate(australian.family.common.name=paste("An unknown",australian.family.common.name,sep=" "))
 
 metadata.regions<-read_csv("data/fish/metadata.regions.csv",col_types = cols(.default = "c"))%>%
