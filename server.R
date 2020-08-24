@@ -295,6 +295,8 @@ function(input, output, session) {
       dplyr::mutate(habitat.type=ga.capitalise(habitat.type))%>%
       dplyr::mutate(habitat.type=str_replace_all(.$habitat.type, c("[^[:alnum:]]"=" ")))
     
+    unique(habitat$habitat.type)
+    
     habitat.bubble<-habitat%>%
       dplyr::filter(habitat.type==input$bubble.habitat)
     

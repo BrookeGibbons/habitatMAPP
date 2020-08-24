@@ -24,7 +24,8 @@ tagList(
                              # add_busy_gif(src = "https://github.com/UWAMEGFisheries/UWAMEGFisheries.github.io/blob/master/Blocks-1s-200px.gif", height = 70, width = 70),
                              selectInput("leaflet.marine.park", "", c("Geographe Marine Park" = "Geographe Bay",
                                                                      "Ningaloo Marine Park" = "Ningaloo",
-                                                                     "South-west Corner" = "South-west Corner"))),
+                                                                     "South-west Corner" = "South-west Corner",
+                                                                     "Dongara"="Dongara"))),
                          
                          # box(width = 3, title = "Map display options", status = "primary", solidHeader = TRUE,
                              # checkboxInput("leaflet.cluster", "Cluster fish highlights", TRUE)), # ,checkboxInput("leaflet.zoom", "Animated zoom", TRUE)
@@ -89,7 +90,7 @@ tagList(
                                                             "stereo-BRUV" = "stereo-BRUV",
                                                             "Towed video" = "Towed"))),
                          box(width = 3, title = "Select habitat type to plot", status = "primary", solidHeader = TRUE, 
-                             selectInput("bubble.habitat", "", c("Consolidated", "Macroalgae", "Seagrasses", "Sponges", "Stony.corals", "Turf.algae", "Unconsolidated", "Other"), multiple = FALSE)),
+                             selectInput("bubble.habitat", "", c("Consolidated", "Macroalgae", "Seagrasses", "Sponges", "Stony corals", "Turf algae", "Unconsolidated", "Other"), multiple = FALSE)),
                          box(width = 12, leafletOutput("bubble.leaflet", height = 625))
                 )
         ), # End tab item

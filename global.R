@@ -296,7 +296,15 @@ hab.data <- fst::read_fst("data/annotations/geographe/southwest.broad.fst") %>%
   dplyr::filter(!campaignid%in%c("2007-03_Capes_MF_stereoBRUVs"))%>%
   dplyr::mutate(method=str_replace_all(.$campaignid, c("2007-03_Capes_MF_stereoBRUVs"="stereo-BRUV",
                                                        "2014-12_Geographe_Bay_stereoBRUVs"="stereo-BRUV")))%>%
-  dplyr::mutate(marine.park="Geographe Bay")
+  dplyr::mutate(marine.park="Geographe Bay")%>%
+  tidyr::replace_na(list(Macroalgae=0,
+                         Turf.algae=0,
+                         Stony.corals=0,
+                         Unconsolidated=0,
+                         Seagrasses=0,
+                         Sponges=0,
+                         Consolidated=0,
+                         Other=0))
 
 broad.colors <- c("#8491B4B2","#1B9E77","#66A61E","#E64B35B2","#7570B3","#D95F02","#E6AB02","black")
 
