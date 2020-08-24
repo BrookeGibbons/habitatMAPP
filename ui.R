@@ -98,7 +98,7 @@ tagList(
                 fluidRow(box(width = 8, status = "primary", height = 800, title = "Acknowledgments",
                              "The Marine Biodiversity Hub is funded by the Australian Government's National Environmental Science Program", br(), br(),
                              "Ningaloo video footage from the baseline survey of deepwater fish in the Ningaloo Marine Park, Commonwealth waters. Funded by the Marine Biodiversity Hub and Parks Australia.", br(),br(),
-                             "Geographe Bay video footage from the .....",br(),br(),
+                             "Geographe Bay video footage from the National Envrionmental Research Programme, UWA and Curtin",br(),br(),
                              "South-west corner video footage from the baseline survey of deeperwater fish and habitats in the South-west Corner Marine Park, Commonwealth waters. Funded by the Marine Biodiversity Hub, Parks Australia and the University of Western Australia.
 "),
                          box(width = 4, status = "primary", height = 800,
