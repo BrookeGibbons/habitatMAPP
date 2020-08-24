@@ -6,6 +6,8 @@ library(DT)
 library(forcats)
 library(fst)
 library(ggplot2)
+library(devtools)
+install_github("UWAMEGFisheries/GlobalArchive") #to check for updates
 library(GlobalArchive)
 library(grid)
 library(htmlwidgets)
