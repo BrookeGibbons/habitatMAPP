@@ -39,6 +39,15 @@ function(input, output, session) {
     icon.fish <- makeAwesomeIcon(icon = "video", library = "fa", markerColor = "lightred", iconColor = "black")
     icon.models <- makeAwesomeIcon(icon = "laptop", library = "fa", markerColor = "orange", iconColor = "black")
     
+    icon.habitat <- iconList(blue = makeIcon("images/marker_blue.png", iconWidth = 30, iconHeight =40))
+    icon.fish <- iconList(blue = makeIcon("images/marker_red.png", iconWidth = 30, iconHeight =40))
+    icon.models <- iconList(blue = makeIcon("images/marker_green.png", iconWidth = 30, iconHeight =40))
+    
+    24:32
+    
+    24/8
+    
+    
     lng1 <- min(map.dat$longitude)
     lat1 <- min(map.dat$latitude)
     lng2 <- max(map.dat$longitude)
@@ -50,34 +59,34 @@ function(input, output, session) {
     leaflet <- leaflet() %>% 
       addProviderTiles('Esri.WorldImagery', group = "World Imagery") %>%
       addTiles(group = "Open Street Map")%>%
-      addControl(html = markerLegendHTML(IconSet = IconSet), position = "bottomleft")%>%
+      addControl(html = html_legend, position = "bottomleft")%>% # markerLegendHTML(IconSet = IconSet)
       # flyToBounds(lng1, lat1, lng2, lat2)%>%
       fitBounds(lng1, lat1, lng2, lat2)%>%
       
       # stereo-BRUV Images
-      addAwesomeMarkers(data=image.popups,
-                        icon = icon.habitat,
-                        clusterOptions = markerClusterOptions(iconCreateFunction =
-                        JS("
-                                          function(cluster) {
-                                             return new L.DivIcon({
-                                               html: '<div style=\"background-color:rgba(56,169,220,0.9)\"><span>' + cluster.getChildCount() + '</div><span>',
-                                               className: 'marker-cluster'
-                                             });
-                                           }")),
-                        group = "Habitat imagery",
-                        popup = image.popups$popup,
-                        popupOptions=c(closeButton = TRUE,minWidth = 0,maxWidth = 700))%>%
-      
+      # addMarkers(data=image.popups,
+      #                   icon = icon.habitat,
+      #                   clusterOptions = markerClusterOptions(iconCreateFunction =
+      #                   JS("
+      #                                     function(cluster) {
+      #                                        return new L.DivIcon({
+      #                                          html: '<div style=\"background-color:rgba(56,169,220,0.9)\"><span>' + cluster.getChildCount() + '</div><span>',
+      #                                          className: 'marker-cluster'
+      #                                        });
+      #                                      }")),
+      #                   group = "Habitat imagery",
+      #                   popup = image.popups$popup,
+      #                   popupOptions=c(closeButton = TRUE,minWidth = 0,maxWidth = 700))%>%
+      # 
       # stereo-BRUV habitat videos
-      addAwesomeMarkers(data=habitat.highlights.popups,
-                        icon = icon.habitat,
+      addMarkers(data=habitat.highlights.popups,
+                        icon = icon.habitat, 
                         popup = habitat.highlights.popups$popup,
                         clusterOptions = markerClusterOptions(iconCreateFunction =
                                                                 JS("
                                           function(cluster) {
                                              return new L.DivIcon({
-                                               html: '<div style=\"background-color:rgba(56,169,220,0.9)\"><span>' + cluster.getChildCount() + '</div><span>',
+                                               html: '<div style=\"background-color:rgba(78,189,220,0.9)\"><span>' + cluster.getChildCount() + '</div><span>',
                                                className: 'marker-cluster'
                                              });
                                            }")),
@@ -85,14 +94,14 @@ function(input, output, session) {
                         popupOptions=c(closeButton = TRUE,minWidth = 0,maxWidth = 700))%>%
       
       # stereo-BRUV fish videos
-      addAwesomeMarkers(data=fish.highlights.popups,
+      addMarkers(data=fish.highlights.popups,
                         icon = icon.fish,
                         popup = fish.highlights.popups$popup,
                         clusterOptions = markerClusterOptions(iconCreateFunction =
                                                                 JS("
                                           function(cluster) {
                                              return new L.DivIcon({
-                                               html: '<div style=\"background-color:rgba(255,137,121,0.9)\"><span>' + cluster.getChildCount() + '</div><span>',
+                                               html: '<div style=\"background-color:rgba(237,122,79,0.9)\"><span>' + cluster.getChildCount() + '</div><span>',
                                                className: 'marker-cluster'
                                              });
                                            }")),
@@ -100,14 +109,14 @@ function(input, output, session) {
                         popupOptions=c(closeButton = TRUE,minWidth = 0,maxWidth = 700))%>%
     
       # 3D models
-      addAwesomeMarkers(data=threed.model.popups,
+      addMarkers(data=threed.model.popups,
                         icon = icon.models,
                         popup = threed.model.popups$popup,
                         clusterOptions = markerClusterOptions(iconCreateFunction =
                                                                 JS("
                                           function(cluster) {
                                              return new L.DivIcon({
-                                               html: '<div style=\"background-color:rgba(239,146,46,0.9)\"><span>' + cluster.getChildCount() + '</div><span>',
+                                               html: '<div style=\"background-color:rgba(73,220,194,0.9)\"><span>' + cluster.getChildCount() + '</div><span>',
                                                className: 'marker-cluster'
                                              });
                                            }")),
@@ -360,26 +369,19 @@ function(input, output, session) {
   # Top species ----
   output$top.species <- renderPlot({
     maxn.sum<-maxn%>%
-      left_join(master)%>%
-      dplyr::mutate(scientific=paste(genus," ",species," (",australian.common.name,")",sep=""))%>%
       group_by(scientific)%>%
       dplyr::summarise(maxn=sum(maxn))%>%
       ungroup()%>%
       top_n(input$species.limit)
     
     length.sum<-length%>%
-      left_join(master)%>%
-      dplyr::mutate(scientific=paste(genus," ",species," (",australian.common.name,")",sep=""))%>%
       group_by(scientific)%>%
       dplyr::summarise(number=sum(number))%>%
       ungroup()%>%
       top_n(input$species.limit)
     
     mass.sum<-mass%>%
-      left_join(master)%>%
-      # dplyr::filter(mass.g>0)%>%
       replace_na(list(mass.g=0))%>%
-      dplyr::mutate(scientific=paste(genus," ",species," (",australian.common.name,")",sep=""))%>%
       group_by(scientific)%>%
       dplyr::summarise(mass.g=sum(mass.g))%>%
       ungroup()%>%
@@ -429,13 +431,9 @@ function(input, output, session) {
 
     options <- maxn %>%
       dplyr::mutate(genus=ifelse(genus%in%c(NA,"NA","Unknown","NANA"),as.character(family),as.character(genus)))%>%
-      dplyr::group_by(family,genus,species)%>%
+      dplyr::group_by(family,genus,species,scientific)%>%
       dplyr::summarise(n=sum(maxn))%>%
       arrange(-n)%>%
-      left_join(master)%>%
-      left_join(family.common.names)%>%
-      dplyr::mutate(common.name=if_else(is.na(australian.common.name),australian.family.common.name,australian.common.name))%>%
-      dplyr::mutate(scientific=paste(genus," ",species," (",common.name,")",sep=""))%>%
       distinct(scientific) %>%
       pull("scientific")
     
@@ -447,10 +445,6 @@ function(input, output, session) {
     
     maxn.per.sample<-maxn%>%
       dplyr::left_join(metadata.regions)%>%
-      dplyr::left_join(master)%>%
-      left_join(family.common.names)%>%
-      dplyr::mutate(common.name=if_else(is.na(australian.common.name),australian.family.common.name,australian.common.name))%>%
-      dplyr::mutate(scientific=paste(genus," ",species," (",common.name,")",sep=""))%>%
       dplyr::filter(scientific%in%c(input$fish.species.dropdown))%>%
       dplyr::group_by(sample,zone)%>%
       dplyr::summarise(maxn=sum(maxn))
@@ -459,10 +453,6 @@ function(input, output, session) {
       # dplyr::filter(mass.g>0)%>%
       replace_na(list(mass.g=0))%>%
       dplyr::left_join(metadata.regions)%>%
-      dplyr::left_join(master)%>%
-      left_join(family.common.names)%>%
-      dplyr::mutate(common.name=if_else(is.na(australian.common.name),australian.family.common.name,australian.common.name))%>%
-      dplyr::mutate(scientific=paste(genus," ",species," (",common.name,")",sep=""))%>%
       dplyr::filter(scientific%in%c(input$fish.species.dropdown))%>%
       dplyr::group_by(sample,zone)%>%
       dplyr::summarise(mass.g=sum(mass.g))%>%
@@ -471,10 +461,6 @@ function(input, output, session) {
     
     length.data<-length%>%
       dplyr::left_join(metadata.regions)%>%
-      dplyr::left_join(master)%>%
-      left_join(family.common.names)%>%
-      dplyr::mutate(common.name=if_else(is.na(australian.common.name),australian.family.common.name,australian.common.name))%>%
-      dplyr::mutate(scientific=paste(genus," ",species," (",common.name,")",sep=""))%>%
       dplyr::filter(scientific%in%c(input$fish.species.dropdown))
     
     scientific.name<-input$fish.species.dropdown
@@ -532,10 +518,6 @@ function(input, output, session) {
     
     maxn.per.sample<-maxn%>%
       left_join(metadata.regions)%>%
-      left_join(master)%>%
-      left_join(family.common.names)%>%
-      dplyr::mutate(common.name=if_else(is.na(australian.common.name),australian.family.common.name,australian.common.name))%>%
-      dplyr::mutate(scientific=paste(genus," ",species," (",common.name,")",sep=""))%>%
       dplyr::filter(scientific%in%c(input$fish.species.dropdown))%>%
       group_by(sample,status)%>%
       summarise(maxn=sum(maxn))
@@ -544,10 +526,6 @@ function(input, output, session) {
     mass.per.sample<-mass%>%
       replace_na(list(mass.g=0))%>%
       dplyr::left_join(metadata.regions)%>%
-      dplyr::left_join(master)%>%
-      left_join(family.common.names)%>%
-      dplyr::mutate(common.name=if_else(is.na(australian.common.name),australian.family.common.name,australian.common.name))%>%
-      dplyr::mutate(scientific=paste(genus," ",species," (",common.name,")",sep=""))%>%
       dplyr::filter(scientific%in%c(input$fish.species.dropdown))%>%
       dplyr::group_by(sample,status)%>%
       dplyr::summarise(mass.g=sum(mass.g))%>%
@@ -557,10 +535,6 @@ function(input, output, session) {
     
     length.data<-length%>%
       dplyr::left_join(metadata.regions)%>%
-      dplyr::left_join(master)%>%
-      left_join(family.common.names)%>%
-      dplyr::mutate(common.name=if_else(is.na(australian.common.name),australian.family.common.name,australian.common.name))%>%
-      dplyr::mutate(scientific=paste(genus," ",species," (",common.name,")",sep=""))%>%
       dplyr::filter(scientific%in%c(input$fish.species.dropdown))
     
     

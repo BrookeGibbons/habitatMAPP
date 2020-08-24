@@ -102,11 +102,11 @@ fish <- read.csv("data/zone-midpoints.csv", na.strings=c("NA","NaN", " ","")) %>
   dplyr::filter(!is.na(fish)) %>%
   dplyr::mutate(source = "fish.highlights")%>%
   dplyr::mutate(popup = paste("<center><h4>Fish observed in the ",
-                             marine.park,
-                             " Marine Park, in the ",
-                             zone,
-                             " Zone.</h4></center>","<br/>",
-                             fish, sep = ""))
+                              marine.park,
+                              " Marine Park, in the ",
+                              zone,
+                              " Zone.</h4></center>","<br/>",
+                              fish, sep = ""))
 
 models <- read.csv("data/3Dmodels.csv", na.strings=c("NA","NaN", " ","")) %>% 
   dplyr::mutate(source = "3d.model")
@@ -114,16 +114,7 @@ models <- read.csv("data/3Dmodels.csv", na.strings=c("NA","NaN", " ","")) %>%
 # Merge data together for leaflet map ----
 dat <- bind_rows(models, gb.bruv.video, sw.bruv.image, fish, ning.bruv.video) # fish, gb.bruv.image, ning.bruv.image, sw.bruv.image, 
 
-# Make icon for images and videos----
-icon.habitat <- makeAwesomeIcon(icon = "image", library = "fa")
-icon.fish <- makeAwesomeIcon(icon = "video", library = "fa", markerColor = "lightred", iconColor = "black")
-icon.models <- makeAwesomeIcon(icon = "laptop", library = "fa", markerColor = "orange", iconColor = "black")
 
-IconSet <- awesomeIconList(
-  "Fish highlights"   = makeAwesomeIcon(icon = "video", library = "fa", markerColor = "lightred"),
-  "Habitat imagery" = makeAwesomeIcon(icon = "image", library = "fa"),
-  "3D models" = makeAwesomeIcon(icon = "laptop", library = "fa", markerColor = "orange")
-)
 
 # Use this to only have one plot function for markers - can't use a filter to hide them individually :(
 # get.color <- function(dat) {
@@ -148,30 +139,30 @@ state.mp <- state.mp[!state.mp$ZONE_TYPE %in% c("Unassigned (IUCN IA)","Unassign
 # remove all alphanumeric to rename zone type
 state.mp$zone<-str_replace_all(state.mp$ZONE_TYPE, c("[^[:alnum:]]"=" "))
 state.mp$zone<-str_replace_all(state.mp$zone, c("Conservation Area  IUCN IA "="Conservation (no-take)",
-                                                          "General Use  IUCN II "="General Use",
-                                                          "General Use Area  IUCN VI "="General Use",
-                                                          "General Use Zone  IUCN II "="General Use",
-                                                          "Recreation Area  IUCN II "="Recreation",
-                                                          "Recreation Zone  IUCN II "="Recreation",
-                                                          "Sanctuary Area  IUCN VI "="Sanctuary (no-take)",
-                                                          "Sanctuary Zone  IUCN IA "="Sanctuary (no-take)",
-                                                          "Special Purpose Zone  Aquaculture   IUCN VI " ="Special Purpose",
-                                                          "Special Purpose Zone  Benthic Protection   IUCN IV "="Special Purpose",
-                                                          "Special Purpose Zone  Dugong Protection   IUCN IV "="Special Purpose", 
-                                                          "Special Purpose Zone  Habitat Protection   IUCN IV " ="Special Purpose",
-                                                          "Special Purpose Zone  Pearling   IUCN VI "  ="Special Purpose",    
-                                                          "Special Purpose Zone  Puerulus   IUCN IA "  ="Special Purpose", 
-                                                          "Special Purpose Zone  Scientific Reference   IUCN II "="Special Purpose",
-                                                          "Special Purpose Zone  Scientific Reference   IUCN VI "="Special Purpose",
-                                                          "Special Purpose Zone  Seagrass Protection   IUCN IV "="Special Purpose", 
-                                                          "Special Purpose Zone  Shore Based Activities   IUCN II "="Special Purpose",
-                                                          "Special Purpose Zone  Wildlife Conservation   IUCN VI "="Special Purpose",
-                                                          "Special Purpose Zone  Wildlife Viewing and Protection   IUCN IV "="Special Purpose",
-                                                          "Special Purpose Zone 1  Shore based Activities   IUCN II "="Special Purpose",       
-                                                          "Special Purpose Zone 2  Shore based Activities   IUCN II "="Special Purpose",       
-                                                          "Special Purpose Zone 3  Shore based Activities   IUCN II " ="Special Purpose",      
-                                                          "Special Purpose Zone 3  Shore based Activities   IUCN VI " ="Special Purpose",      
-                                                          "Special Purpose Zone 4  Shore based Activities   IUCN II "="Special Purpose"))
+                                                "General Use  IUCN II "="General Use",
+                                                "General Use Area  IUCN VI "="General Use",
+                                                "General Use Zone  IUCN II "="General Use",
+                                                "Recreation Area  IUCN II "="Recreation",
+                                                "Recreation Zone  IUCN II "="Recreation",
+                                                "Sanctuary Area  IUCN VI "="Sanctuary (no-take)",
+                                                "Sanctuary Zone  IUCN IA "="Sanctuary (no-take)",
+                                                "Special Purpose Zone  Aquaculture   IUCN VI " ="Special Purpose",
+                                                "Special Purpose Zone  Benthic Protection   IUCN IV "="Special Purpose",
+                                                "Special Purpose Zone  Dugong Protection   IUCN IV "="Special Purpose", 
+                                                "Special Purpose Zone  Habitat Protection   IUCN IV " ="Special Purpose",
+                                                "Special Purpose Zone  Pearling   IUCN VI "  ="Special Purpose",    
+                                                "Special Purpose Zone  Puerulus   IUCN IA "  ="Special Purpose", 
+                                                "Special Purpose Zone  Scientific Reference   IUCN II "="Special Purpose",
+                                                "Special Purpose Zone  Scientific Reference   IUCN VI "="Special Purpose",
+                                                "Special Purpose Zone  Seagrass Protection   IUCN IV "="Special Purpose", 
+                                                "Special Purpose Zone  Shore Based Activities   IUCN II "="Special Purpose",
+                                                "Special Purpose Zone  Wildlife Conservation   IUCN VI "="Special Purpose",
+                                                "Special Purpose Zone  Wildlife Viewing and Protection   IUCN IV "="Special Purpose",
+                                                "Special Purpose Zone 1  Shore based Activities   IUCN II "="Special Purpose",       
+                                                "Special Purpose Zone 2  Shore based Activities   IUCN II "="Special Purpose",       
+                                                "Special Purpose Zone 3  Shore based Activities   IUCN II " ="Special Purpose",      
+                                                "Special Purpose Zone 3  Shore based Activities   IUCN VI " ="Special Purpose",      
+                                                "Special Purpose Zone 4  Shore based Activities   IUCN II "="Special Purpose"))
 
 # unique(state.mp$zone)
 
@@ -180,14 +171,14 @@ state.mp$zone<-str_replace_all(state.mp$zone, c("Conservation Area  IUCN IA "="C
 commonwealth.mp <- readOGR("data/spatial/AustraliaNetworkMarineParks.shp")
 commonwealth.mp$zone<-str_replace_all(commonwealth.mp$ZoneName, c("[^[:alnum:]]"=" "))
 commonwealth.mp$zone<-str_replace_all(commonwealth.mp$zone, c(" Zone"="",
-                                                                      "Habitat Protection  Lord Howe " = "Habitat Protection",
-                                                                      "Habitat Protection  Reefs " = "Habitat Protection",
-                                                                      "Marine National Park" = "National Park",
-                                                                      "National Park" = "National Park (no-take)",
-                                                                      "Special Purpose  Mining Exclusion " = "Special Purpose",
-                                                                      "Special Purpose  Norfolk " = "Special Purpose",
-                                                                      "Special Purpose  Trawl " = "Special Purpose",
-                                                                      "Sanctuary" = "Sanctuary (no-take)"))
+                                                              "Habitat Protection  Lord Howe " = "Habitat Protection",
+                                                              "Habitat Protection  Reefs " = "Habitat Protection",
+                                                              "Marine National Park" = "National Park",
+                                                              "National Park" = "National Park (no-take)",
+                                                              "Special Purpose  Mining Exclusion " = "Special Purpose",
+                                                              "Special Purpose  Norfolk " = "Special Purpose",
+                                                              "Special Purpose  Trawl " = "Special Purpose",
+                                                              "Sanctuary" = "Sanctuary (no-take)"))
 unique(commonwealth.mp$zone)
 
 
@@ -208,11 +199,11 @@ commonwealth.mp$zone <- as.factor(commonwealth.mp$zone)
 commonwealth.mp$zone<-fct_relevel(commonwealth.mp$zone, "Sanctuary (no-take)", "National Park (no-take)", "Recreational Use", "Habitat Protection", "Multiple Use", "Special Purpose")
 
 commonwealth.pal <- colorFactor(c("#f6c1d9", # Sanctuary
-                         "#7bbc63", # National Park
-                         "#fdb930", # Recreational Use
-                         "#fff7a3", # Habitat Protection
-                         '#b9e6fb', # Multiple Use
-                         '#ccc1d6'# Special Purpose
+                                  "#7bbc63", # National Park
+                                  "#fdb930", # Recreational Use
+                                  "#fff7a3", # Habitat Protection
+                                  '#b9e6fb', # Multiple Use
+                                  '#ccc1d6'# Special Purpose
 ), commonwealth.mp$zone)
 
 
@@ -248,10 +239,6 @@ commonwealth.pal <- colorFactor(c("#f6c1d9", # Sanctuary
 #b5e2ed - general use
 
 # Fish data for plots ----
-maxn <- read_csv("data/fish/2014-12_Geographe.Bay_stereoBRUVs.complete.maxn.csv",col_types = cols(.default = "c"))%>%
-  dplyr::mutate(maxn=as.numeric(maxn))%>%
-  dplyr::select(-c(latitude,longitude,status))
-
 master<-read_csv("data/fish/australia.life.history_200824.csv")%>%
   ga.clean.names()%>%
   dplyr::select(family,genus,species,australian.common.name)
@@ -259,7 +246,22 @@ master<-read_csv("data/fish/australia.life.history_200824.csv")%>%
 family.common.names<-read_csv("data/fish/family.common.names.csv")%>%
   ga.clean.names()%>%
   distinct()%>%
-  dplyr::mutate(australian.family.common.name=paste("An unknown",australian.family.common.name,sep=" "))
+  dplyr::mutate(family.common.name=paste("An unknown",australian.family.common.name,sep=" "))%>%
+  dplyr::select(family,family.common.name)
+
+lumped.common.names<-read_csv("data/fish/lumped.common.names.csv")%>%
+  ga.clean.names()%>%
+  distinct()
+
+maxn <- read_csv("data/fish/2014-12_Geographe.Bay_stereoBRUVs.complete.maxn.csv",col_types = cols(.default = "c"))%>%
+  dplyr::mutate(maxn=as.numeric(maxn))%>%
+  dplyr::select(-c(latitude,longitude,status))%>%
+  left_join(master)%>%
+  left_join(family.common.names)%>%
+  left_join(lumped.common.names)%>%
+  dplyr::mutate(common.name=if_else(is.na(australian.common.name),family.common.name,australian.common.name))%>%
+  dplyr::mutate(common.name=if_else(!is.na(lumped.common.name),lumped.common.name,common.name))%>%
+  dplyr::mutate(scientific=paste(genus," ",species," (",common.name,")",sep=""))
 
 metadata.regions<-read_csv("data/fish/metadata.regions.csv",col_types = cols(.default = "c"))%>%
   mutate(zone=str_replace_all(.$zone,c("Sanctuary"="Sanctuary (no-take)","Fished"="Outside Marine Park")))%>%
@@ -269,11 +271,23 @@ metadata.regions<-read_csv("data/fish/metadata.regions.csv",col_types = cols(.de
 
 length <- read_csv("data/fish/2014-12_Geographe.Bay_stereoBRUVs.complete.length.csv",col_types = cols(.default = "c"))%>%
   dplyr::mutate(number=as.numeric(number),length=as.numeric(length))%>%
-  dplyr::select(-c(latitude,longitude,status))
+  dplyr::select(-c(latitude,longitude,status))%>%
+  left_join(master)%>%
+  left_join(family.common.names)%>%
+  left_join(lumped.common.names)%>%
+  dplyr::mutate(common.name=if_else(is.na(australian.common.name),family.common.name,australian.common.name))%>%
+  dplyr::mutate(common.name=if_else(!is.na(lumped.common.name),lumped.common.name,common.name))%>%
+  dplyr::mutate(scientific=paste(genus," ",species," (",common.name,")",sep=""))
 
 mass <- read_csv("data/fish/2014-12_Geographe.Bay_stereoBRUVs.complete.mass.csv",col_types = cols(.default = "c"))%>%
   dplyr::mutate(number=as.numeric(number),mass.g=as.numeric(mass.g))%>%
-  dplyr::select(-c(latitude,longitude,status))
+  dplyr::select(-c(latitude,longitude,status))%>%
+  left_join(master)%>%
+  left_join(family.common.names)%>%
+  left_join(lumped.common.names)%>%
+  dplyr::mutate(common.name=if_else(is.na(australian.common.name),family.common.name,australian.common.name))%>%
+  dplyr::mutate(common.name=if_else(!is.na(lumped.common.name),lumped.common.name,common.name))%>%
+  dplyr::mutate(scientific=paste(genus," ",species," (",common.name,")",sep=""))
 
 
 # Habitat data for plotting ----
@@ -286,6 +300,31 @@ hab.data <- fst::read_fst("data/annotations/geographe/southwest.broad.fst") %>%
 
 broad.colors <- c("#8491B4B2","#1B9E77","#66A61E","#E64B35B2","#7570B3","#D95F02","#E6AB02","black")
 
+# Make icon for images and videos----
+icon.habitat <- makeAwesomeIcon(icon = "image", library = "fa")
+icon.fish <- makeAwesomeIcon(icon = "video", library = "fa", markerColor = "lightred", iconColor = "black")
+icon.models <- makeAwesomeIcon(icon = "laptop", library = "fa", markerColor = "orange", iconColor = "black")
+
+IconSet <- awesomeIconList(
+  "Fish highlights"   = makeAwesomeIcon(icon = "video", library = "fa", markerColor = "lightred"),
+  "Habitat imagery" = makeAwesomeIcon(icon = "image", library = "fa"),
+  "3D models" = makeAwesomeIcon(icon = "laptop", library = "fa", markerColor = "orange")
+)
+
+testIcons <- iconList(blue = makeIcon("images/marker_red.png", iconWidth = 24, iconHeight =32),
+                       green = makeIcon("images/marker_green.png", iconWidth = 24, iconHeight =32),
+                       orange = makeIcon("images/marker_blue.png", iconWidth = 24, iconHeight =32))
+
+html_legend <- "<div style='width: auto; height: 45px'> <div style='position: relative; display: inline-block; width: 36px; height: 45px' <img src='images/marker_red.png'> </div> <p style='position: relative; top: 15px; display: inline-block; ' > BRUV </p> </div>
+<div style='width: auto; height: 45px'> <div style='position: relative; display: inline-block; width: 36px; height: 45px' <img src='images/marker_red.png'> </div> <p style='position: relative; top: 15px; display: inline-block; ' > BRUV </p> </div>
+<div style='width: auto; height: 45px'> <div style='position: relative; display: inline-block; width: 36px; height: 45px' <img src='images/marker_red.png'> </div> <p style='position: relative; top: 15px; display: inline-block; ' > BRUV </p> </div>"
+
+html_legend <- "<img src='https://unpkg.com/leaflet@1.3.1/dist/images/marker-icon.png'
+style='width:10px;height:10px;'>green<br/> 
+
+<img src='http://leafletjs.com/docs/images/leaf-red.png'  
+style='width:10px;height:10px;'>red"
+
 # Legend function ----
 markerLegendHTML <- function(IconSet) {
   # container div:
@@ -294,14 +333,14 @@ markerLegendHTML <- function(IconSet) {
   n <- 1
   # add each icon for font-awesome icons icons:
   for (Icon in IconSet) {
-    if (Icon[["library"]] == "fa") {
+    # if (Icon[["library"]] == "fa") {
       legendHtml<- paste0(legendHtml, "<div style='width: auto; height: 45px'>",
                           "<div style='position: relative; display: inline-block; width: 36px; height: 45px' class='awesome-marker-icon-",Icon[["markerColor"]]," awesome-marker'>",
                           "<i style='margin-left: 3px; margin-top: 11px; 'class= 'fa fa-",Icon[["icon"]]," fa-inverse'></i>",
                           "</div>",
                           "<p style='position: relative; top: 15px; display: inline-block; ' >", names(IconSet)[n] ,"</p>",
                           "</div>")    
-    }
+    # }
     n<- n + 1
   }
   paste0(legendHtml, "</div>")
@@ -340,7 +379,7 @@ dbHeader <- dashboardHeader()
 dbHeader$children[[2]]$children <-  tags$a(href='http://mycompanyishere.com',
                                            tags$img(src='https://www.nespmarine.edu.au/sites/default/themes/nespmarine/logo.png',height='60',width='200'))
 
-dbHeader <- dashboardHeader(title = "HabitatMAPPer",
+dbHeader <- dashboardHeader(title = "marine mapper",
                             tags$li(a(href = 'https://marineecology.io/',
                                       img(src = 'https://github.com/UWAMEGFisheries/UWAMEGFisheries.github.io/blob/master/images/MEG-white.png?raw=true',
                                           title = "Marine Ecology Group", height = "50px"),
