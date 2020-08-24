@@ -15,6 +15,7 @@ function(input, output, session) {
       selected = selected
     )
   }
+  
 # Filter data to selected marine park (should make plotting faster) ----
   map.dat <- reactive({
     req(input$leaflet.marine.park)
@@ -25,7 +26,6 @@ function(input, output, session) {
 
 # Create leaflet explore map ---- 
   output$imagery.leaflet <- renderLeaflet({
-    # req(input$leaflet.zoom)
     
     map.dat <- map.dat() # call in filtered data
     
@@ -141,11 +141,6 @@ function(input, output, session) {
                 title="Australian Marine Park Zones",
                 position = "bottomright", group = "Australian Marine Parks")%>%
       
-      # # Add a legend
-      # addLegend(pal = testpal, values = commonwealth.mp$IUCN, opacity = 1,
-      #           title="IUCN Protected Area Category",
-      #           position = "bottomright", group = "State marine parks")%>%
-      
       addLayersControl(
         baseGroups = c("World Imagery","Open Street Map"),
         overlayGroups = c("Fish highlights",
@@ -154,25 +149,9 @@ function(input, output, session) {
                           "State Marine Parks",
                           "Australian Marine Parks"), options = layersControlOptions(collapsed = FALSE))%>% 
       hideGroup("State Marine Parks")%>%
-      hideGroup("Australian Marine Parks")#%>%
-      #hideGroup("Habitat imagery")
-    
-    
-    # zoom.method(lng1, lat1, lng2, lat2) %>%
-      # flyToBounds(lng1, lat1, lng2, lat2)%>%
-      # fitBounds(lng1, lat1, lng2, lat2)%>%
-        # 
-        # if (input$leaflet.zoom%in%TRUE) {
-        #   leaflet <- leaflet %>% flyToBounds(lng1, lat1, lng2, lat2)
-        # } else {
-        #   leaflet <- leaflet %>% fitBounds(lng1, lat1, lng2, lat2)
-        # }
-        # 
-    
-    # Sys.sleep(5)
-    # hide_loading(elem = "leafletBusy")
+      hideGroup("Australian Marine Parks")
+
     return(leaflet)
-    # leaflet
     
   })
   
@@ -214,15 +193,20 @@ function(input, output, session) {
       # addTiles()%>%
       addProviderTiles('Esri.WorldImagery', group = "World Imagery") %>%
       addTiles(group = "Open Street Map")%>%
+      addMapPane("State Marine Parks", zIndex = 300) %>%
+      addMapPane("Australian Marine Parks", zIndex = 300) %>%
+      
       # Ngari Capes Marine Parks
       addPolygons(data = ngari.mp, weight = 1, color = "black", 
                   fillOpacity = 0.8, fillColor = "#7bbc63", 
-                  group = "State Marine Parks", label=ngari.mp$Name)%>%
+                  group = "State Marine Parks", label=ngari.mp$Name,
+                  options = pathOptions(pane = "State Marine Parks")) %>%
       
       # State Marine Parks
       addPolygons(data = state.mp, weight = 1, color = "black", 
                   fillOpacity = 0.8, fillColor = ~state.pal(zone), 
-                  group = "State Marine Parks", label=state.mp$COMMENTS)%>%
+                  group = "State Marine Parks", label=state.mp$COMMENTS,
+                  options = pathOptions(pane = "State Marine Parks")) %>%
       
       # Add a legend
       addLegend(pal = state.pal, values = state.mp$zone, opacity = 1,
@@ -232,7 +216,8 @@ function(input, output, session) {
       # Commonwealth Marine Parks
       addPolygons(data = commonwealth.mp, weight = 1, color = "black", 
                   fillOpacity = 0.8, fillColor = ~commonwealth.pal(zone), 
-                  group = "Australian Marine Parks", label=commonwealth.mp$ZoneName)%>%
+                  group = "Australian Marine Parks", label=commonwealth.mp$ZoneName,
+                  options = pathOptions(pane = "Australian Marine Parks")) %>%
       
       # Add a legend
       addLegend(pal = commonwealth.pal, values = commonwealth.mp$zone, opacity = 1,
@@ -240,12 +225,11 @@ function(input, output, session) {
                 position = "bottomright", group = "Australian Marine Parks")%>%
       
       addLayersControl(baseGroups = c("World Imagery","Open Street Map"),
-                       overlayGroups = c("State Marine Parks",
+                       overlayGroups = c("Pie Charts",
+                                         "State Marine Parks",
                                          "Australian Marine Parks"), options = layersControlOptions(collapsed = FALSE))%>% 
       hideGroup("State Marine Parks")%>%
       hideGroup("Australian Marine Parks")%>%
-      
-      
       addMinicharts(
         coords$longitude, coords$latitude,
         type = "pie",
@@ -308,15 +292,20 @@ function(input, output, session) {
     map <- leaflet(habitat.bubble) %>%
       addProviderTiles('Esri.WorldImagery', group = "World Imagery") %>%
       addTiles(group = "Open Street Map")%>%
+      addMapPane("State Marine Parks", zIndex = 300) %>%
+      addMapPane("Australian Marine Parks", zIndex = 300) %>%
+      
       # Ngari Capes Marine Parks
       addPolygons(data = ngari.mp, weight = 1, color = "black", 
                   fillOpacity = 0.8, fillColor = "#7bbc63", 
-                  group = "State Marine Parks", label=ngari.mp$Name)%>%
+                  group = "State Marine Parks", label=ngari.mp$Name,
+                  options = pathOptions(pane = "State Marine Parks")) %>%
       
       # State Marine Parks
       addPolygons(data = state.mp, weight = 1, color = "black", 
                   fillOpacity = 0.8, fillColor = ~state.pal(zone), 
-                  group = "State Marine Parks", label=state.mp$COMMENTS)%>%
+                  group = "State Marine Parks", label=state.mp$COMMENTS,
+                  options = pathOptions(pane = "State Marine Parks")) %>%
       
       # Add a legend
       addLegend(pal = state.pal, values = state.mp$zone, opacity = 1,
@@ -326,7 +315,8 @@ function(input, output, session) {
       # Commonwealth Marine Parks
       addPolygons(data = commonwealth.mp, weight = 1, color = "black", 
                   fillOpacity = 0.8, fillColor = ~commonwealth.pal(zone), 
-                  group = "Australian Marine Parks", label=commonwealth.mp$ZoneName)%>%
+                  group = "Australian Marine Parks", label=commonwealth.mp$ZoneName,
+                  options = pathOptions(pane = "Australian Marine Parks")) %>%
       
       # Add a legend
       addLegend(pal = commonwealth.pal, values = commonwealth.mp$zone, opacity = 1,
@@ -340,11 +330,6 @@ function(input, output, session) {
       hideGroup("Australian Marine Parks")%>%
       fitBounds(~min(longitude), ~min(latitude), ~max(longitude), ~max(latitude))
     
-    # if (input$shapefile.bubble==TRUE) {
-    #   map<-map%>%
-    #     addPolygons(data = new.shp,weight = 1,color = "black", fillOpacity = 0.5,fillColor = "#7bbc63",group = "group",label=new.shp$Name)
-    # }
-    
     overzero <- habitat.bubble%>%
       filter(percent.cover > 0)
     
@@ -356,7 +341,7 @@ function(input, output, session) {
         addCircleMarkers(
           data = overzero, lat = ~ latitude, lng = ~ longitude,
           radius = ~((percent.cover/max(percent.cover))*15), fillOpacity = 0.5, stroke = FALSE,
-          label = ~as.character(percent.cover)
+          label = ~as.character(percent.cover), group = "Bubbles"
         )
     }
     if (nrow(equalzero)) {
@@ -364,7 +349,7 @@ function(input, output, session) {
         addCircleMarkers(
           data = equalzero, lat = ~ latitude, lng = ~ longitude,
           radius = 2, fillOpacity = 0.5, color = "white",stroke = FALSE,
-          label = ~as.character(percent.cover)
+          label = ~as.character(percent.cover), group = "Bubbles"
         )
     }
     map
@@ -448,8 +433,9 @@ function(input, output, session) {
       dplyr::summarise(n=sum(maxn))%>%
       arrange(-n)%>%
       left_join(master)%>%
-      dplyr::mutate(scientific=paste(genus," ",species," (",australian.common.name,")",sep=""))%>%
-      # dplyr::mutate(scientific=paste(genus," ",species,sep=""))%>%
+      left_join(family.common.names)%>%
+      dplyr::mutate(common.name=if_else(is.na(australian.common.name),australian.family.common.name,australian.common.name))%>%
+      dplyr::mutate(scientific=paste(genus," ",species," (",common.name,")",sep=""))%>%
       distinct(scientific) %>%
       pull("scientific")
     
@@ -462,7 +448,9 @@ function(input, output, session) {
     maxn.per.sample<-maxn%>%
       dplyr::left_join(metadata.regions)%>%
       dplyr::left_join(master)%>%
-      dplyr::mutate(scientific=paste(genus," ",species," (",australian.common.name,")",sep=""))%>%
+      left_join(family.common.names)%>%
+      dplyr::mutate(common.name=if_else(is.na(australian.common.name),australian.family.common.name,australian.common.name))%>%
+      dplyr::mutate(scientific=paste(genus," ",species," (",common.name,")",sep=""))%>%
       dplyr::filter(scientific%in%c(input$fish.species.dropdown))%>%
       dplyr::group_by(sample,zone)%>%
       dplyr::summarise(maxn=sum(maxn))
@@ -472,7 +460,9 @@ function(input, output, session) {
       replace_na(list(mass.g=0))%>%
       dplyr::left_join(metadata.regions)%>%
       dplyr::left_join(master)%>%
-      dplyr::mutate(scientific=paste(genus," ",species," (",australian.common.name,")",sep=""))%>%
+      left_join(family.common.names)%>%
+      dplyr::mutate(common.name=if_else(is.na(australian.common.name),australian.family.common.name,australian.common.name))%>%
+      dplyr::mutate(scientific=paste(genus," ",species," (",common.name,")",sep=""))%>%
       dplyr::filter(scientific%in%c(input$fish.species.dropdown))%>%
       dplyr::group_by(sample,zone)%>%
       dplyr::summarise(mass.g=sum(mass.g))%>%
@@ -482,7 +472,9 @@ function(input, output, session) {
     length.data<-length%>%
       dplyr::left_join(metadata.regions)%>%
       dplyr::left_join(master)%>%
-      dplyr::mutate(scientific=paste(genus," ",species," (",australian.common.name,")",sep=""))%>%
+      left_join(family.common.names)%>%
+      dplyr::mutate(common.name=if_else(is.na(australian.common.name),australian.family.common.name,australian.common.name))%>%
+      dplyr::mutate(scientific=paste(genus," ",species," (",common.name,")",sep=""))%>%
       dplyr::filter(scientific%in%c(input$fish.species.dropdown))
     
     scientific.name<-input$fish.species.dropdown
@@ -541,7 +533,9 @@ function(input, output, session) {
     maxn.per.sample<-maxn%>%
       left_join(metadata.regions)%>%
       left_join(master)%>%
-      dplyr::mutate(scientific=paste(genus," ",species," (",australian.common.name,")",sep=""))%>%
+      left_join(family.common.names)%>%
+      dplyr::mutate(common.name=if_else(is.na(australian.common.name),australian.family.common.name,australian.common.name))%>%
+      dplyr::mutate(scientific=paste(genus," ",species," (",common.name,")",sep=""))%>%
       dplyr::filter(scientific%in%c(input$fish.species.dropdown))%>%
       group_by(sample,status)%>%
       summarise(maxn=sum(maxn))
@@ -551,7 +545,9 @@ function(input, output, session) {
       replace_na(list(mass.g=0))%>%
       dplyr::left_join(metadata.regions)%>%
       dplyr::left_join(master)%>%
-      dplyr::mutate(scientific=paste(genus," ",species," (",australian.common.name,")",sep=""))%>%
+      left_join(family.common.names)%>%
+      dplyr::mutate(common.name=if_else(is.na(australian.common.name),australian.family.common.name,australian.common.name))%>%
+      dplyr::mutate(scientific=paste(genus," ",species," (",common.name,")",sep=""))%>%
       dplyr::filter(scientific%in%c(input$fish.species.dropdown))%>%
       dplyr::group_by(sample,status)%>%
       dplyr::summarise(mass.g=sum(mass.g))%>%
@@ -562,7 +558,9 @@ function(input, output, session) {
     length.data<-length%>%
       dplyr::left_join(metadata.regions)%>%
       dplyr::left_join(master)%>%
-      dplyr::mutate(scientific=paste(genus," ",species," (",australian.common.name,")",sep=""))%>%
+      left_join(family.common.names)%>%
+      dplyr::mutate(common.name=if_else(is.na(australian.common.name),australian.family.common.name,australian.common.name))%>%
+      dplyr::mutate(scientific=paste(genus," ",species," (",common.name,")",sep=""))%>%
       dplyr::filter(scientific%in%c(input$fish.species.dropdown))
     
     
