@@ -252,12 +252,13 @@ maxn <- read_csv("data/fish/2014-12_Geographe.Bay_stereoBRUVs.complete.maxn.csv"
   dplyr::mutate(maxn=as.numeric(maxn))%>%
   dplyr::select(-c(latitude,longitude,status))
 
-master<-read_csv("data/fish/australia.life.history_200805.csv")%>%
+master<-read_csv("data/fish/australia.life.history_200824.csv")%>%
   ga.clean.names()%>%
   dplyr::select(family,genus,species,australian.common.name)
 
 family.common.names<-read_csv("data/fish/family.common.names.csv")%>%
-  ga.clean.names()
+  ga.clean.names()%>%
+  dplyr::mutate(australian.family.common.name=paste("An unknown",australian.family.common.name,sep=" "))
 
 metadata.regions<-read_csv("data/fish/metadata.regions.csv",col_types = cols(.default = "c"))%>%
   mutate(zone=str_replace_all(.$zone,c("Sanctuary"="Sanctuary (no-take)","Fished"="Outside Marine Park")))%>%
