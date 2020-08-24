@@ -211,7 +211,41 @@ function(input, output, session) {
     
     leaflet(coords, width = "100%", height = "800px") %>%
       fitBounds(~min(longitude), ~min(latitude), ~max(longitude), ~max(latitude))%>%
-      addTiles()%>%
+      # addTiles()%>%
+      addProviderTiles('Esri.WorldImagery', group = "World Imagery") %>%
+      addTiles(group = "Open Street Map")%>%
+      # Ngari Capes Marine Parks
+      addPolygons(data = ngari.mp, weight = 1, color = "black", 
+                  fillOpacity = 0.8, fillColor = "#7bbc63", 
+                  group = "State Marine Parks", label=ngari.mp$Name)%>%
+      
+      # State Marine Parks
+      addPolygons(data = state.mp, weight = 1, color = "black", 
+                  fillOpacity = 0.8, fillColor = ~state.pal(zone), 
+                  group = "State Marine Parks", label=state.mp$COMMENTS)%>%
+      
+      # Add a legend
+      addLegend(pal = state.pal, values = state.mp$zone, opacity = 1,
+                title="State Zones",
+                position = "bottomright", group = "State Marine Parks")%>%
+      
+      # Commonwealth Marine Parks
+      addPolygons(data = commonwealth.mp, weight = 1, color = "black", 
+                  fillOpacity = 0.8, fillColor = ~commonwealth.pal(zone), 
+                  group = "Australian Marine Parks", label=commonwealth.mp$ZoneName)%>%
+      
+      # Add a legend
+      addLegend(pal = commonwealth.pal, values = commonwealth.mp$zone, opacity = 1,
+                title="Australian Marine Park Zones",
+                position = "bottomright", group = "Australian Marine Parks")%>%
+      
+      addLayersControl(baseGroups = c("World Imagery","Open Street Map"),
+                       overlayGroups = c("State Marine Parks",
+                                         "Australian Marine Parks"), options = layersControlOptions(collapsed = FALSE))%>% 
+      hideGroup("State Marine Parks")%>%
+      hideGroup("Australian Marine Parks")%>%
+      
+      
       addMinicharts(
         coords$longitude, coords$latitude,
         type = "pie",
@@ -272,7 +306,38 @@ function(input, output, session) {
       dplyr::filter(habitat.type==input$bubble.habitat)
     
     map <- leaflet(habitat.bubble) %>%
-      addTiles()%>%
+      addProviderTiles('Esri.WorldImagery', group = "World Imagery") %>%
+      addTiles(group = "Open Street Map")%>%
+      # Ngari Capes Marine Parks
+      addPolygons(data = ngari.mp, weight = 1, color = "black", 
+                  fillOpacity = 0.8, fillColor = "#7bbc63", 
+                  group = "State Marine Parks", label=ngari.mp$Name)%>%
+      
+      # State Marine Parks
+      addPolygons(data = state.mp, weight = 1, color = "black", 
+                  fillOpacity = 0.8, fillColor = ~state.pal(zone), 
+                  group = "State Marine Parks", label=state.mp$COMMENTS)%>%
+      
+      # Add a legend
+      addLegend(pal = state.pal, values = state.mp$zone, opacity = 1,
+                title="State Zones",
+                position = "bottomright", group = "State Marine Parks")%>%
+      
+      # Commonwealth Marine Parks
+      addPolygons(data = commonwealth.mp, weight = 1, color = "black", 
+                  fillOpacity = 0.8, fillColor = ~commonwealth.pal(zone), 
+                  group = "Australian Marine Parks", label=commonwealth.mp$ZoneName)%>%
+      
+      # Add a legend
+      addLegend(pal = commonwealth.pal, values = commonwealth.mp$zone, opacity = 1,
+                title="Australian Marine Park Zones",
+                position = "bottomright", group = "Australian Marine Parks")%>%
+      
+      addLayersControl(baseGroups = c("World Imagery","Open Street Map"),
+                       overlayGroups = c("State Marine Parks",
+                                         "Australian Marine Parks"), options = layersControlOptions(collapsed = FALSE))%>% 
+      hideGroup("State Marine Parks")%>%
+      hideGroup("Australian Marine Parks")%>%
       fitBounds(~min(longitude), ~min(latitude), ~max(longitude), ~max(latitude))
     
     # if (input$shapefile.bubble==TRUE) {

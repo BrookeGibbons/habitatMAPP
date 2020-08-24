@@ -68,7 +68,7 @@ tagList(
                                                                      # "South-west Corner" = "South-west Corner"
                                                                   ))),
                          box(width = 3, title = "Select a method to plot", status= "primary", solidHeader = TRUE, 
-                             selectInput("pie.method", "",c("All methods"="all",
+                             selectInput("pie.method", "",c(#"All methods"="all",
                                                                   "AUV" = "AUV",
                                                                   "stereo-BRUV" = "stereo-BRUV",
                                                                   "Towed video" = "Towed"))),
@@ -84,7 +84,7 @@ tagList(
                                                                  #"South-west Corner" = "South-west Corner"
                                                                  ))),
                          box(width = 3, title = "Select a method to plot", status = "primary", solidHeader = TRUE, 
-                             selectInput("bubble.method", "", c("All"="all",
+                             selectInput("bubble.method", "", c(#"All"="all",
                                                             "AUV" = "AUV",
                                                             "stereo-BRUV" = "stereo-BRUV",
                                                             "Towed video" = "Towed"))),
