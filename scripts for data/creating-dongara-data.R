@@ -1,30 +1,3 @@
-library(dplyr)
-library(readr)
-library(GlobalArchive)
-install.packages("life.cycle")
-install.packages("installr")
-library(installr)
-updateR()
-
-setwd("C:/GitHub/habitatMAPP/data/dongara")
-dir()
-
-metadata<-read_csv("Image_Location_Data.csv")%>%
-  ga.clean.names()
-
-urchin<-read_csv("Urchin_Density_Data.csv")%>%
-  dplyr::select(image_name,Urchins_per_m2)%>%
-  ga.clean.names()%>%
-  left_join(metadata,.)%>%
-  mutate(urchin.density.m2=as.numeric(urchins_per_m2))%>%
-  select(x,y,urchin.density.m2)%>%
-  replace_na(list(urchin.density.m2=0))
-
-write.csv(urchin, "urchin.denisty.dongara.csv",row.names = FALSE)
-
-names(urchin)
-
-
 library(tidyr)
 library(dplyr)
 library(readr)
@@ -32,38 +5,48 @@ library(stringr)
 library(readr)
 library(GlobalArchive)
 
-# Study name----
-rm(list=ls()) #clear memory
+setwd("C:/GitHub/habitatMAPP/data/dongara")
+setwd("/srv/shiny-server/marinemapper/data/dongara")
+dir()
 
-study <- "towed"
-# Set sub directories----
-habitat <- read.csv("BenthoBoxPointTags.csv") %>%
+metadata<-read_csv("Image_Location_Data.csv")%>%
+  ga.clean.names()%>%
+  dplyr::rename(sample=image_name)
+
+urchin<-read_csv("Urchin_Density_Data.csv")%>%
+  dplyr::select(image_name,Urchins_per_m2)%>%
+  ga.clean.names()%>%
+  dplyr::rename(sample=image_name)%>%
+  left_join(metadata,.)%>%
+  mutate(urchin.density.m2=as.numeric(urchins_per_m2))%>%
+  dplyr::select(x,y,urchin.density.m2)%>%
+  tidyr::replace_na(list(urchin.density.m2=0))
+
+write.csv(urchin, "urchin.denisty.dongara.csv",row.names = FALSE)
+
+names(urchin)
+
+
+
+
+hab <- read.csv("BenthoBoxPointTags.csv") %>%
   ga.clean.names() %>% # Function Brooke & Tim wrote to tidy column names
-  dplyr::select(image.name,image.source.dataset,point.x.from.top.left.corner.,point.y.from.top.left.corner.,display.name) %>% # Select columns to keep
-  dplyr::mutate(image.name=str_replace_all(image.name,c("https://uwa-auv.s3-ap-southeast-2.amazonaws.com/"="",".jpg"="","/Images"="","2014_TowedVideo/"="",".jpeg"=""))) %>% # Remove url from sample names
+  dplyr::select(image.name,image.source.dataset,point.x.from.top.left.corner.,point.y.from.top.left.corner.,display.name) %>% 
   dplyr::rename(habitat = display.name, point.x = point.x.from.top.left.corner., point.y = point.y.from.top.left.corner.)%>%
-  #tidyr::separate(image.name, into = c("campaignid","sample"),sep="/")%>%
   dplyr::filter(!habitat%in%c(NA, "")) %>%
+  mutate(habitat=paste("hab.",habitat))%>%
   rename(sample=image.name)%>%
-  #mutate(id = paste(campaignid, sample, sep = ".")) %>%
-  mutate(habitat=paste("hab:",habitat))%>%
+  distinct()%>%
   dplyr::glimpse()
+
+
+habitat<-hab%>%
+  separate(sample, c("before", "sample"), "images&files=")%>%
+  dplyr::select(-c(before))
 
 names(habitat)
 unique(habitat$sample)
 unique(habitat$campaignid)
-
-
-
-# Metadata ----
-setwd(metadata.dir)
-dir()
-
-metadata<-read.csv("2014_GB_Towed_Video_Metadata_dd.csv")%>%
-  dplyr::filter(!is.na(latitude))%>%
-  dplyr::mutate(sample=str_replace_all(.$image_name,c(".jpeg"="")))%>%
-  dplyr::select(sample,latitude,longitude)%>%
-  glimpse()
 
 # CREATE catami point score------
 unique(habitat$habitat)%>%sort()
@@ -77,25 +60,23 @@ point.score <- habitat %>%
   dplyr::select(-c(point.x, point.y, image.source.dataset)) %>%
   ungroup()%>%
   dplyr::group_by(sample) %>%
-  dplyr::summarise_all(funs(sum)) %>%
+  dplyr::summarise_all((sum)) %>%
   ungroup()
 
 percent.cover <- point.score%>%
   dplyr::mutate(total.sum=rowSums(.[,2:(ncol(.))],na.rm = TRUE ))%>%
   dplyr::group_by(sample) %>%
-  mutate_at(vars(starts_with("hab: ")),funs(./total.sum*100))%>%
-  mutate_at(vars(starts_with("hab: ")),funs(round(.,digits=2)))%>%
+  mutate_at(vars(starts_with("hab.")),funs(./total.sum*100))%>%
+  mutate_at(vars(starts_with("hab.")),funs(round(.,digits=2)))%>%
   dplyr::select(-total.sum) %>%
   left_join(metadata) %>%
+  ga.clean.names()%>%
   glimpse()
 
-names(percent.cover)<-str_replace_all(names(percent.cover),c("hab: "=""))
+names(percent.cover)
+names(percent.cover)<-str_replace_all(names(percent.cover),c("hab."=""))
 
 # Write final habitat data----
-# join starting with relief - as this is most likely to have the most samples with habitat data
-setwd(raw.dir)
-dir()
-
 write.csv(percent.cover,paste(study,"raw.percent.cover.csv",sep="_"),row.names = FALSE)
 
 # Make broad categories -----
@@ -127,166 +108,93 @@ names(percent.cover)
 # 51 - 75 = Unknown 7
 # 76 - 100 = Unknown 8
 
+test<-read.csv("towed_raw.percent.cover.csv")
 
-broad.hab <- percent.cover%>%
+# test<-test%>%glimpse()%>%
+  # mutate(macroalgae=macroalgae.articulated.calcareous+macroalgae.articulated.calcareous.green)
+
+broad.hab <- test%>%ungroup()%>%
   # Macroalgae
-  mutate(Macroalgae=
-           biota.macroalgae.encrusting.brown+
-           biota.macroalgae.encrusting.red.calcareous+
-           biota.macroalgae.erect.course.branching.brown+
-           biota.macroalgae.erect.course.branching.brown.other.sp.+
-           biota.macroalgae.erect.course.branching.red+
-           biota.macroalgae.erect.fine.branching.red+
-           biota.macroalgae.globose.saccate.brown)%>%
+  dplyr::mutate(Macroalgae=(macroalgae.articulated.calcareous+
+           macroalgae.articulated.calcareous.green+
+           macroalgae.articulated.calcareous.green.articulated.calcareous.green+
+           macroalgae.articulated.calcareous.red+
+           macroalgae.articulated.calcareous.red.articulated.calcareous.red+
+           macroalgae.drift.algae+
+           macroalgae.encrusting.brown+
+           macroalgae.encrusting.green+
+           macroalgae.encrusting.red+
+           macroalgae.encrusting.red.calcareous+
+           macroalgae.erect.coarse.branching+
+           macroalgae.erect.coarse.branching.brown+
+           macroalgae.erect.coarse.branching.brown.drift+
+           macroalgae.erect.coarse.branching.brown.sargassum.spp+
+           macroalgae.erect.coarse.branching.green+
+           macroalgae.erect.coarse.branching.green.caulerpa.spp+
+           macroalgae.erect.coarse.branching.red+
+           macroalgae.erect.fine.branching+
+           macroalgae.erect.fine.branching.brown+
+           macroalgae.erect.fine.branching.brown.brown.understory.algae+
+           macroalgae.erect.fine.branching.green+
+           macroalgae.erect.fine.branching.green.caulerpa.spp+
+           macroalgae.erect.fine.branching.red+
+           macroalgae.erect.fine.branching.red.foliose+
+           macroalgae.filamentous.filiform.brown+
+           macroalgae.filamentous.filiform.green+
+           macroalgae.filamentous.filiform.red+
+           macroalgae.filamentous.filiform.turfing.algae+
+           macroalgae.globose.saccate+
+           macroalgae.globose.saccate.brown+
+           macroalgae.globose.saccate.green+
+           macroalgae.laminate.brown+
+           macroalgae.laminate.green+
+           macroalgae.large.canopy.forming+
+           macroalgae.large.canopy.forming.brown+
+           macroalgae.large.canopy.forming.brown.ecklonia.radiata))%>%
   # Turfing algae
-  mutate(Turf.algae=
-           biota.macroalgae.filamentous.and.filiform.turfing.algae)%>%
+  # mutate(Turf.algae=
+  #          biota.macroalgae.filamentous.and.filiform.turfing.algae)%>%
   # Sand
-  mutate(Unconsolidated=
-           substrate.unconsolidated.sand.mud.coarse.sand.)%>%
+  mutate(Unconsolidated=substrate.unconsolidated.soft.pebble.gravel
+         +substrate.unconsolidated.soft.pebble.gravel.biologenic
+         +substrate.unconsolidated.soft.pebble.gravel.biologenic.rhodoliths
+         +substrate.unconsolidated.soft.pebble.gravel.gravel.2.10mm.
+         +substrate.unconsolidated.soft.pebble.gravel.pebble.10.64mm.
+         +substrate.unconsolidated.soft.sand.mud.2mm.coarse.sand.with.shell.fragments.
+         +substrate.unconsolidated.soft.sand.mud.2mm.fine.sand.no.shell.fragments.
+         +substrate.unconsolidated.soft.sand.mud.2mm.fine.sand.no.shell.fragments.)%>%
   # Seagrasses
   mutate(Seagrasses= 
-           biota.seagrasses.strap.like.leaves+
-           biota.seagrasses.strap.like.leaves.amphibolis.sp.+
-           biota.seagrasses.strap.like.leaves.posidonia.sp.+
-           biota.seagrasses.strap.like.leaves.thalassodendrum.sp.+
-           
-           biota.unknown.sp1+
-           biota.unknown.sp2+
-           biota.unknown.sp3+
-           biota.unknown.sp4+
-           
-           biota.unknown.sp5+
-           biota.unknown.sp6+
-           biota.unknown.sp7+
-           biota.unknown.sp8+
-           
-           biota.invertebrate.complex.complex.1+
-           biota.invertebrate.complex.complex.2+
-           biota.invertebrate.complex.complex.3+
-           biota.invertebrate.complex.complex.4)%>%
+           seagrasses+seagrasses.elliptical.leaves+
+           seagrasses.elliptical.leaves.halophila.sp.caab.63600902.+
+           seagrasses.elliptical.leaves.halophila.sp.caab.63600902.epiphytes.algae+
+           seagrasses.elliptical.leaves.halophila.sp.caab.63600902.epiphytes.other+
+           seagrasses.strap.like.leaves+seagrasses.strap.like.leaves.amphibolis.sp.caab.63600903.+
+           seagrasses.strap.like.leaves.amphibolis.sp.caab.63600903.epiphytes.algae+
+           seagrasses.strap.like.leaves.amphibolis.sp.caab.63600903.epiphytes.other+
+           seagrasses.strap.like.leaves.posidonia.sp.caab.63600903.+
+           seagrasses.strap.like.leaves.posidonia.sp.caab.63600903.epiphytes.algae+
+           seagrasses.strap.like.leaves.rupia.sp.caab.63600903.+
+           seagrasses.strap.like.leaves.zostera.sp.caab.63600903.)%>%
   # Rock
   mutate(Consolidated=
-           substrate.consolidated+
-           substrate.consolidated.rock.turf.mat)%>%
-  # Sponges
-  rename(Sponges=biota.sponges,Other=biota.unknown.sp10)%>%
+           substrate.consolidated.hard.
+           +substrate.consolidated.hard.boulders
+           +substrate.consolidated.hard.cobbles
+           +substrate.consolidated.hard.rock)%>%
   
-  dplyr::select(c(sample,latitude,longitude,Macroalgae,Turf.algae,Unconsolidated,Seagrasses,Sponges,Consolidated,Other))
+  # Sponges
+  mutate(Sponges=sponges
+  +sponges.crusts+sponges.crusts.encrusting+sponges.crusts.encrusting.bryozoa.sponge.matrix+sponges.crusts.encrusting.encrusting.yellow.2+sponges.massive.forms+sponges.massive.forms.simple.massive.black.oscula.papillate)%>%
+  
+  # dplyr::rename(Other=biota.unknown.sp10)%>%
+  mutate(Other=unscorable+sea.spiders+molluscs.gastropods+fishes.eels+fishes.bony.fishes+bioturbation.unknown.origin.pogostick+bryozoa+bryozoa.bryozoa.sponge.matrix+cnidaria.corals+cnidaria.corals.stony.corals.encrusting+echinoderms.sea.stars+echinoderms.sea.urchins+echinoderms.sea.urchins.regular.urchins)%>%
+  dplyr::select(c(sample,y,x,Macroalgae,Unconsolidated,Seagrasses,Sponges,Consolidated,Other))%>%
+  dplyr::rename(latitude=y,longitude=x)%>%
+  mutate(method="Towed",marine.park="Dongara")%>%
+  filter(!is.na(latitude))
+
+plot(metadata$x, metadata$y)
 
 # Save broad habitat types ----
-setwd(raw.dir)
-dir()
-
 write.csv(broad.hab,paste(study,"broad.percent.cover.csv",sep="_"),row.names = FALSE)
-
-# Detailed
-dat.detailed<-percent.cover%>%
-  # Rename seagrass categories
-  # total seagrass
-  dplyr::mutate(Strap.like.leaves=
-                  biota.seagrasses.strap.like.leaves+
-                  biota.seagrasses.strap.like.leaves.amphibolis.sp.+
-                  biota.seagrasses.strap.like.leaves.posidonia.sp.+
-                  biota.seagrasses.strap.like.leaves.thalassodendrum.sp.+
-                  
-                  biota.unknown.sp1+
-                  biota.unknown.sp2+
-                  biota.unknown.sp3+
-                  biota.unknown.sp4+
-                  
-                  biota.unknown.sp5+
-                  biota.unknown.sp6+
-                  biota.unknown.sp7+
-                  biota.unknown.sp8+
-                  
-                  biota.invertebrate.complex.complex.1+
-                  biota.invertebrate.complex.complex.2+
-                  biota.invertebrate.complex.complex.3+
-                  biota.invertebrate.complex.complex.4)%>%
-  
-  # total seagrass with epiphytes
-  dplyr::mutate(Strap.like.leaves.with.epiphytes=
-                  biota.unknown.sp1+
-                  biota.unknown.sp2+
-                  biota.unknown.sp3+
-                  biota.unknown.sp4+
-                  
-                  biota.unknown.sp5+
-                  biota.unknown.sp6+
-                  biota.unknown.sp7+
-                  biota.unknown.sp8+
-                  
-                  biota.invertebrate.complex.complex.1+
-                  biota.invertebrate.complex.complex.2+
-                  biota.invertebrate.complex.complex.3+
-                  biota.invertebrate.complex.complex.4)%>%
-  
-  # Posidonia
-  dplyr::mutate(Posidonia=
-                  biota.seagrasses.strap.like.leaves.posidonia.sp.+
-                  biota.unknown.sp1+
-                  biota.unknown.sp2+
-                  biota.unknown.sp3+
-                  biota.unknown.sp4)%>%
-  dplyr::mutate(Posidonia.with.epiphytes=
-                  biota.unknown.sp1+
-                  biota.unknown.sp2+
-                  biota.unknown.sp3+
-                  biota.unknown.sp4)%>%
-  
-  # Amphibolis
-  dplyr::mutate(Amphibolis=
-                  biota.seagrasses.strap.like.leaves.amphibolis.sp.+
-                  biota.invertebrate.complex.complex.1+
-                  biota.invertebrate.complex.complex.2+
-                  biota.invertebrate.complex.complex.3+
-                  biota.invertebrate.complex.complex.4)%>%
-  dplyr::mutate(Amphibolis.with.epiphytes=
-                  biota.invertebrate.complex.complex.1+
-                  biota.invertebrate.complex.complex.2+
-                  biota.invertebrate.complex.complex.3+
-                  biota.invertebrate.complex.complex.4)%>%
-  # Zostera
-  dplyr::mutate(Thalassodendrum=
-                  biota.seagrasses.strap.like.leaves.thalassodendrum.sp.)%>%
-  
-  # total Macroalgae
-  dplyr::mutate(Macroalgae=
-                  biota.macroalgae.encrusting.brown+
-                  biota.macroalgae.encrusting.red.calcareous+
-                  biota.macroalgae.erect.course.branching.brown+
-                  biota.macroalgae.erect.course.branching.brown.other.sp.+
-                  biota.macroalgae.erect.course.branching.red+
-                  biota.macroalgae.erect.fine.branching.red+
-                  biota.macroalgae.globose.saccate.brown)%>%
-  #total turf macroalgae
-  dplyr::mutate(Turf.algae=
-                  biota.macroalgae.filamentous.and.filiform.turfing.algae)%>%
-  
-  # total erect course
-  dplyr::mutate(Erect.coarse.branching=
-                  biota.macroalgae.erect.course.branching.brown+
-                  biota.macroalgae.erect.course.branching.brown.other.sp.+
-                  biota.macroalgae.erect.course.branching.red)%>%
-  # total fine course
-  dplyr::mutate(Erect.fine.branching=
-                  biota.macroalgae.erect.fine.branching.red)%>%
-  
-  dplyr::select(sample,latitude,longitude,
-                Strap.like.leaves,Strap.like.leaves.with.epiphytes,
-                Amphibolis,Amphibolis.with.epiphytes,
-                Posidonia,Posidonia.with.epiphytes,
-                Thalassodendrum,
-                Macroalgae,
-                Turf.algae,
-                Erect.coarse.branching,
-                Erect.fine.branching)
-
-# Save detailed habitat types ----
-setwd(raw.dir)
-dir()
-
-write.csv(dat.detailed,paste(study,"detailed.percent.cover.csv",sep="_"),row.names = FALSE)
-
-

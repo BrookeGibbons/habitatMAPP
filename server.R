@@ -42,11 +42,7 @@ function(input, output, session) {
     icon.habitat <- iconList(blue = makeIcon("images/marker_blue.png", iconWidth = 30, iconHeight =40))
     icon.fish <- iconList(blue = makeIcon("images/marker_red.png", iconWidth = 30, iconHeight =40))
     icon.models <- iconList(blue = makeIcon("images/marker_green.png", iconWidth = 30, iconHeight =40))
-    
-    24:32
-    
-    24/8
-    
+
     
     lng1 <- min(map.dat$longitude)
     lat1 <- min(map.dat$latitude)

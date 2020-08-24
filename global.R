@@ -293,12 +293,16 @@ mass <- read_csv("data/fish/2014-12_Geographe.Bay_stereoBRUVs.complete.mass.csv"
 
 
 # Habitat data for plotting ----
-hab.data <- fst::read_fst("data/annotations/geographe/southwest.broad.fst") %>%
+geo.hab.data <- fst::read_fst("data/annotations/geographe/southwest.broad.fst") %>%
   as.data.frame() %>%
   dplyr::filter(!campaignid%in%c("2007-03_Capes_MF_stereoBRUVs"))%>%
   dplyr::mutate(method=str_replace_all(.$campaignid, c("2007-03_Capes_MF_stereoBRUVs"="stereo-BRUV",
                                                        "2014-12_Geographe_Bay_stereoBRUVs"="stereo-BRUV")))%>%
-  dplyr::mutate(marine.park="Geographe Bay")%>%
+  dplyr::mutate(marine.park="Geographe Bay")
+
+dongara.hab.data<-read_csv("data/dongara/towed_broad.percent.cover.csv")
+
+hab.data<-bind_rows(geo.hab.data,dongara.hab.data)%>%
   tidyr::replace_na(list(Macroalgae=0,
                          Turf.algae=0,
                          Stony.corals=0,
