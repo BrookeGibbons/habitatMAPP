@@ -19,13 +19,13 @@ tagList(
                 #tags$head(
                 #  includeCSS("styles.css") # Include custom CSS
                 #),
-                fluidRow(box(width = 12, title = "Select a Marine Park to explore", status = "primary", solidHeader = TRUE, 
+                fluidRow(box(width = 12, title = "Select an area to explore", status = "primary", solidHeader = TRUE, 
                              add_busy_spinner(spin = "fading-circle"),
                              # add_busy_gif(src = "https://github.com/UWAMEGFisheries/UWAMEGFisheries.github.io/blob/master/Blocks-1s-200px.gif", height = 70, width = 70),
                              selectInput("leaflet.marine.park", "", c("Geographe Marine Park" = "Geographe Bay",
                                                                      "Ningaloo Marine Park" = "Ningaloo",
-                                                                     "South-west Corner" = "South-west Corner",
-                                                                     "Dongara"="Dongara"))),
+                                                                     "South-west Corner Marine Park" = "South-west Corner",
+                                                                     "Dongara lobster fishery"="Dongara"))),
                          
                          # box(width = 3, title = "Map display options", status = "primary", solidHeader = TRUE,
                              # checkboxInput("leaflet.cluster", "Cluster fish highlights", TRUE)), # ,checkboxInput("leaflet.zoom", "Animated zoom", TRUE)
@@ -35,7 +35,7 @@ tagList(
                 ), # End tab item
         
         tabItem(tabName = "fish",
-                fluidRow(box(width = 4, title = "Select a Marine Park to plot", status = "primary", solidHeader = TRUE, 
+                fluidRow(box(width = 4, title = "Select an area to plot", status = "primary", solidHeader = TRUE, 
                              selectInput("fish.marine.park", "", c("Geographe Marine Park" = "Geographe Bay"#,
                                                                   # "Ningaloo Marine Park" = "Ningaloo",
                                                                   # "South-west Corner" = "South-west Corner"
