@@ -13,6 +13,7 @@ tagList(
       )
     ),
     dashboardBody(
+      tags$head(tags$link(rel = "shortcut icon", href = "favicon.ico")),
       tabItems(
         # Upload data ----
         tabItem(tabName = "imagery",
@@ -111,7 +112,7 @@ tagList(
                              "Ningaloo video footage from the baseline survey of deepwater fish in the Ningaloo Marine Park, Commonwealth waters. Funded by the Marine Biodiversity Hub and Parks Australia.", br(),br(),
                              "Geographe Bay video footage from the National Envrionmental Research Programme, UWA and Curtin",br(),br(),
                              "South-west corner video footage from the baseline survey of deeperwater fish and habitats in the South-west Corner Marine Park, Commonwealth waters. Funded by the Marine Biodiversity Hub, Parks Australia and the University of Western Australia.
-"),
+",br(),br(),"Icons made by <a href='https://www.flaticon.com/authors/smashicons' title='Smashicons'>Smashicons</a> from <a href='https://www.flaticon.com/' title='Flaticon'> www.flaticon.com</a>"),
                          box(width = 4, status = "primary", height = 800,
                              imageOutput("logos")
                 
