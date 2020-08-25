@@ -403,20 +403,26 @@ function(input, output, session) {
         addCircleMarkers(
           data = trapping, lat = ~ latitude, lng = ~ longitude,
           stroke = FALSE, group = "Trap locations",fillOpacity = 1,
-          radius = 4, color = "#67E01F"
-        )%>%
+          radius = 4, color = "#67E01F")%>%
         addCircleMarkers(
           data = monitoring, lat = ~ latitude, lng = ~ longitude,
           stroke = FALSE, group = "Monitoring",fillOpacity = 1,
-          radius = 4, color = "#E01F67"
-        )%>%
+          radius = 4, color = "#E01F67")%>%
+        
+        addPolygons(data = dongara.shp, weight = 1, color = "black",
+                    fillOpacity = 0.8, fillColor = ~dongara.pal(seagrass.state),
+                    group = "Seagrass analysis", label=dongara.shp$seagrass.state) %>%
+        
         addLayersControl(baseGroups = c("World Imagery","Open Street Map"),
                          overlayGroups = c("State Marine Parks",
                                            "Australian Marine Parks",
                                            "Trap locations",
-                                           "Monitoring"), options = layersControlOptions(collapsed = FALSE))%>% 
+                                           "Monitoring", "Seagrass analysis"
+                                           ), options = layersControlOptions(collapsed = FALSE))%>% 
         hideGroup("State Marine Parks")%>%
-        hideGroup("Australian Marine Parks")
+        hideGroup("Australian Marine Parks")%>%
+        hideGroup("Seagrass analysis")%>%
+        addLegendCustom(colors = c("#67E01F", "#E01F67"), labels = c("Trapping", "Monitoring"), sizes = c(20, 20))
     }
     
     map

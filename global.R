@@ -32,8 +32,6 @@ library(sf)
 library(stringr)
 library(tidyr)
 
-# a new line
-
 # Bring in data ----
 # Load 2019 ningaloo metadata ----
 ning.bruv.metadata <- read.csv("data/2019-08_Ningaloo_metadata.csv") %>%
@@ -139,6 +137,22 @@ monitoring <- read.csv("data/dongara/all.monitoring.sites.csv")%>%
 
 # Spatial files ----
 # State marine parks ----
+dongara.shp <-  readOGR("data/spatial/Raster_to_Poly.shp") 
+
+unique(dongara.shp$Desc_)
+
+dongara.shp$seagrass.state<-fct_relevel(dongara.shp$Desc_, "Conservation (no-take)", "Sanctuary (no-take)", "Recreation", "General Use", "Special Purpose")
+
+dongara.pal <- colorFactor(c("#f6c1d9", # Seagrass Gained
+                                  "#7bbc63", # Seagrass Degraded
+                                  "#fdb930", # Seagrass Lost
+                                  "#fff7a3", # Stable Seagrass
+                                  '#b9e6fb', # Stable Partial Seagrass
+                                  '#ccc1d6',# Stable Sand
+                                  'black' # Noise
+), dongara.shp$seagrass.state)
+
+
 ngari.mp <- readOGR("data/spatial/test1.shp") 
 state.mp <- readOGR("data/spatial/WA_MPA_2018.shp")
 
@@ -454,3 +468,10 @@ theme_collapse<-theme(      ## the commented values are from theme_grey
 se <- function(x) sd(x) / sqrt(length(x))
 se.min <- function(x) (mean(x)) - se(x)
 se.max <- function(x) (mean(x)) + se(x)
+
+addLegendCustom <- function(map, colors, labels, sizes, opacity = 0.5){
+  colorAdditions <- paste0(colors, "; border-radius: 50%; width:", sizes, "px; height:", sizes, "px")
+  labelAdditions <- paste0("<div style='display: inline-block;height: ", sizes, "px;margin-top: 4px;line-height: ", sizes, "px;'>", labels, "</div>")
+  
+  return(addLegend(map, colors = colorAdditions, labels = labelAdditions, opacity = opacity))
+}
