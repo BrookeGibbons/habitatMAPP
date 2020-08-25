@@ -62,7 +62,7 @@ tagList(
         
         
         tabItem(tabName = "pie",
-                fluidRow(box(width = 3, title = "Select a Marine Park to plot", status = "primary", solidHeader = TRUE, 
+                fluidRow(box(width = 3, title = "Select an area to plot", status = "primary", solidHeader = TRUE, 
                              selectInput("pie.marine.park", "", c("Geographe Marine Park" = "Geographe Bay"#,
                                                                      # "Ningaloo Marine Park" = "Ningaloo",
                                                                      # "South-west Corner" = "South-west Corner"
@@ -81,7 +81,7 @@ tagList(
         tabItem(tabName = "bubble",
                 fluidRow(box(width = 3, title = "Select a Marine Park to plot", status = "primary", solidHeader = TRUE, 
                              selectInput("bubble.marine.park", "", c("Geographe Marine Park" = "Geographe Bay",
-                                                                     "Dongara" ="Dongara"
+                                                                     "Dongara lobster fishery" ="Dongara"
                                                                  #"Ningaloo Marine Park" = "Ningaloo",
                                                                  #"South-west Corner" = "South-west Corner"
                                                                  ))),
