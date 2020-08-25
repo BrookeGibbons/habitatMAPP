@@ -21,7 +21,7 @@ tagList(
                 #),
                 fluidRow(box(width = 12, title = "Select an area to explore", status = "primary", solidHeader = TRUE, 
                              add_busy_spinner(spin = "fading-circle"),
-                             # add_busy_gif(src = "https://github.com/UWAMEGFisheries/UWAMEGFisheries.github.io/blob/master/Blocks-1s-200px.gif", height = 70, width = 70),
+                             
                              selectInput("leaflet.marine.park", "", c("Geographe Marine Park" = "Geographe Bay",
                                                                      "Ningaloo Marine Park" = "Ningaloo",
                                                                      "South-west Corner Marine Park" = "South-west Corner",
@@ -46,7 +46,6 @@ tagList(
                                                             "Biomass" = "biomass"))),
                          
                          box(width=4,title = "Number of species to plot",status="primary",solidHeader = TRUE,numericInput("species.limit", "Number:", 15, min = 5, max = 20)),
-                         # add_busy_bar(color = "#FF0000"),
                          box(width=12,height = 500,
                              title = "Plot of most abundant species", status = "primary",
                              plotOutput("top.species")),
@@ -57,7 +56,6 @@ tagList(
 
                          box(width=12,title = "Marine Park Zones", status = "primary", plotOutput("fish.zones", height = 250)),
                          box(width=12,title = "Fished vs. No-take", status = "primary", plotOutput("fish.status", height = 250))
-                         # box(width=12,leafletOutput("pie.leaflet", height = 625))
                 )
         ), # End tab item
         
