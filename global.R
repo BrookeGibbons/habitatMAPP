@@ -116,7 +116,14 @@ models <- read.csv("data/3Dmodels.csv", na.strings=c("NA","NaN", " ","")) %>%
 # Merge data together for leaflet map ----
 dat <- bind_rows(models, gb.bruv.video, sw.bruv.image, fish, ning.bruv.video) # fish, gb.bruv.image, ning.bruv.image, sw.bruv.image, 
 
+# Lobster trapping sites -----
+trapping <- read.csv("data/dongara/trap.locations.csv")%>%
+  dplyr::select(X,Y)%>%
+  dplyr::rename(longitude=X,latitude=Y)
 
+monitoring <- read.csv("data/dongara/all.monitoring.sites.csv")%>%
+  dplyr::select(X,Y)%>%
+  dplyr::rename(longitude=X,latitude=Y)
 
 # Use this to only have one plot function for markers - can't use a filter to hide them individually :(
 # get.color <- function(dat) {

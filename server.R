@@ -385,6 +385,7 @@ function(input, output, session) {
         addCircleMarkers(
           data = overzero, lat = ~ latitude, lng = ~ longitude,
           radius = ~((percent.cover/max(percent.cover))*15), fillOpacity = 0.5, stroke = FALSE,
+          color = "#1F67E0",
           label = ~as.character(percent.cover), group = "Bubbles"
         )
     }
@@ -396,6 +397,28 @@ function(input, output, session) {
           label = ~as.character(percent.cover), group = "Bubbles"
         )
     }
+    
+    if (input$bubble.marine.park%in%"Dongara") {
+      map <- map %>%
+        addCircleMarkers(
+          data = trapping, lat = ~ latitude, lng = ~ longitude,
+          stroke = FALSE, group = "Trap locations",fillOpacity = 1,
+          radius = 4, color = "#67E01F"
+        )%>%
+        addCircleMarkers(
+          data = monitoring, lat = ~ latitude, lng = ~ longitude,
+          stroke = FALSE, group = "Monitoring",fillOpacity = 1,
+          radius = 4, color = "#E01F67"
+        )%>%
+        addLayersControl(baseGroups = c("World Imagery","Open Street Map"),
+                         overlayGroups = c("State Marine Parks",
+                                           "Australian Marine Parks",
+                                           "Trap locations",
+                                           "Monitoring"), options = layersControlOptions(collapsed = FALSE))%>% 
+        hideGroup("State Marine Parks")%>%
+        hideGroup("Australian Marine Parks")
+    }
+    
     map
   })
   
