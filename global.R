@@ -7,7 +7,7 @@ library(forcats)
 library(fst)
 library(ggplot2)
 library(devtools)
-install_github("UWAMEGFisheries/GlobalArchive") #to check for updates
+# install_github("UWAMEGFisheries/GlobalArchive") #to check for updates
 library(GlobalArchive)
 library(grid)
 library(htmlwidgets)
@@ -298,7 +298,8 @@ geo.hab.data <- fst::read_fst("data/annotations/geographe/southwest.broad.fst") 
   dplyr::filter(!campaignid%in%c("2007-03_Capes_MF_stereoBRUVs"))%>%
   dplyr::mutate(method=str_replace_all(.$campaignid, c("2007-03_Capes_MF_stereoBRUVs"="stereo-BRUV",
                                                        "2014-12_Geographe_Bay_stereoBRUVs"="stereo-BRUV")))%>%
-  dplyr::mutate(marine.park="Geographe Bay")
+  dplyr::mutate(marine.park="Geographe Bay")%>%
+  dplyr::mutate(Macrophytes=Seagrasses+Macroalgae)
 
 dongara.hab.data<-read_csv("data/dongara/towed_broad.percent.cover.csv")
 
@@ -310,6 +311,8 @@ hab.data<-bind_rows(geo.hab.data,dongara.hab.data)%>%
                          Seagrasses=0,
                          Sponges=0,
                          Consolidated=0,
+                         Macrophytes=0,
+                         Urchin.density=0,
                          Other=0))
 
 broad.colors <- c("#8491B4B2","#1B9E77","#66A61E","#E64B35B2","#7570B3","#D95F02","#E6AB02","black")

@@ -5,7 +5,7 @@ library(stringr)
 library(readr)
 library(GlobalArchive)
 
-setwd("C:/GitHub/habitatMAPP/data/dongara")
+# setwd("C:/GitHub/habitatMAPP/data/dongara")
 setwd("/srv/shiny-server/marinemapper/data/dongara")
 dir()
 
@@ -18,9 +18,9 @@ urchin<-read_csv("Urchin_Density_Data.csv")%>%
   ga.clean.names()%>%
   dplyr::rename(sample=image_name)%>%
   left_join(metadata,.)%>%
-  mutate(urchin.density.m2=as.numeric(urchins_per_m2))%>%
-  dplyr::select(x,y,urchin.density.m2)%>%
-  tidyr::replace_na(list(urchin.density.m2=0))
+  mutate(Urchin.density=as.numeric(urchins_per_m2))%>%
+  dplyr::select(sample,Urchin.density)%>%
+  tidyr::replace_na(list(Urchin.density=0))
 
 write.csv(urchin, "urchin.denisty.dongara.csv",row.names = FALSE)
 
@@ -109,6 +109,7 @@ names(percent.cover)
 # 76 - 100 = Unknown 8
 
 test<-read.csv("towed_raw.percent.cover.csv")
+names(test)
 
 # test<-test%>%glimpse()%>%
   # mutate(macroalgae=macroalgae.articulated.calcareous+macroalgae.articulated.calcareous.green)
@@ -175,7 +176,9 @@ broad.hab <- test%>%ungroup()%>%
            seagrasses.strap.like.leaves.posidonia.sp.caab.63600903.+
            seagrasses.strap.like.leaves.posidonia.sp.caab.63600903.epiphytes.algae+
            seagrasses.strap.like.leaves.rupia.sp.caab.63600903.+
-           seagrasses.strap.like.leaves.zostera.sp.caab.63600903.)%>%
+           seagrasses.strap.like.leaves.zostera.sp.caab.63600903.+
+           sea.spiders+fishes.eels
+           )%>%
   # Rock
   mutate(Consolidated=
            substrate.consolidated.hard.
@@ -187,12 +190,30 @@ broad.hab <- test%>%ungroup()%>%
   mutate(Sponges=sponges
   +sponges.crusts+sponges.crusts.encrusting+sponges.crusts.encrusting.bryozoa.sponge.matrix+sponges.crusts.encrusting.encrusting.yellow.2+sponges.massive.forms+sponges.massive.forms.simple.massive.black.oscula.papillate)%>%
   
+  # stony corals
+  mutate(Stony.corals=cnidaria.corals+cnidaria.corals.stony.corals.encrusting)%>%
+  
+  # Macrophytes
+  
+  mutate(Macrophytes=Seagrasses+Macroalgae)%>%
+  
   # dplyr::rename(Other=biota.unknown.sp10)%>%
-  mutate(Other=unscorable+sea.spiders+molluscs.gastropods+fishes.eels+fishes.bony.fishes+bioturbation.unknown.origin.pogostick+bryozoa+bryozoa.bryozoa.sponge.matrix+cnidaria.corals+cnidaria.corals.stony.corals.encrusting+echinoderms.sea.stars+echinoderms.sea.urchins+echinoderms.sea.urchins.regular.urchins)%>%
-  dplyr::select(c(sample,y,x,Macroalgae,Unconsolidated,Seagrasses,Sponges,Consolidated,Other))%>%
+  mutate(Other=unscorable+
+           molluscs.gastropods+
+           fishes.bony.fishes+
+           bioturbation.unknown.origin.pogostick+
+           bryozoa+
+           bryozoa.bryozoa.sponge.matrix+
+           echinoderms.sea.stars+
+           echinoderms.sea.urchins+
+           echinoderms.sea.urchins.regular.urchins)%>%
+  
+  dplyr::select(c(sample,y,x,Macroalgae,Unconsolidated,Seagrasses,Sponges,Consolidated,Other,Macrophytes,Stony.corals))%>%
+  
   dplyr::rename(latitude=y,longitude=x)%>%
   mutate(method="Towed",marine.park="Dongara")%>%
-  filter(!is.na(latitude))
+  filter(!is.na(latitude))%>%
+  left_join(.,urchin)
 
 plot(metadata$x, metadata$y)
 

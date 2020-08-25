@@ -52,7 +52,7 @@ tagList(
                              plotOutput("top.species")),
                          
                          box(width=12,title = "Choose a species to plot below:", status = "primary", solidHeader = TRUE,
-                             htmlOutput("fish.species.dropdown",multiple=TRUE)),
+                             htmlOutput("fish.species.dropdown",multiple=FALSE)),
                          
 
                          box(width=12,title = "Marine Park Zones", status = "primary", plotOutput("fish.zones", height = 250)),
@@ -70,8 +70,9 @@ tagList(
                                                                   ))),
                          box(width = 3, title = "Select a method to plot", status= "primary", solidHeader = TRUE, 
                              selectInput("pie.method", "",c(#"All methods"="all",
-                                                                  "AUV" = "AUV",
-                                                                  "stereo-BRUV" = "stereo-BRUV",
+                               "stereo-BRUV" = "stereo-BRUV",
+                               "AUV" = "AUV",
+                                                                  
                                                                   "Towed video" = "Towed"))),
                          # add_busy_bar(color = "#FF0000"),
                          box(width=12,leafletOutput("pie.leaflet", height = 625))
@@ -85,13 +86,23 @@ tagList(
                                                                  #"Ningaloo Marine Park" = "Ningaloo",
                                                                  #"South-west Corner" = "South-west Corner"
                                                                  ))),
-                         box(width = 3, title = "Select a method to plot", status = "primary", solidHeader = TRUE, 
-                             selectInput("bubble.method", "", c(#"All"="all",
-                                                            "AUV" = "AUV",
-                                                            "stereo-BRUV" = "stereo-BRUV",
-                                                            "Towed video" = "Towed"))),
-                         box(width = 3, title = "Select habitat type to plot", status = "primary", solidHeader = TRUE, 
-                             selectInput("bubble.habitat", "", c("Consolidated", "Macroalgae", "Seagrasses", "Sponges", "Stony corals", "Turf algae", "Unconsolidated", "Other"), multiple = FALSE)),
+                         box(width = 3, title = "Select a method to plot", status = "primary", solidHeader = TRUE, br(),
+                             # selectInput("bubble.method", "", c(#"All"="all",
+                             #   "stereo-BRUV" = "stereo-BRUV",
+                             #   "AUV" = "AUV",
+                             #   "Towed video" = "Towed"))),
+                         
+                         htmlOutput("bubble.method.dropdown", multiple=FALSE)),
+                         
+                         # box(width = 3, title = "Select habitat type to plot", status = "primary", solidHeader = TRUE, 
+                         #     selectInput("bubble.habitat", "", c("Consolidated", "Macroalgae", "Seagrasses", "Sponges", "Stony corals", "Turf algae", "Unconsolidated", "Other"), multiple = FALSE)),
+                         box(width = 3, title = "Select habitat type to plot", status = "primary", solidHeader = TRUE, br(),
+                             # selectInput("bubble.method", "", c(#"All"="all",
+                             #   "stereo-BRUV" = "stereo-BRUV",
+                             #   "AUV" = "AUV",
+                             #   "Towed video" = "Towed"))),
+                             
+                             htmlOutput("bubble.habitat.dropdown", multiple=FALSE)),
                          box(width = 12, leafletOutput("bubble.leaflet", height = 625))
                 )
         ), # End tab item

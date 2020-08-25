@@ -244,21 +244,7 @@ function(input, output, session) {
   })
   
   
-  bubble.data <- reactive({
-    req(input$bubble.marine.park, input$bubble.method)
-    
-    bubble.dat <- hab.data %>%
-      dplyr::filter(marine.park%in%input$bubble.marine.park)
-    
-    if (input$bubble.method == "all") {
-      bubble.dat
-      
-    } else {
-      bubble.method <- input$bubble.method
-      filter(bubble.dat, method == bubble.method)
-    }
-    
-  })
+
   
   
   # logos
@@ -273,19 +259,70 @@ function(input, output, session) {
     
   }, deleteFile = FALSE)
   
-  # Habitat bubble plot ----
+  # Habitat bubble data ----
+  bubble.data <- reactive({
+    req(input$bubble.marine.park) #, input$bubble.method
+    
+    bubble.dat <- hab.data %>%
+      dplyr::filter(marine.park%in%input$bubble.marine.park)
+    
+    # if (input$bubble.method == "all") {
+    #   bubble.dat
+    #   
+    # } else {
+    #   bubble.method <- input$bubble.method
+    #   filter(bubble.dat, method == bubble.method)
+    # }
+    
+  })
   
+  # Habitat bubble method dropdown ----
+  output$bubble.method.dropdown <- renderUI({
+    
+    options <- hab.data %>%
+      dplyr::filter(marine.park%in%input$bubble.marine.park)%>%
+      distinct(method) %>%
+      pull("method")
+    
+    create_dropdown("bubble.method.dropdown", options, NULL)
+  })
+  
+  output$bubble.habitat.dropdown <- renderUI({
+    
+    dat <- hab.data%>%
+      dplyr::filter(marine.park%in%input$bubble.marine.park)%>%
+      dplyr::filter(method%in%input$bubble.method.dropdown)
+    
+    options <- tidyr::gather(dat,"Consolidated","Macroalgae","Macrophytes",
+                             "Seagrasses","Sponges",
+                             "Stony.corals","Turf.algae",
+                             "Unconsolidated","Urchin.density","Other",
+                             key="habitat.type",value="percent.cover")
+    
+    options.use<-options%>%
+      dplyr::mutate(habitat.type=ga.capitalise(habitat.type))%>%
+      dplyr::mutate(habitat.type=str_replace_all(.$habitat.type, c("[^[:alnum:]]"=" ")))%>%
+      dplyr::filter(percent.cover>0)%>%
+      distinct(habitat.type) %>%
+      arrange()%>%
+      pull("habitat.type")
+    
+    create_dropdown("bubble.habitat.dropdown", options.use, NULL)
+  })
+  
+  # Habitat bubble plot ----
   output$bubble.leaflet <- renderLeaflet({
-    req(input$bubble.habitat)
+    req(input$bubble.habitat.dropdown)
     
     bubble.dat<-bubble.data()%>%
-      dplyr::select(method, sample, longitude, latitude, Consolidated, Macroalgae, Seagrasses, Sponges, Stony.corals, Turf.algae, Unconsolidated, Other) # "biota.ascidians", "biota.crinoids", "biota.invertebrate.complex","biota.seagrasses",
+      dplyr::filter(method%in%c(input$bubble.method.dropdown))%>%
+      dplyr::select(method, sample, longitude, latitude, Consolidated, Macroalgae, Seagrasses, Sponges, Stony.corals, Turf.algae, Unconsolidated, Other,Macrophytes,Urchin.density) # "biota.ascidians", "biota.crinoids", "biota.invertebrate.complex","biota.seagrasses",
     # Gather habitat to bubble plot easier
     
-    habitat<-tidyr::gather(bubble.dat,"Consolidated","Macroalgae",
-                    "Seagrasses","Sponges",
-                    "Stony.corals","Turf.algae",
-                    "Unconsolidated","Other",key="habitat.type",value="percent.cover")
+    habitat<-tidyr::gather(bubble.dat,"Consolidated","Macroalgae","Macrophytes",
+                           "Seagrasses","Sponges",
+                           "Stony.corals","Turf.algae",
+                           "Unconsolidated","Urchin.density","Other",key="habitat.type",value="percent.cover")
     
     habitat<-habitat%>%
       dplyr::mutate(habitat.type=ga.capitalise(habitat.type))%>%
@@ -294,7 +331,7 @@ function(input, output, session) {
     unique(habitat$habitat.type)
     
     habitat.bubble<-habitat%>%
-      dplyr::filter(habitat.type==input$bubble.habitat)
+      dplyr::filter(habitat.type==input$bubble.habitat.dropdown)
     
     map <- leaflet(habitat.bubble) %>%
       addProviderTiles('Esri.WorldImagery', group = "World Imagery") %>%
