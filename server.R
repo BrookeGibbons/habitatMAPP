@@ -447,7 +447,7 @@ function(input, output, session) {
   output$raster.leaflet <- renderLeaflet({
     
     map <- leaflet() %>%
-      addProviderTiles('Esri.WorldImagery', group = "World Imagery") %>%
+      addProviderTiles('Esri.WorldImagery') %>%
       addRasterImage(raster_classified, colors = cb,maxBytes = 6 * 1024 * 1024) %>%
       addLegendRaster(colors = c("#499C32", # 1, stable seagrass, DARK GREEN
                                  "#e7ed6f", # 2, stable sand, PALE YELLOW

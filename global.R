@@ -434,7 +434,6 @@ addLegendCustom <- function(map, colors, labels, sizes, opacity = 0.5){
 
 change.over.time<- raster(x = "data/spatial/Change Over Time.tif")
 
-
 reclass_df <- c(10100.5,	10101.5,	1,
                 10102.5,	10103.5,	1,
                 10300.5,	10301.5,	1,
