@@ -475,3 +475,101 @@ addLegendCustom <- function(map, colors, labels, sizes, opacity = 0.5){
   
   return(addLegend(map, colors = colorAdditions, labels = labelAdditions, opacity = opacity))
 }
+
+change.over.time<- raster(x = "data/spatial/Change Over Time.tif")
+
+
+reclass_df <- c(10100.5,	10101.5,	1,
+                10102.5,	10103.5,	1,
+                10300.5,	10301.5,	1,
+                20201.5,	20202.5,	2,
+                30101.5,	30102.5,	3,
+                30102.5,	30103.5,	3,
+                30200.5,	30201.5,	3,
+                30202.5,	30203.5,	3,
+                30302.5,	30303.5,	3,
+                10201.5,	10202.5,	4,
+                10301.5,	10302.5,	4,
+                30201.5,	30202.5,	4,
+                30301.5,	30302.5,	4,
+                20102.5,	20103.5,	5,
+                20200.5,	20201.5,	5,
+                20202.5,	20203.5,	5,
+                20300.5,	20301.5,	5,
+                20302.5,	20303.5,	5,
+                30100.5,	30101.5,	5,
+                30300.5,	30301.5,	5,
+                10101.5,	10102.5,	6,
+                10202.5,	10203.5,	6,
+                10302.5,	10303.5,	6,
+                10200.5,	10201.5,	7,
+                20100.5,	20101.5,	7,
+                20101.5,	20102.5,	7,
+                20301.5,	20302.5,	7,
+                10103.5,	10104.5,	NA,
+                10203.5,	10204.5,	NA,
+                10303.5,	10304.5,	NA,
+                10400.5,	10401.5,	NA,
+                20103.5, 20104.5,	NA,
+                20401.5,	20402.5,	NA,
+                30203.5,	30204.5,	NA,
+                30303.5,	30304.5,	NA,
+                30400.5,	30401.5,	NA,
+                30401.5,	30402.5,	NA,
+                30402.5,	30403.5,	NA,
+                30403.5,	30404.5,	NA,
+                40100.5,	40101.5,	NA,
+                40101.5,	40102.5,	NA,
+                40102.5,	40103.5,	NA,
+                40103.5,	40104.5,	NA,
+                40200.5,	40201.5,	NA,
+                40201.5,	40202.5,	NA,
+                40202.5,	40203.5,	NA,
+                40203.5,	40204.5,	NA,
+                40300.5,	40301.5,	NA,
+                40301.5,	40302.5,	NA,
+                40302.5,	40303.5,	NA,
+                40303.5,	40304.5,	NA,
+                40400.5,	40401.5,	NA,
+                40401.5,	40402.5,	NA,
+                40402.5,	40403.5,	NA,
+                40403.5,	40404.5,	NA,
+                30103.5,30104.5,NA,
+                20403.4,20404.5,NA,
+                20400.5,20401.5,NA,
+                20203.5,20204.5,NA,
+                10403.5,10404.5,NA,
+                10402.5,10403.5,NA,
+                10401.5,10402.5,NA
+                
+                
+)
+
+reclass_m <- matrix(reclass_df,
+                    ncol = 3,
+                    byrow = TRUE)
+reclass_m
+
+raster_classified <- reclassify(change.over.time, reclass_m)
+raster_classified[is.na(raster_classified)] <- 0
+summary(raster_classified)
+
+raster.colors <- c(#"transparent",
+  "#499C32", # 1, stable seagrass, DARK GREEN
+  "#e7ed6f", # 2, stable sand, PALE YELLOW
+  "#5CC140", # 3, stable partial seagrass, LIGHT GREEN
+  "#C1405C", # 4, Seagrass lost, PALE RED
+  "#6eed5a", # 5, Seagrass gained, NEON GREEN
+  "#ED905A", # 6, Seagrass Degraded, PALE ORANGE
+  "#5AB7ED"#,
+  #"transparent"
+)
+at <- seq(0.5, 7.5, 1)
+cb <- colorBin(palette = raster.colors, bins = at, domain = at,na.color = "transparent")
+
+addLegendRaster <- function(map, colors, labels, sizes, opacity = 1){
+  colorAdditions <- paste0(colors, "; width:", sizes, "px; height:", sizes, "px")
+  labelAdditions <- paste0("<div style='display: inline-block;height: ", sizes, "px;margin-top: 4px;line-height: ", sizes, "px;'>", labels, "</div>")
+  
+  return(addLegend(map, colors = colorAdditions, labels = labelAdditions, opacity = opacity))
+}
