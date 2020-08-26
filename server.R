@@ -462,7 +462,16 @@ function(input, output, session) {
                                  'Seagrass Lost',
                                  "Seagrass Gained",
                                  "Seagrass Degraded",
-                                 "Noise"), sizes = c(20, 20,20, 20,20, 20,20))
+                                 "Noise"), sizes = c(20, 20,20, 20,20, 20,20))%>%
+      addCircleMarkers(
+                                   data = trapping, lat = ~ latitude, lng = ~ longitude,
+                                   stroke = FALSE, group = "Trap locations",fillOpacity = 1,
+                                   radius = 4, color = "#67E01F")%>%
+      addCircleMarkers(
+        data = monitoring, lat = ~ latitude, lng = ~ longitude,
+        stroke = FALSE, group = "Monitoring",fillOpacity = 1,
+        radius = 4, color = "#E01F67")%>%
+      addLegendCustom(colors = c("#67E01F", "#E01F67"), labels = c("Trapping", "Monitoring"), sizes = c(20, 20))
   
     map
   })
