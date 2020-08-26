@@ -409,15 +409,15 @@ function(input, output, session) {
           stroke = FALSE, group = "Monitoring",fillOpacity = 1,
           radius = 4, color = "#E01F67")%>%
         
-        addPolygons(data = dongara.shp, weight = 1, color = "black",
-                    fillOpacity = 0.8, fillColor = ~dongara.pal(seagrass.state),
-                    group = "Seagrass analysis", label=dongara.shp$seagrass.state) %>%
+        # addPolygons(data = dongara.shp, weight = 1, color = "black",
+        #             fillOpacity = 0.8, #fillColor = ~dongara.pal(seagrass.state),
+        #             group = "Seagrass analysis", label=dongara.shp$seagrass.state) %>%
         
         addLayersControl(baseGroups = c("World Imagery","Open Street Map"),
                          overlayGroups = c("State Marine Parks",
                                            "Australian Marine Parks",
                                            "Trap locations",
-                                           "Monitoring", "Seagrass analysis"
+                                           "Monitoring"#, "Seagrass analysis"
                                            ), options = layersControlOptions(collapsed = FALSE))%>% 
         hideGroup("State Marine Parks")%>%
         hideGroup("Australian Marine Parks")%>%

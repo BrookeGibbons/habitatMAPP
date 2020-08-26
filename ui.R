@@ -79,7 +79,7 @@ tagList(
                 ), # End tab item
         
         tabItem(tabName = "bubble",
-                fluidRow(box(width = 3, title = "Select a Marine Park to plot", status = "primary", solidHeader = TRUE, 
+                fluidRow(box(width = 3, title = "Select an area to plot", status = "primary", solidHeader = TRUE, 
                              selectInput("bubble.marine.park", "", c("Geographe Marine Park" = "Geographe Bay",
                                                                      "Dongara lobster fishery" ="Dongara"
                                                                  #"Ningaloo Marine Park" = "Ningaloo",
