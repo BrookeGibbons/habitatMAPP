@@ -9,6 +9,7 @@ tagList(
         menuItem("Fish plots", tabName = "fish", icon = icon("fish", lib="font-awesome")),
         menuItem("Habitat pie charts", tabName = "pie", icon = icon("pie-chart")),
         menuItem("Habitat bubble plots", tabName = "bubble", icon = icon("circle")),
+        menuItem("Habitat change", tabName = "raster", icon = icon("map")),
         menuItem("Acknowledgements", tabName = "acknowledgements", icon = icon("hands-helping", lib="font-awesome"))
       )
     ),
@@ -103,6 +104,11 @@ tagList(
                              
                              htmlOutput("bubble.habitat.dropdown", multiple=FALSE)),
                          box(width = 12, leafletOutput("bubble.leaflet", height = 625))
+                )
+        ), # End tab item
+        
+        tabItem(tabName = "raster",
+                fluidRow(box(width = 12, leafletOutput("raster.leaflet", height = 625))
                 )
         ), # End tab item
         

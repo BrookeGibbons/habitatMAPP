@@ -412,35 +412,67 @@ function(input, output, session) {
         # addPolygons(data = dongara.shp, weight = 1, color = "black",
         #             fillOpacity = 0.8, #fillColor = ~dongara.pal(seagrass.state),
         #             group = "Seagrass analysis", label=dongara.shp$seagrass.state) %>%
-        addRasterImage(raster_classified, colors = cb,maxBytes = 6 * 1024 * 1024,
-                       group = "Change over time") %>%
+        #addRasterImage(raster_classified, colors = cb,maxBytes = 6 * 1024 * 1024,
+        #               group = "Change over time") %>%
         addLayersControl(baseGroups = c("World Imagery","Open Street Map"),
                          overlayGroups = c("State Marine Parks",
                                            "Australian Marine Parks",
                                            "Trap locations",
-                                           "Monitoring",
-                                           "Change over time"#, "Seagrass analysis"
+                                           "Monitoring"#,
+                                           #"Change over time"#, "Seagrass analysis"
                                            ), options = layersControlOptions(collapsed = FALSE))%>% 
         hideGroup("State Marine Parks")%>%
         hideGroup("Australian Marine Parks")%>%
         hideGroup("Change over time")%>%
-        addLegendRaster(colors = c("#499C32", # 1, stable seagrass, DARK GREEN
-                                   "#e7ed6f", # 2, stable sand, PALE YELLOW
-                                   "#5CC140", # 3, stable partial seagrass, LIGHT GREEN
-                                   "#C1405C", # 4, Seagrass lost, PALE RED
-                                   "#6eed5a", # 5, Seagrass gained, NEON GREEN
-                                   "#ED905A", # 6, Seagrass Degraded, PALE ORANGE
-                                   "#5AB7ED"), # noise 
-                        labels = c("Stable Seagrass",
-                                   "Stable Sand",
-                                   "Stable Partial Seagrass",
-                                   'Seagrass Lost',
-                                   "Seagrass Gained",
-                                   "Seagrass Degraded",
-                                   "Noise"), sizes = c(20, 20,20, 20,20, 20,20))%>%
+        # addLegendRaster(colors = c("#499C32", # 1, stable seagrass, DARK GREEN
+        #                            "#e7ed6f", # 2, stable sand, PALE YELLOW
+        #                            "#5CC140", # 3, stable partial seagrass, LIGHT GREEN
+        #                            "#C1405C", # 4, Seagrass lost, PALE RED
+        #                            "#6eed5a", # 5, Seagrass gained, NEON GREEN
+        #                            "#ED905A", # 6, Seagrass Degraded, PALE ORANGE
+        #                            "#5AB7ED"), # noise 
+        #                 labels = c("Stable Seagrass",
+        #                            "Stable Sand",
+        #                            "Stable Partial Seagrass",
+        #                            'Seagrass Lost',
+        #                            "Seagrass Gained",
+        #                            "Seagrass Degraded",
+        #                            "Noise"), sizes = c(20, 20,20, 20,20, 20,20))%>%
         addLegendCustom(colors = c("#67E01F", "#E01F67"), labels = c("Trapping", "Monitoring"), sizes = c(20, 20))
     }
     
+    map
+  })
+  
+  output$raster.leaflet <- renderLeaflet({
+    
+    map <- leaflet() %>%
+      addProviderTiles('Esri.WorldImagery') %>%
+      addRasterImage(raster_classified, colors = cb,maxBytes = 6 * 1024 * 1024) %>%
+      addLegendRaster(colors = c("#499C32", # 1, stable seagrass, DARK GREEN
+                                 "#e7ed6f", # 2, stable sand, PALE YELLOW
+                                 "#5CC140", # 3, stable partial seagrass, LIGHT GREEN
+                                 "#C1405C", # 4, Seagrass lost, PALE RED
+                                 "#6eed5a", # 5, Seagrass gained, NEON GREEN
+                                 "#ED905A", # 6, Seagrass Degraded, PALE ORANGE
+                                 "#5AB7ED"), # noise 
+                      labels = c("Stable Seagrass",
+                                 "Stable Sand",
+                                 "Stable Partial Seagrass",
+                                 'Seagrass Lost',
+                                 "Seagrass Gained",
+                                 "Seagrass Degraded",
+                                 "Noise"), sizes = c(20, 20,20, 20,20, 20,20))%>%
+      addCircleMarkers(
+                                   data = trapping, lat = ~ latitude, lng = ~ longitude,
+                                   stroke = FALSE, group = "Trap locations",fillOpacity = 1,
+                                   radius = 4, color = "#67E01F")%>%
+      addCircleMarkers(
+        data = monitoring, lat = ~ latitude, lng = ~ longitude,
+        stroke = FALSE, group = "Monitoring",fillOpacity = 1,
+        radius = 4, color = "#E01F67")%>%
+      addLegendCustom(colors = c("#67E01F", "#E01F67"), labels = c("Trapping", "Monitoring"), sizes = c(20, 20))
+  
     map
   })
   

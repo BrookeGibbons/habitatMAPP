@@ -137,22 +137,6 @@ monitoring <- read.csv("data/dongara/all.monitoring.sites.csv")%>%
 
 # Spatial files ----
 # State marine parks ----
-dongara.shp <-  readOGR("data/spatial/Raster_to_Poly.shp") 
-
-unique(dongara.shp$Desc_)
-
-dongara.shp$seagrass.state<-fct_relevel(dongara.shp$Desc_, "Conservation (no-take)", "Sanctuary (no-take)", "Recreation", "General Use", "Special Purpose")
-
-dongara.pal <- colorFactor(c("#f6c1d9", # Seagrass Gained
-                                  "#7bbc63", # Seagrass Degraded
-                                  "#fdb930", # Seagrass Lost
-                                  "#fff7a3", # Stable Seagrass
-                                  '#b9e6fb', # Stable Partial Seagrass
-                                  '#ccc1d6',# Stable Sand
-                                  'black' # Noise
-), dongara.shp$seagrass.state)
-
-
 ngari.mp <- readOGR("data/spatial/test1.shp") 
 state.mp <- readOGR("data/spatial/WA_MPA_2018.shp")
 
@@ -390,34 +374,6 @@ markerLegendHTML <- function(IconSet) {
 }
 
 
-# HOW TO ADD ICONS BASED ON COLUMN ------
-# Make a list of icons. We'll index into it based on name.
-# oceanIcons <- iconList(
-#   ship = makeIcon("ferry-18.png", "ferry-18@2x.png", 18, 18),
-#   pirate = makeIcon("danger-24.png", "danger-24@2x.png", 24, 24)
-# )
-# 
-# # Some fake data
-# df <- sp::SpatialPointsDataFrame(
-#   cbind(
-#     (runif(20) - .5) * 10 - 90.620130,  # lng
-#     (runif(20) - .5) * 3.8 + 25.638077  # lat
-#   ),
-#   data.frame(type = factor(
-#     ifelse(runif(20) > 0.75, "pirate", "ship"),
-#     c("ship", "pirate")
-#   ))
-# )
-# 
-# leaflet(df) %>% addTiles() %>%
-#   # Select from oceanIcons based on df$type
-#   addMarkers(icon = ~oceanIcons[type])
-
-# first 20 quakes
-# df.20 <- quakes[1:20,]
-
-
-
 dbHeader <- dashboardHeader()
 dbHeader$children[[2]]$children <-  tags$a(href='http://mycompanyishere.com',
                                            tags$img(src='https://www.nespmarine.edu.au/sites/default/themes/nespmarine/logo.png',height='60',width='200'))
@@ -477,7 +433,6 @@ addLegendCustom <- function(map, colors, labels, sizes, opacity = 0.5){
 }
 
 change.over.time<- raster(x = "data/spatial/Change Over Time.tif")
-
 
 reclass_df <- c(10100.5,	10101.5,	1,
                 10102.5,	10103.5,	1,
