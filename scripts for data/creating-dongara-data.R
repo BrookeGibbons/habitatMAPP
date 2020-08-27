@@ -5,13 +5,9 @@ library(stringr)
 library(readr)
 library(GlobalArchive)
 library(raster)
-
-
-
-
+library(leaflet)
 
 change.over.time<- raster(x = "data/spatial/Change Over Time.tif")
-
 
 reclass_df <- c(10100.5,	10101.5,	1,
                 10102.5,	10103.5,	1,
@@ -88,39 +84,18 @@ raster_classified <- reclassify(change.over.time, reclass_m)
 raster_classified[is.na(raster_classified)] <- 0
 summary(raster_classified)
 
-plot(raster_classified, col = c("transparent","#499C32", # 1, stable seagrass, DARK GREEN
-                                "#e7ed6f", # 2, stable sand, PALE YELLOW
-                                "#5CC140", # 3, stable partial seagrass, LIGHT GREEN
-                                "#C1405C", # 4, Seagrass lost, PALE RED
-                                "#6eed5a", # 5, Seagrass gained, NEON GREEN
-                                "#ED905A", # 6, Seagrass Degraded, PALE ORANGE
-                                "#5AB7ED"
-                                ))# 7, Noise, BLUE
-# Stable Seagrass
-# Stable Sand
-# Stable Partial Seagrass
-# Seagrass Lost
-# Seagrass Gained
-# Seagrass Degraded
-# Noise
-
-
-# "#75C639", "#39BCC6", "#8A39C6", "#C64339", "#E1B71E", "#E11EAA", "#f7ed35"
-# green, blue, purple, red, orange, pink, yellow
-
-
-colors <- c(#"transparent",
-            "#499C32", # 1, stable seagrass, DARK GREEN
-             "#e7ed6f", # 2, stable sand, PALE YELLOW
-             "#5CC140", # 3, stable partial seagrass, LIGHT GREEN
-             "#C1405C", # 4, Seagrass lost, PALE RED
-             "#6eed5a", # 5, Seagrass gained, NEON GREEN
-             "#ED905A", # 6, Seagrass Degraded, PALE ORANGE
-             "#5AB7ED"#,
-             #"transparent"
-            )
+raster.colors <- c(#"transparent",
+  "#499C32", # 1, stable seagrass, DARK GREEN
+  "#e7ed6f", # 2, stable sand, PALE YELLOW
+  "#5CC140", # 3, stable partial seagrass, LIGHT GREEN
+  "#C1405C", # 4, Seagrass lost, PALE RED
+  "#6eed5a", # 5, Seagrass gained, NEON GREEN
+  "#ED905A", # 6, Seagrass Degraded, PALE ORANGE
+  "#5AB7ED"#,
+  #"transparent"
+)
 at <- seq(0.5, 7.5, 1)
-cb <- colorBin(palette = colors, bins = at, domain = at,na.color = "transparent")
+cb <- colorBin(palette = raster.colors, bins = at, domain = at,na.color = "transparent")
 
 addLegendRaster <- function(map, colors, labels, sizes, opacity = 1){
   colorAdditions <- paste0(colors, "; width:", sizes, "px; height:", sizes, "px")
@@ -129,7 +104,13 @@ addLegendRaster <- function(map, colors, labels, sizes, opacity = 1){
   return(addLegend(map, colors = colorAdditions, labels = labelAdditions, opacity = opacity))
 }
 
+trapping <- read.csv("data/dongara/trap.locations.csv")%>%
+  dplyr::select(X,Y)%>%
+  dplyr::rename(longitude=X,latitude=Y)
 
+monitoring <- read.csv("data/dongara/all.monitoring.sites.csv")%>%
+  dplyr::select(X,Y)%>%
+  dplyr::rename(longitude=X,latitude=Y)
 
 leaflet() %>% 
   addProviderTiles('Esri.WorldImagery', group = "World Imagery") %>%
@@ -147,7 +128,16 @@ leaflet() %>%
                              'Seagrass Lost',
                              "Seagrass Gained",
                              "Seagrass Degraded",
-                             "Noise"), sizes = c(20, 20,20, 20,20, 20,20))
+                             "Noise"), sizes = c(20, 20,20, 20,20, 20,20))%>%
+  addCircleMarkers(
+    data = trapping, lat = ~ latitude, lng = ~ longitude,
+    stroke = FALSE, group = "Trap locations",fillOpacity = 1,
+    radius = 4, color = "#67E01F")%>%
+  addCircleMarkers(
+    data = monitoring, lat = ~ latitude, lng = ~ longitude,
+    stroke = FALSE, group = "Monitoring",fillOpacity = 1,
+    radius = 4, color = "#E01F67")%>%
+  addLegendCustom(colors = c("#67E01F", "#E01F67"), labels = c("Trapping", "Monitoring"), sizes = c(20, 20))
 
 # setwd("C:/GitHub/habitatMAPP/data/dongara")
 setwd("/srv/shiny-server/marinemapper/data/dongara")
